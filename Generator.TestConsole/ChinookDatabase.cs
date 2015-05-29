@@ -3151,6 +3151,36 @@ namespace Generator.SimpleDataAccess.Samples
 
         #endregion
 
+        #region Stored Procedures
+
+        public void ExecuteInsertGenre(System.String name, out System.Int32 genreId)
+        {
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("[dbo].[InsertGenre]"))
+            {
+                command.CommandType = System.Data.CommandType.StoredProcedure;
+
+                try
+                {
+                    PopConnection(command);
+
+                    System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar);
+                    pName.Value = name;
+
+                    System.Data.SqlClient.SqlParameter pGenreId = command.Parameters.Add("@GenreId", System.Data.SqlDbType.Int);
+                    pGenreId.Direction = System.Data.ParameterDirection.Output;
+
+                    command.ExecuteNonQuery();
+
+                    genreId = (System.Int32)pGenreId.Value;
+                }
+                finally
+                {
+                    PushConnection(command);
+                }
+            }
+        }
+        #endregion
+
         
         private void PopConnection(System.Data.SqlClient.SqlCommand command)
         {

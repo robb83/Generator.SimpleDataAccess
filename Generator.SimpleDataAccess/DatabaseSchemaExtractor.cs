@@ -443,13 +443,15 @@ namespace Generator.SimpleDataAccess
                                 p.Parameters.Add(parameterInfo);
                             }
 
-                            parameterInfo.IsOutput = reader.GetBoolean(4);
-                            parameterInfo.DbType = SqlDbTypeFrom(reader.GetString(0));
+                            parameterInfo.Name = reader.GetString(0).Replace("@", "");
+                            parameterInfo.IsOutput = reader.GetBoolean(1);
+                            parameterInfo.DbType = SqlDbTypeFrom(reader.GetString(2));
                             parameterInfo.Type = TypeFrom(parameterInfo.DbType);
                             parameterInfo.MappingMethodName = MappingMethod(parameterInfo.DbType);
                             parameterInfo.FullTypeName = TypeFullName(parameterInfo.Type, parameterInfo.HasDefault);
                             parameterInfo.LocalVariableName = ToLocalVariableName(parameterInfo.Name);
                             parameterInfo.ParameterName = ToParameterName(parameterInfo.Name);
+                            parameterInfo.LocalParameterVariableName = ToLocalParameterName(parameterInfo.Name);
                         }
                     }
                 }

@@ -57,6 +57,75 @@ namespace Generator.SimpleDataAccess.Generators
             code.CodeBlockEnd();
         }
 
+        public static void GenerateStoredProcedure(CodeStringBuilder code, StoredProcedureInfo storedProcedureInfo)
+        {
+            String parameters = "";
+
+            foreach (StoredProcedureParameterInfo parameterInfo in storedProcedureInfo.Parameters)
+            {
+                if (parameters.Length > 0)
+                {
+                    parameters += ", ";
+                }
+
+                if (parameterInfo.IsOutput)
+                {
+                    parameters += "out ";
+                }
+
+                parameters += parameterInfo.FullTypeName;
+                parameters += " ";
+                parameters += parameterInfo.LocalVariableName;
+            }
+
+            code.AppendFormat("public void Execute{0}({1})", storedProcedureInfo.Name, parameters);
+            code.CodeBlockBegin();
+
+            code.AppendFormat("using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(\"[{0}].[{1}]\"))", storedProcedureInfo.Schema, storedProcedureInfo.Name);
+            code.CodeBlockBegin();
+            code.AppendLine("command.CommandType = System.Data.CommandType.StoredProcedure;");
+            code.AppendLine();
+
+            code.Append("try");
+            code.CodeBlockBegin();
+            code.AppendLine("PopConnection(command);");
+            code.AppendLine();
+
+            foreach (StoredProcedureParameterInfo parameterInfo in storedProcedureInfo.Parameters)
+            {
+                GenerateSqlParameter(code,
+                    parameterInfo.LocalVariableName,
+                    parameterInfo.LocalParameterVariableName,
+                    parameterInfo.ParameterName,
+                    parameterInfo.DbType,
+                    parameterInfo.HasDefault, parameterInfo.IsOutput);
+                code.AppendLine();
+            }
+
+            code.AppendLine("command.ExecuteNonQuery();");
+            code.AppendLine();
+
+            foreach (StoredProcedureParameterInfo parameterInfo in storedProcedureInfo.Parameters)
+            {
+                if (parameterInfo.IsOutput == false)
+                {
+                    continue;
+                }
+
+                code.AppendFormat("{0} = ({1}){2}.Value;", parameterInfo.LocalVariableName, parameterInfo.FullTypeName, parameterInfo.LocalParameterVariableName);
+                code.AppendLine();
+            }
+
+            code.CodeBlockEnd();
+            code.Append("finally");
+            code.CodeBlockBegin();
+            code.Append("PushConnection(command);");
+            code.CodeBlockEnd();
+
+            code.CodeBlockEnd();
+            code.CodeBlockEnd();
+        }
+
         public static void GenerateSelectMethod(CodeStringBuilder code, TableInfo tableInfo, List<ColumnInfo> filteredColumns, bool singleResult)
         {
             String methodName = "Select" + tableInfo.ClassName;
@@ -455,7 +524,18 @@ namespace Generator.SimpleDataAccess.Generators
                 code.AppendLine("#endregion");
                 code.AppendLine();
             }
-            
+
+            foreach(StoredProcedureInfo storedProcedureInfo in schemaInfo.StoredProcedures)
+            {
+                code.AppendLine("#region Stored Procedures");
+                code.AppendLine();
+
+                GenerateStoredProcedure(code, storedProcedureInfo);
+
+                code.AppendLine("#endregion");
+                code.AppendLine();
+            }
+
             code.Append(@"
 private void PopConnection(System.Data.SqlClient.SqlCommand command)
 {

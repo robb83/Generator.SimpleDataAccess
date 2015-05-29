@@ -13,6 +13,7 @@ namespace Generator.SimpleDataAccess.Model
         public String FullTypeName;
         public String ParameterName;
         public String LocalVariableName;
+        public String LocalParameterVariableName;
 
         public override string ToString()
         {
