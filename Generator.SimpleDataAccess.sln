@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.22823.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Generator.SimpleDataAccess", "Generator.SimpleDataAccess\Generator.SimpleDataAccess.csproj", "{7A55C4C3-C181-42E1-8243-42D894AE7A0F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Generator.TestConsole", "Generator.TestConsole\Generator.TestConsole.csproj", "{40F68C3E-BD39-4287-8443-C9D29DB583BB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4107EC2F-B98F-4B4E-AD07-BF1E02B0173A}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+		TODO.txt = TODO.txt
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7A55C4C3-C181-42E1-8243-42D894AE7A0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A55C4C3-C181-42E1-8243-42D894AE7A0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A55C4C3-C181-42E1-8243-42D894AE7A0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A55C4C3-C181-42E1-8243-42D894AE7A0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40F68C3E-BD39-4287-8443-C9D29DB583BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40F68C3E-BD39-4287-8443-C9D29DB583BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40F68C3E-BD39-4287-8443-C9D29DB583BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40F68C3E-BD39-4287-8443-C9D29DB583BB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,9 @@
+	Insert, update level configuration for computed or user specified column reread from database (now only identity column supported)
+	Customizable method names
+	Nullable column filter support (accept null value)
+	Special column value support (UpdatedAt: GETUTCDATE, GETDATE)
+	Update concurrent support
+	Upsert, paged select and stored procedure support
+	External or User friendly template support
+	Select WITH(NOLOCK) support
+	Connection keep alive support (if transaction is not explicitly opened)
