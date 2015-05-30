@@ -25,21 +25,28 @@ namespace Generator.SimpleDataAccess.Generators
             code.CodeBlockEnd();
         }
 
-        private static void GenerateColumnMapperFromSqlDataReader(CodeStringBuilder code, ColumnInfo columnInfo)
+        private static void GenerateColumnMapperFromSqlDataReader(CodeStringBuilder code, ColumnInfo columnInfo, int? ordinalOverride = null)
         {
+            int ordinal = columnInfo.Ordinal;
+
+            if (ordinalOverride.HasValue)
+            {
+                ordinal = ordinalOverride.Value;
+            }
+
             if (columnInfo.IsNullable && columnInfo.Type.IsValueType)
             {
-                code.CodeBlockBegin("if (reader.IsDBNull({0}))", columnInfo.Ordinal);
-                code.AppendLineFormat("entity.{0} = null;", columnInfo.PropertyName, columnInfo.MappingMethodName, columnInfo.Ordinal);
+                code.CodeBlockBegin("if (reader.IsDBNull({0}))", ordinal);
+                code.AppendLineFormat("entity.{0} = null;", columnInfo.PropertyName, columnInfo.MappingMethodName, ordinal);
                 code.CodeBlockEnd();
 
                 code.CodeBlockBegin("else");
-                code.AppendLineFormat("entity.{0} = reader.{1}({2});", columnInfo.PropertyName, columnInfo.MappingMethodName, columnInfo.Ordinal);
+                code.AppendLineFormat("entity.{0} = reader.{1}({2});", columnInfo.PropertyName, columnInfo.MappingMethodName, ordinal);
                 code.CodeBlockEnd();
             }
             else
             {
-                code.AppendLineFormat("entity.{0} = reader.{1}({2});", columnInfo.PropertyName, columnInfo.MappingMethodName, columnInfo.Ordinal);
+                code.AppendLineFormat("entity.{0} = reader.{1}({2});", columnInfo.PropertyName, columnInfo.MappingMethodName, ordinal);
             }
         }
 
@@ -413,6 +420,7 @@ namespace Generator.SimpleDataAccess.Generators
                 
                 code.CodeBlockBegin("if (reader.Read())");
 
+                int ordinal = 0;
                 foreach (ColumnInfo columnInfo in tableInfo.Columns)
                 {
                     if (!columnInfo.IsComputed && !columnInfo.IsIdentity)
@@ -420,7 +428,7 @@ namespace Generator.SimpleDataAccess.Generators
                         continue;
                     }
 
-                    GenerateColumnMapperFromSqlDataReader(code, columnInfo);
+                    GenerateColumnMapperFromSqlDataReader(code, columnInfo, ordinal++);
                 }
 
                 code.CodeBlockEnd();

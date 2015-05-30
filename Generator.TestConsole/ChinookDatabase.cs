@@ -873,8 +873,8 @@ namespace Generator.SimpleDataAccess.Samples
                         if (reader.Read())
                         {
                             entity.CustomerId = reader.GetInt32(0);
-                            entity.FullName = reader.GetString(13);
-                            entity.FullDetail = reader.GetString(15);
+                            entity.FullName = reader.GetString(1);
+                            entity.FullDetail = reader.GetString(2);
                         }
                         else
                         {
