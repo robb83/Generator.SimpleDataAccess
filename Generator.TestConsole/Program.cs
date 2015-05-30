@@ -70,6 +70,15 @@ namespace Generator.TestConsole
                 fullName = customer.FullName;
                 fullDetail = customer.FullDetail;
 
+                Artist artist2 = new Artist();
+                artist2.Name = "Kis Pál és a borz";
+
+                database.UpsertArtist(artist2);
+
+                artist2.Name = "Kispál és a Borz";
+
+                database.UpsertArtist(artist2);
+
                 database.RollbackTransaction();
             }
         }

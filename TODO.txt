@@ -8,3 +8,4 @@
 	Select WITH(NOLOCK) and other transaction isolation support
 	Connection keep alive support (if transaction is not explicitly opened)
 	System type size support in SqlParameter (optional)
+	SqlParameter InputOutput support

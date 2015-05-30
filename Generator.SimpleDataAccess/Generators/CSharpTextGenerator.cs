@@ -352,6 +352,92 @@ namespace Generator.SimpleDataAccess.Generators
             }
         }
 
+        public static void GenerateUpsertMethod(CodeStringBuilder code, TableInfo tableInfo)
+        {
+            List<ColumnInfo> key = tableInfo.GetFirstPrimaryKey();
+
+            code.AppendFormat("public void Upsert{0}({0} entity)", tableInfo.ClassName);
+            code.CodeBlockBegin();
+
+            code.Append("if (entity == null)");
+            code.CodeBlockBegin();
+            code.Append("throw new ArgumentNullException(\"entity\");");
+            code.CodeBlockEnd();
+            code.AppendLine();
+
+            code.AppendFormat("using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(\"{0}\"))", SQLTextGenerator.GenerateMerge(tableInfo, key));
+            code.CodeBlockBegin();
+
+            code.Append("try");
+            code.CodeBlockBegin();
+            code.AppendLine("PopConnection(command);");
+
+            foreach (ColumnInfo columnInfo in tableInfo.Columns)
+            {
+                GenerateSqlParameter(
+                    code,
+                    String.Format("entity.{0}", columnInfo.PropertyName),
+                    columnInfo.LocalParameterVariableName,
+                    columnInfo.ParameterName,
+                    columnInfo.DbType,
+                    columnInfo.IsNullable,
+                    columnInfo.IsComputed,
+                    columnInfo.MaxLength);
+                code.AppendLine();
+            }
+
+            if (tableInfo.HasComputedColumns() || tableInfo.HasIdentityColumn())
+            {
+                code.Append("using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())");
+                code.CodeBlockBegin();
+
+                code.Append("if (reader.Read())");
+                code.CodeBlockBegin();
+
+                foreach (ColumnInfo columnInfo in tableInfo.Columns)
+                {
+                    if (!columnInfo.IsComputed && !columnInfo.IsIdentity)
+                    {
+                        continue;
+                    }
+
+                    GenerateColumnMapperFromSqlDataReader(code, columnInfo);
+                }
+
+                code.CodeBlockEnd();
+                code.Append("else");
+                code.CodeBlockBegin();
+                code.Append("throw new InvalidOperationException(\"Upsert failed.\");");
+                code.CodeBlockEnd();
+
+                code.CodeBlockEnd();
+            }
+            else
+            {
+                code.Append("if (command.ExecuteNonQuery() <= 0)");
+                code.CodeBlockBegin();
+                code.Append("throw new InvalidOperationException(\"Upsert failed.\");");
+                code.CodeBlockEnd();
+            }
+
+            foreach (var columnInfo in tableInfo.Columns)
+            {
+                if (columnInfo.IsComputed)
+                {
+                    GenerateColumnMapperFromSqlParameter(code, columnInfo);
+                }
+            }
+
+            code.CodeBlockEnd();
+            code.Append("finally");
+            code.CodeBlockBegin();
+            code.Append("PushConnection(command);");
+            code.CodeBlockEnd();
+
+            code.CodeBlockEnd();
+            code.CodeBlockEnd();
+        }
+
         public static void GenerateUpdateMethod(CodeStringBuilder code, TableInfo tableInfo)
         {
             List<ColumnInfo> key = tableInfo.GetFirstPrimaryKey();
@@ -589,10 +675,13 @@ namespace Generator.SimpleDataAccess.Generators
 
             foreach (var t in schemaInfo.Tables)
             {
-                code.AppendLineFormat("#region Insert, Update, Delete, Select, Mapping - {0}", t.ToString());
+                code.AppendLineFormat("#region Upsert, Insert, Update, Delete, Select, Mapping - {0}", t.ToString());
                 code.AppendLine();
 
                 CSharpTextGenerator.GenerateMapping(code, t);
+                code.AppendLine();
+
+                CSharpTextGenerator.GenerateUpsertMethod(code, t);
                 code.AppendLine();
 
                 CSharpTextGenerator.GenerateInsertMethod(code, t);
