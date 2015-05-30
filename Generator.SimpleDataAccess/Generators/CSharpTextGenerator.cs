@@ -26,6 +26,44 @@ namespace Generator.SimpleDataAccess.Generators
             code.CodeBlockEnd();
         }
 
+        private static void GenerateColumnMapperFromSqlDataReader(CodeStringBuilder code, ColumnInfo columnInfo)
+        {
+            if (columnInfo.IsNullable && columnInfo.Type.IsValueType)
+            {
+                code.AppendLineFormat("if (reader.IsDBNull({0}))", columnInfo.Ordinal);
+                code.CodeBlockBegin();
+                code.AppendLineFormat("entity.{0} = null;", columnInfo.PropertyName, columnInfo.MappingMethodName, columnInfo.Ordinal);
+                code.CodeBlockEnd();
+                code.AppendLine("else");
+                code.CodeBlockBegin();
+                code.AppendLineFormat("entity.{0} = reader.{1}({2});", columnInfo.PropertyName, columnInfo.MappingMethodName, columnInfo.Ordinal);
+                code.CodeBlockEnd();
+            }
+            else
+            {
+                code.AppendLineFormat("entity.{0} = reader.{1}({2});", columnInfo.PropertyName, columnInfo.MappingMethodName, columnInfo.Ordinal);
+            }
+        }
+
+        private static void GenerateColumnMapperFromSqlParameter(CodeStringBuilder code, ColumnInfo columnInfo)
+        {
+            if (columnInfo.IsNullable)
+            {
+                code.AppendLineFormat("if ({0}.Value == System.DBNull.Value)", columnInfo.LocalParameterVariableName);
+                code.CodeBlockBegin();
+                code.AppendLineFormat("entity.{0} = null;", columnInfo.PropertyName);
+                code.CodeBlockEnd();
+                code.AppendLine("else");
+                code.CodeBlockBegin();
+                code.AppendLineFormat("entity.{0} = ({1}){2}.Value;", columnInfo.PropertyName, columnInfo.FullTypeName ,columnInfo.LocalParameterVariableName);
+                code.CodeBlockEnd();
+            }
+            else
+            {
+                code.AppendLineFormat("entity.{0} = ({1}){2}.Value;", columnInfo.PropertyName, columnInfo.FullTypeName, columnInfo.LocalParameterVariableName);
+            }
+        }
+
         public static void GenerateMapping(CodeStringBuilder code, TableInfo tableInfo)
         {
             code.AppendFormat("public static {0} Read{0}(System.Data.SqlClient.SqlDataReader reader)", tableInfo.ClassName);
@@ -33,23 +71,9 @@ namespace Generator.SimpleDataAccess.Generators
 
             code.AppendLineFormat("{0} entity = new {0}();", tableInfo.ClassName);
             
-            foreach (var c in tableInfo.Columns)
+            foreach (var columnInfo in tableInfo.Columns)
             {
-                if (c.IsNullable && c.Type.IsValueType)
-                {
-                    code.AppendLineFormat("if (reader.IsDBNull({0}))", c.Ordinal);
-                    code.CodeBlockBegin();
-                    code.AppendLineFormat("entity.{0} = null;", c.PropertyName, c.MappingMethodName, c.Ordinal);
-                    code.CodeBlockEnd();
-                    code.AppendLine("else");
-                    code.CodeBlockBegin();
-                    code.AppendLineFormat("entity.{0} = reader.{1}({2});", c.PropertyName, c.MappingMethodName, c.Ordinal);
-                    code.CodeBlockEnd();                    
-                }
-                else
-                {
-                    code.AppendLineFormat("entity.{0} = reader.{1}({2});", c.PropertyName, c.MappingMethodName, c.Ordinal);
-                }
+                GenerateColumnMapperFromSqlDataReader(code, columnInfo);
             }
 
             code.Append("return entity;");
@@ -105,7 +129,9 @@ namespace Generator.SimpleDataAccess.Generators
                     parameterInfo.LocalParameterVariableName,
                     parameterInfo.ParameterName,
                     parameterInfo.DbType,
-                    parameterInfo.HasDefault, parameterInfo.IsOutput);
+                    parameterInfo.HasDefault, 
+                    parameterInfo.IsOutput,
+                    -1);
                 code.AppendLine();
             }
 
@@ -235,7 +261,9 @@ namespace Generator.SimpleDataAccess.Generators
                         columnInfo.LocalParameterVariableName, 
                         columnInfo.ParameterName, 
                         columnInfo.DbType, 
-                        columnInfo.IsNullable, false);
+                        columnInfo.IsNullable, 
+                        false,
+                        columnInfo.MaxLength);
                     code.AppendLine();
                 }
             }
@@ -275,9 +303,30 @@ namespace Generator.SimpleDataAccess.Generators
             code.CodeBlockEnd();
         }
         
-        private static void GenerateSqlParameter(CodeStringBuilder code, String valueExpression, String localParameterName, String sqlParameterName, System.Data.SqlDbType sqlDbType, bool is_nullable, bool is_output)
+        private static bool IsVariableLength(System.Data.SqlDbType dbType)
         {
-            code.AppendLineFormat("System.Data.SqlClient.SqlParameter {0} = command.Parameters.Add(\"{1}\", System.Data.SqlDbType.{2});", localParameterName, sqlParameterName ,sqlDbType.ToString());
+            switch(dbType)
+            {
+                case System.Data.SqlDbType.NText:
+                case System.Data.SqlDbType.NVarChar:
+                case System.Data.SqlDbType.VarChar:
+                case System.Data.SqlDbType.Text:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        private static void GenerateSqlParameter(CodeStringBuilder code, String valueExpression, String localParameterName, String sqlParameterName, System.Data.SqlDbType sqlDbType, bool is_nullable, bool is_output, long max_length)
+        {
+            if (IsVariableLength(sqlDbType))
+            {
+                code.AppendLineFormat("System.Data.SqlClient.SqlParameter {0} = command.Parameters.Add(\"{1}\", System.Data.SqlDbType.{2}, {3});", localParameterName, sqlParameterName, sqlDbType.ToString(), max_length);
+            }
+            else
+            {
+                code.AppendLineFormat("System.Data.SqlClient.SqlParameter {0} = command.Parameters.Add(\"{1}\", System.Data.SqlDbType.{2});", localParameterName, sqlParameterName, sqlDbType.ToString(), max_length);
+            }
 
             if (is_output)
             {
@@ -305,6 +354,8 @@ namespace Generator.SimpleDataAccess.Generators
 
         public static void GenerateUpdateMethod(CodeStringBuilder code, TableInfo tableInfo)
         {
+            List<ColumnInfo> key = tableInfo.GetFirstPrimaryKey();
+
             code.AppendFormat("public void Update{0}({0} entity)", tableInfo.ClassName);
             code.CodeBlockBegin();
 
@@ -314,7 +365,7 @@ namespace Generator.SimpleDataAccess.Generators
             code.CodeBlockEnd();
             code.AppendLine();
 
-            code.AppendFormat("using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(\"{0}\"))", SQLTextGenerator.GenerateUpdate(tableInfo, tableInfo.Indexes.Where(i => i.IsPrimaryKey).First().Columns));
+            code.AppendFormat("using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(\"{0}\"))", SQLTextGenerator.GenerateUpdate(tableInfo, key));
             code.CodeBlockBegin();
 
             code.Append("try");
@@ -323,8 +374,6 @@ namespace Generator.SimpleDataAccess.Generators
 
             foreach (ColumnInfo columnInfo in tableInfo.Columns)
             {
-                if (columnInfo.IsComputed) continue;
-                
                 GenerateSqlParameter(
                     code,
                     String.Format("entity.{0}", columnInfo.PropertyName),
@@ -332,12 +381,25 @@ namespace Generator.SimpleDataAccess.Generators
                     columnInfo.ParameterName,
                     columnInfo.DbType,
                     columnInfo.IsNullable,
-                    false);
+                    columnInfo.IsComputed,
+                    columnInfo.MaxLength);
                 code.AppendLine();
             }
 
-            code.Append("if (command.ExecuteNonQuery() <= 0)");
-            code.CodeBlockBegin();            
+            code.Append("if (command.ExecuteNonQuery() > 0)");
+            code.CodeBlockBegin();
+
+            foreach (var columnInfo in tableInfo.Columns)
+            {
+                if (columnInfo.IsComputed)
+                {
+                    GenerateColumnMapperFromSqlParameter(code, columnInfo);
+                }
+            }
+
+            code.CodeBlockEnd();
+            code.Append("else");
+            code.CodeBlockBegin();
             code.Append("throw new InvalidOperationException(\"Update failed.\");");
             code.CodeBlockEnd();
 
@@ -371,8 +433,6 @@ namespace Generator.SimpleDataAccess.Generators
 
             foreach (ColumnInfo columnInfo in tableInfo.Columns)
             {
-                if (columnInfo.IsComputed) continue;
-
                 GenerateSqlParameter(
                     code, 
                     String.Format("entity.{0}", columnInfo.PropertyName), 
@@ -380,7 +440,8 @@ namespace Generator.SimpleDataAccess.Generators
                     columnInfo.ParameterName, 
                     columnInfo.DbType, 
                     columnInfo.IsNullable, 
-                    columnInfo.IsIdentity);
+                    columnInfo.IsIdentity || columnInfo.IsComputed,
+                    columnInfo.MaxLength);
                 code.AppendLine();
             }
 
@@ -389,10 +450,9 @@ namespace Generator.SimpleDataAccess.Generators
 
             foreach (var columnInfo in tableInfo.Columns)
             {
-                if (columnInfo.IsIdentity)
+                if (columnInfo.IsIdentity || columnInfo.IsComputed)
                 {
-                    code.AppendFormat("entity.{0} = ({1}){2}.Value;", columnInfo.PropertyName, columnInfo.FullTypeName , columnInfo.LocalParameterVariableName);
-                    break;
+                    GenerateColumnMapperFromSqlParameter(code, columnInfo);
                 }
             }
 
@@ -455,7 +515,10 @@ namespace Generator.SimpleDataAccess.Generators
                         columnInfo.LocalVariableName,
                         columnInfo.LocalParameterVariableName, 
                         columnInfo.ParameterName, 
-                        columnInfo.DbType, columnInfo.IsNullable, false);
+                        columnInfo.DbType, 
+                        columnInfo.IsNullable, 
+                        false,
+                        columnInfo.MaxLength);
                     code.AppendLine();
                 }
             }

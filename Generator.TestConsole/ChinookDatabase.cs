@@ -33,6 +33,9 @@ namespace Generator.SimpleDataAccess.Samples
         public System.String Fax { get; set; }
         public System.String Email { get; set; }
         public System.Nullable<System.Int32> SupportRepId { get; set; }
+        public System.String FullName { get; set; }
+        public System.String Comment { get; set; }
+        public System.String FullDetail { get; set; }
     }
 
     public partial class Employee
@@ -155,7 +158,7 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[Album] ([Title], [ArtistId]) VALUES (@Title, @ArtistId); SET @AlbumId = SCOPE_IDENTITY(); "))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[Album] ([Title], [ArtistId]) VALUES (@Title, @ArtistId); SET @AlbumId = SCOPE_IDENTITY();"))
             {
                 try
                 {
@@ -163,7 +166,7 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pAlbumId = command.Parameters.Add("@AlbumId", System.Data.SqlDbType.Int);
                     pAlbumId.Direction = System.Data.ParameterDirection.Output;
 
-                    System.Data.SqlClient.SqlParameter pTitle = command.Parameters.Add("@Title", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pTitle = command.Parameters.Add("@Title", System.Data.SqlDbType.NVarChar, 320);
                     pTitle.Value = entity.Title;
 
                     System.Data.SqlClient.SqlParameter pArtistId = command.Parameters.Add("@ArtistId", System.Data.SqlDbType.Int);
@@ -192,7 +195,7 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("UPDATE [dbo].[Album] SET [Title] = @Title, [ArtistId] = @ArtistId WHERE [AlbumId] = @AlbumId"))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("UPDATE [dbo].[Album] SET [Title] = @Title, [ArtistId] = @ArtistId WHERE [AlbumId] = @AlbumId;"))
             {
                 try
                 {
@@ -200,13 +203,16 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pAlbumId = command.Parameters.Add("@AlbumId", System.Data.SqlDbType.Int);
                     pAlbumId.Value = entity.AlbumId;
 
-                    System.Data.SqlClient.SqlParameter pTitle = command.Parameters.Add("@Title", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pTitle = command.Parameters.Add("@Title", System.Data.SqlDbType.NVarChar, 320);
                     pTitle.Value = entity.Title;
 
                     System.Data.SqlClient.SqlParameter pArtistId = command.Parameters.Add("@ArtistId", System.Data.SqlDbType.Int);
                     pArtistId.Value = entity.ArtistId;
 
-                    if (command.ExecuteNonQuery() <= 0)
+                    if (command.ExecuteNonQuery() > 0)
+                    {
+                    }
+                    else
                     {
                         throw new InvalidOperationException("Update failed.");
                     }
@@ -382,7 +388,7 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[Artist] ([Name]) VALUES (@Name); SET @ArtistId = SCOPE_IDENTITY(); "))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[Artist] ([Name]) VALUES (@Name); SET @ArtistId = SCOPE_IDENTITY();"))
             {
                 try
                 {
@@ -390,7 +396,7 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pArtistId = command.Parameters.Add("@ArtistId", System.Data.SqlDbType.Int);
                     pArtistId.Direction = System.Data.ParameterDirection.Output;
 
-                    System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar, 240);
                     if (entity.Name == null)
                     {
                         pName.Value = System.DBNull.Value;
@@ -423,7 +429,7 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("UPDATE [dbo].[Artist] SET [Name] = @Name WHERE [ArtistId] = @ArtistId"))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("UPDATE [dbo].[Artist] SET [Name] = @Name WHERE [ArtistId] = @ArtistId;"))
             {
                 try
                 {
@@ -431,7 +437,7 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pArtistId = command.Parameters.Add("@ArtistId", System.Data.SqlDbType.Int);
                     pArtistId.Value = entity.ArtistId;
 
-                    System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar, 240);
                     if (entity.Name == null)
                     {
                         pName.Value = System.DBNull.Value;
@@ -441,7 +447,10 @@ namespace Generator.SimpleDataAccess.Samples
                         pName.Value = entity.Name;
                     }
 
-                    if (command.ExecuteNonQuery() <= 0)
+                    if (command.ExecuteNonQuery() > 0)
+                    {
+                    }
+                    else
                     {
                         throw new InvalidOperationException("Update failed.");
                     }
@@ -579,6 +588,9 @@ namespace Generator.SimpleDataAccess.Samples
             {
                 entity.SupportRepId = reader.GetInt32(12);
             }
+            entity.FullName = reader.GetString(13);
+            entity.Comment = reader.GetString(14);
+            entity.FullDetail = reader.GetString(15);
             return entity;
         }
 
@@ -589,7 +601,7 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[Customer] ([FirstName], [LastName], [Company], [Address], [City], [State], [Country], [PostalCode], [Phone], [Fax], [Email], [SupportRepId]) VALUES (@FirstName, @LastName, @Company, @Address, @City, @State, @Country, @PostalCode, @Phone, @Fax, @Email, @SupportRepId); SET @CustomerId = SCOPE_IDENTITY(); "))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[Customer] ([FirstName], [LastName], [Company], [Address], [City], [State], [Country], [PostalCode], [Phone], [Fax], [Email], [SupportRepId], [Comment]) VALUES (@FirstName, @LastName, @Company, @Address, @City, @State, @Country, @PostalCode, @Phone, @Fax, @Email, @SupportRepId, @Comment); SELECT @CustomerId = [CustomerId], @FullName = [FullName], @FullDetail = [FullDetail] FROM [dbo].[Customer] WHERE [CustomerId] = SCOPE_IDENTITY()"))
             {
                 try
                 {
@@ -597,13 +609,13 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pCustomerId = command.Parameters.Add("@CustomerId", System.Data.SqlDbType.Int);
                     pCustomerId.Direction = System.Data.ParameterDirection.Output;
 
-                    System.Data.SqlClient.SqlParameter pFirstName = command.Parameters.Add("@FirstName", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pFirstName = command.Parameters.Add("@FirstName", System.Data.SqlDbType.NVarChar, 80);
                     pFirstName.Value = entity.FirstName;
 
-                    System.Data.SqlClient.SqlParameter pLastName = command.Parameters.Add("@LastName", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pLastName = command.Parameters.Add("@LastName", System.Data.SqlDbType.NVarChar, 40);
                     pLastName.Value = entity.LastName;
 
-                    System.Data.SqlClient.SqlParameter pCompany = command.Parameters.Add("@Company", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pCompany = command.Parameters.Add("@Company", System.Data.SqlDbType.NVarChar, 160);
                     if (entity.Company == null)
                     {
                         pCompany.Value = System.DBNull.Value;
@@ -613,7 +625,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pCompany.Value = entity.Company;
                     }
 
-                    System.Data.SqlClient.SqlParameter pAddress = command.Parameters.Add("@Address", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pAddress = command.Parameters.Add("@Address", System.Data.SqlDbType.NVarChar, 140);
                     if (entity.Address == null)
                     {
                         pAddress.Value = System.DBNull.Value;
@@ -623,7 +635,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pAddress.Value = entity.Address;
                     }
 
-                    System.Data.SqlClient.SqlParameter pCity = command.Parameters.Add("@City", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pCity = command.Parameters.Add("@City", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.City == null)
                     {
                         pCity.Value = System.DBNull.Value;
@@ -633,7 +645,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pCity.Value = entity.City;
                     }
 
-                    System.Data.SqlClient.SqlParameter pState = command.Parameters.Add("@State", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pState = command.Parameters.Add("@State", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.State == null)
                     {
                         pState.Value = System.DBNull.Value;
@@ -643,7 +655,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pState.Value = entity.State;
                     }
 
-                    System.Data.SqlClient.SqlParameter pCountry = command.Parameters.Add("@Country", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pCountry = command.Parameters.Add("@Country", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.Country == null)
                     {
                         pCountry.Value = System.DBNull.Value;
@@ -653,7 +665,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pCountry.Value = entity.Country;
                     }
 
-                    System.Data.SqlClient.SqlParameter pPostalCode = command.Parameters.Add("@PostalCode", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pPostalCode = command.Parameters.Add("@PostalCode", System.Data.SqlDbType.NVarChar, 20);
                     if (entity.PostalCode == null)
                     {
                         pPostalCode.Value = System.DBNull.Value;
@@ -663,7 +675,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pPostalCode.Value = entity.PostalCode;
                     }
 
-                    System.Data.SqlClient.SqlParameter pPhone = command.Parameters.Add("@Phone", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pPhone = command.Parameters.Add("@Phone", System.Data.SqlDbType.NVarChar, 48);
                     if (entity.Phone == null)
                     {
                         pPhone.Value = System.DBNull.Value;
@@ -673,7 +685,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pPhone.Value = entity.Phone;
                     }
 
-                    System.Data.SqlClient.SqlParameter pFax = command.Parameters.Add("@Fax", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pFax = command.Parameters.Add("@Fax", System.Data.SqlDbType.NVarChar, 48);
                     if (entity.Fax == null)
                     {
                         pFax.Value = System.DBNull.Value;
@@ -683,7 +695,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pFax.Value = entity.Fax;
                     }
 
-                    System.Data.SqlClient.SqlParameter pEmail = command.Parameters.Add("@Email", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pEmail = command.Parameters.Add("@Email", System.Data.SqlDbType.NVarChar, 120);
                     pEmail.Value = entity.Email;
 
                     System.Data.SqlClient.SqlParameter pSupportRepId = command.Parameters.Add("@SupportRepId", System.Data.SqlDbType.Int);
@@ -696,9 +708,34 @@ namespace Generator.SimpleDataAccess.Samples
                         pSupportRepId.Value = entity.SupportRepId;
                     }
 
+                    System.Data.SqlClient.SqlParameter pFullName = command.Parameters.Add("@FullName", System.Data.SqlDbType.NVarChar, 122);
+                    pFullName.Direction = System.Data.ParameterDirection.Output;
+
+                    System.Data.SqlClient.SqlParameter pComment = command.Parameters.Add("@Comment", System.Data.SqlDbType.NVarChar, -1);
+                    if (entity.Comment == null)
+                    {
+                        pComment.Value = System.DBNull.Value;
+                    }
+                    else
+                    {
+                        pComment.Value = entity.Comment;
+                    }
+
+                    System.Data.SqlClient.SqlParameter pFullDetail = command.Parameters.Add("@FullDetail", System.Data.SqlDbType.NVarChar, -1);
+                    pFullDetail.Direction = System.Data.ParameterDirection.Output;
+
                     if (command.ExecuteNonQuery() > 0)
                     {
                         entity.CustomerId = (System.Int32)pCustomerId.Value;
+                        entity.FullName = (System.String)pFullName.Value;
+                        if (pFullDetail.Value == System.DBNull.Value)
+                        {
+                            entity.FullDetail = null;
+                        }
+                        else
+                        {
+                            entity.FullDetail = (System.String)pFullDetail.Value;
+                        }
                     }
                     else
                     {
@@ -719,7 +756,7 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("UPDATE [dbo].[Customer] SET [FirstName] = @FirstName, [LastName] = @LastName, [Company] = @Company, [Address] = @Address, [City] = @City, [State] = @State, [Country] = @Country, [PostalCode] = @PostalCode, [Phone] = @Phone, [Fax] = @Fax, [Email] = @Email, [SupportRepId] = @SupportRepId WHERE [CustomerId] = @CustomerId"))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("UPDATE [dbo].[Customer] SET [FirstName] = @FirstName, [LastName] = @LastName, [Company] = @Company, [Address] = @Address, [City] = @City, [State] = @State, [Country] = @Country, [PostalCode] = @PostalCode, [Phone] = @Phone, [Fax] = @Fax, [Email] = @Email, [SupportRepId] = @SupportRepId, [Comment] = @Comment WHERE [CustomerId] = @CustomerId; SELECT @FullName = [FullName], @FullDetail = [FullDetail] FROM [dbo].[Customer]  WHERE [CustomerId] = @CustomerId"))
             {
                 try
                 {
@@ -727,13 +764,13 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pCustomerId = command.Parameters.Add("@CustomerId", System.Data.SqlDbType.Int);
                     pCustomerId.Value = entity.CustomerId;
 
-                    System.Data.SqlClient.SqlParameter pFirstName = command.Parameters.Add("@FirstName", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pFirstName = command.Parameters.Add("@FirstName", System.Data.SqlDbType.NVarChar, 80);
                     pFirstName.Value = entity.FirstName;
 
-                    System.Data.SqlClient.SqlParameter pLastName = command.Parameters.Add("@LastName", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pLastName = command.Parameters.Add("@LastName", System.Data.SqlDbType.NVarChar, 40);
                     pLastName.Value = entity.LastName;
 
-                    System.Data.SqlClient.SqlParameter pCompany = command.Parameters.Add("@Company", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pCompany = command.Parameters.Add("@Company", System.Data.SqlDbType.NVarChar, 160);
                     if (entity.Company == null)
                     {
                         pCompany.Value = System.DBNull.Value;
@@ -743,7 +780,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pCompany.Value = entity.Company;
                     }
 
-                    System.Data.SqlClient.SqlParameter pAddress = command.Parameters.Add("@Address", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pAddress = command.Parameters.Add("@Address", System.Data.SqlDbType.NVarChar, 140);
                     if (entity.Address == null)
                     {
                         pAddress.Value = System.DBNull.Value;
@@ -753,7 +790,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pAddress.Value = entity.Address;
                     }
 
-                    System.Data.SqlClient.SqlParameter pCity = command.Parameters.Add("@City", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pCity = command.Parameters.Add("@City", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.City == null)
                     {
                         pCity.Value = System.DBNull.Value;
@@ -763,7 +800,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pCity.Value = entity.City;
                     }
 
-                    System.Data.SqlClient.SqlParameter pState = command.Parameters.Add("@State", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pState = command.Parameters.Add("@State", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.State == null)
                     {
                         pState.Value = System.DBNull.Value;
@@ -773,7 +810,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pState.Value = entity.State;
                     }
 
-                    System.Data.SqlClient.SqlParameter pCountry = command.Parameters.Add("@Country", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pCountry = command.Parameters.Add("@Country", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.Country == null)
                     {
                         pCountry.Value = System.DBNull.Value;
@@ -783,7 +820,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pCountry.Value = entity.Country;
                     }
 
-                    System.Data.SqlClient.SqlParameter pPostalCode = command.Parameters.Add("@PostalCode", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pPostalCode = command.Parameters.Add("@PostalCode", System.Data.SqlDbType.NVarChar, 20);
                     if (entity.PostalCode == null)
                     {
                         pPostalCode.Value = System.DBNull.Value;
@@ -793,7 +830,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pPostalCode.Value = entity.PostalCode;
                     }
 
-                    System.Data.SqlClient.SqlParameter pPhone = command.Parameters.Add("@Phone", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pPhone = command.Parameters.Add("@Phone", System.Data.SqlDbType.NVarChar, 48);
                     if (entity.Phone == null)
                     {
                         pPhone.Value = System.DBNull.Value;
@@ -803,7 +840,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pPhone.Value = entity.Phone;
                     }
 
-                    System.Data.SqlClient.SqlParameter pFax = command.Parameters.Add("@Fax", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pFax = command.Parameters.Add("@Fax", System.Data.SqlDbType.NVarChar, 48);
                     if (entity.Fax == null)
                     {
                         pFax.Value = System.DBNull.Value;
@@ -813,7 +850,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pFax.Value = entity.Fax;
                     }
 
-                    System.Data.SqlClient.SqlParameter pEmail = command.Parameters.Add("@Email", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pEmail = command.Parameters.Add("@Email", System.Data.SqlDbType.NVarChar, 120);
                     pEmail.Value = entity.Email;
 
                     System.Data.SqlClient.SqlParameter pSupportRepId = command.Parameters.Add("@SupportRepId", System.Data.SqlDbType.Int);
@@ -826,7 +863,35 @@ namespace Generator.SimpleDataAccess.Samples
                         pSupportRepId.Value = entity.SupportRepId;
                     }
 
-                    if (command.ExecuteNonQuery() <= 0)
+                    System.Data.SqlClient.SqlParameter pFullName = command.Parameters.Add("@FullName", System.Data.SqlDbType.NVarChar, 122);
+                    pFullName.Direction = System.Data.ParameterDirection.Output;
+
+                    System.Data.SqlClient.SqlParameter pComment = command.Parameters.Add("@Comment", System.Data.SqlDbType.NVarChar, -1);
+                    if (entity.Comment == null)
+                    {
+                        pComment.Value = System.DBNull.Value;
+                    }
+                    else
+                    {
+                        pComment.Value = entity.Comment;
+                    }
+
+                    System.Data.SqlClient.SqlParameter pFullDetail = command.Parameters.Add("@FullDetail", System.Data.SqlDbType.NVarChar, -1);
+                    pFullDetail.Direction = System.Data.ParameterDirection.Output;
+
+                    if (command.ExecuteNonQuery() > 0)
+                    {
+                        entity.FullName = (System.String)pFullName.Value;
+                        if (pFullDetail.Value == System.DBNull.Value)
+                        {
+                            entity.FullDetail = null;
+                        }
+                        else
+                        {
+                            entity.FullDetail = (System.String)pFullDetail.Value;
+                        }
+                    }
+                    else
                     {
                         throw new InvalidOperationException("Update failed.");
                     }
@@ -840,7 +905,7 @@ namespace Generator.SimpleDataAccess.Samples
 
         public List<Customer> SelectCustomer()
         {
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT [CustomerId], [FirstName], [LastName], [Company], [Address], [City], [State], [Country], [PostalCode], [Phone], [Fax], [Email], [SupportRepId] FROM [dbo].[Customer]"))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT [CustomerId], [FirstName], [LastName], [Company], [Address], [City], [State], [Country], [PostalCode], [Phone], [Fax], [Email], [SupportRepId], [FullName], [Comment], [FullDetail] FROM [dbo].[Customer]"))
             {
                 try
                 {
@@ -891,7 +956,7 @@ namespace Generator.SimpleDataAccess.Samples
 
         public List<Customer> SelectCustomerBySupportRepId(System.Nullable<System.Int32> supportRepId)
         {
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT [CustomerId], [FirstName], [LastName], [Company], [Address], [City], [State], [Country], [PostalCode], [Phone], [Fax], [Email], [SupportRepId] FROM [dbo].[Customer] WHERE [SupportRepId] = @SupportRepId"))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT [CustomerId], [FirstName], [LastName], [Company], [Address], [City], [State], [Country], [PostalCode], [Phone], [Fax], [Email], [SupportRepId], [FullName], [Comment], [FullDetail] FROM [dbo].[Customer] WHERE [SupportRepId] = @SupportRepId"))
             {
                 try
                 {
@@ -951,7 +1016,7 @@ namespace Generator.SimpleDataAccess.Samples
 
         public Customer SelectCustomerByCustomerId(System.Int32 customerId)
         {
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT [CustomerId], [FirstName], [LastName], [Company], [Address], [City], [State], [Country], [PostalCode], [Phone], [Fax], [Email], [SupportRepId] FROM [dbo].[Customer] WHERE [CustomerId] = @CustomerId"))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT [CustomerId], [FirstName], [LastName], [Company], [Address], [City], [State], [Country], [PostalCode], [Phone], [Fax], [Email], [SupportRepId], [FullName], [Comment], [FullDetail] FROM [dbo].[Customer] WHERE [CustomerId] = @CustomerId"))
             {
                 try
                 {
@@ -1050,7 +1115,7 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[Employee] ([LastName], [FirstName], [Title], [ReportsTo], [BirthDate], [HireDate], [Address], [City], [State], [Country], [PostalCode], [Phone], [Fax], [Email]) VALUES (@LastName, @FirstName, @Title, @ReportsTo, @BirthDate, @HireDate, @Address, @City, @State, @Country, @PostalCode, @Phone, @Fax, @Email); SET @EmployeeId = SCOPE_IDENTITY(); "))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[Employee] ([LastName], [FirstName], [Title], [ReportsTo], [BirthDate], [HireDate], [Address], [City], [State], [Country], [PostalCode], [Phone], [Fax], [Email]) VALUES (@LastName, @FirstName, @Title, @ReportsTo, @BirthDate, @HireDate, @Address, @City, @State, @Country, @PostalCode, @Phone, @Fax, @Email); SET @EmployeeId = SCOPE_IDENTITY();"))
             {
                 try
                 {
@@ -1058,13 +1123,13 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pEmployeeId = command.Parameters.Add("@EmployeeId", System.Data.SqlDbType.Int);
                     pEmployeeId.Direction = System.Data.ParameterDirection.Output;
 
-                    System.Data.SqlClient.SqlParameter pLastName = command.Parameters.Add("@LastName", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pLastName = command.Parameters.Add("@LastName", System.Data.SqlDbType.NVarChar, 40);
                     pLastName.Value = entity.LastName;
 
-                    System.Data.SqlClient.SqlParameter pFirstName = command.Parameters.Add("@FirstName", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pFirstName = command.Parameters.Add("@FirstName", System.Data.SqlDbType.NVarChar, 40);
                     pFirstName.Value = entity.FirstName;
 
-                    System.Data.SqlClient.SqlParameter pTitle = command.Parameters.Add("@Title", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pTitle = command.Parameters.Add("@Title", System.Data.SqlDbType.NVarChar, 60);
                     if (entity.Title == null)
                     {
                         pTitle.Value = System.DBNull.Value;
@@ -1104,7 +1169,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pHireDate.Value = entity.HireDate;
                     }
 
-                    System.Data.SqlClient.SqlParameter pAddress = command.Parameters.Add("@Address", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pAddress = command.Parameters.Add("@Address", System.Data.SqlDbType.NVarChar, 140);
                     if (entity.Address == null)
                     {
                         pAddress.Value = System.DBNull.Value;
@@ -1114,7 +1179,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pAddress.Value = entity.Address;
                     }
 
-                    System.Data.SqlClient.SqlParameter pCity = command.Parameters.Add("@City", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pCity = command.Parameters.Add("@City", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.City == null)
                     {
                         pCity.Value = System.DBNull.Value;
@@ -1124,7 +1189,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pCity.Value = entity.City;
                     }
 
-                    System.Data.SqlClient.SqlParameter pState = command.Parameters.Add("@State", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pState = command.Parameters.Add("@State", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.State == null)
                     {
                         pState.Value = System.DBNull.Value;
@@ -1134,7 +1199,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pState.Value = entity.State;
                     }
 
-                    System.Data.SqlClient.SqlParameter pCountry = command.Parameters.Add("@Country", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pCountry = command.Parameters.Add("@Country", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.Country == null)
                     {
                         pCountry.Value = System.DBNull.Value;
@@ -1144,7 +1209,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pCountry.Value = entity.Country;
                     }
 
-                    System.Data.SqlClient.SqlParameter pPostalCode = command.Parameters.Add("@PostalCode", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pPostalCode = command.Parameters.Add("@PostalCode", System.Data.SqlDbType.NVarChar, 20);
                     if (entity.PostalCode == null)
                     {
                         pPostalCode.Value = System.DBNull.Value;
@@ -1154,7 +1219,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pPostalCode.Value = entity.PostalCode;
                     }
 
-                    System.Data.SqlClient.SqlParameter pPhone = command.Parameters.Add("@Phone", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pPhone = command.Parameters.Add("@Phone", System.Data.SqlDbType.NVarChar, 48);
                     if (entity.Phone == null)
                     {
                         pPhone.Value = System.DBNull.Value;
@@ -1164,7 +1229,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pPhone.Value = entity.Phone;
                     }
 
-                    System.Data.SqlClient.SqlParameter pFax = command.Parameters.Add("@Fax", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pFax = command.Parameters.Add("@Fax", System.Data.SqlDbType.NVarChar, 48);
                     if (entity.Fax == null)
                     {
                         pFax.Value = System.DBNull.Value;
@@ -1174,7 +1239,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pFax.Value = entity.Fax;
                     }
 
-                    System.Data.SqlClient.SqlParameter pEmail = command.Parameters.Add("@Email", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pEmail = command.Parameters.Add("@Email", System.Data.SqlDbType.NVarChar, 120);
                     if (entity.Email == null)
                     {
                         pEmail.Value = System.DBNull.Value;
@@ -1207,7 +1272,7 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("UPDATE [dbo].[Employee] SET [LastName] = @LastName, [FirstName] = @FirstName, [Title] = @Title, [ReportsTo] = @ReportsTo, [BirthDate] = @BirthDate, [HireDate] = @HireDate, [Address] = @Address, [City] = @City, [State] = @State, [Country] = @Country, [PostalCode] = @PostalCode, [Phone] = @Phone, [Fax] = @Fax, [Email] = @Email WHERE [EmployeeId] = @EmployeeId"))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("UPDATE [dbo].[Employee] SET [LastName] = @LastName, [FirstName] = @FirstName, [Title] = @Title, [ReportsTo] = @ReportsTo, [BirthDate] = @BirthDate, [HireDate] = @HireDate, [Address] = @Address, [City] = @City, [State] = @State, [Country] = @Country, [PostalCode] = @PostalCode, [Phone] = @Phone, [Fax] = @Fax, [Email] = @Email WHERE [EmployeeId] = @EmployeeId;"))
             {
                 try
                 {
@@ -1215,13 +1280,13 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pEmployeeId = command.Parameters.Add("@EmployeeId", System.Data.SqlDbType.Int);
                     pEmployeeId.Value = entity.EmployeeId;
 
-                    System.Data.SqlClient.SqlParameter pLastName = command.Parameters.Add("@LastName", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pLastName = command.Parameters.Add("@LastName", System.Data.SqlDbType.NVarChar, 40);
                     pLastName.Value = entity.LastName;
 
-                    System.Data.SqlClient.SqlParameter pFirstName = command.Parameters.Add("@FirstName", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pFirstName = command.Parameters.Add("@FirstName", System.Data.SqlDbType.NVarChar, 40);
                     pFirstName.Value = entity.FirstName;
 
-                    System.Data.SqlClient.SqlParameter pTitle = command.Parameters.Add("@Title", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pTitle = command.Parameters.Add("@Title", System.Data.SqlDbType.NVarChar, 60);
                     if (entity.Title == null)
                     {
                         pTitle.Value = System.DBNull.Value;
@@ -1261,7 +1326,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pHireDate.Value = entity.HireDate;
                     }
 
-                    System.Data.SqlClient.SqlParameter pAddress = command.Parameters.Add("@Address", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pAddress = command.Parameters.Add("@Address", System.Data.SqlDbType.NVarChar, 140);
                     if (entity.Address == null)
                     {
                         pAddress.Value = System.DBNull.Value;
@@ -1271,7 +1336,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pAddress.Value = entity.Address;
                     }
 
-                    System.Data.SqlClient.SqlParameter pCity = command.Parameters.Add("@City", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pCity = command.Parameters.Add("@City", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.City == null)
                     {
                         pCity.Value = System.DBNull.Value;
@@ -1281,7 +1346,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pCity.Value = entity.City;
                     }
 
-                    System.Data.SqlClient.SqlParameter pState = command.Parameters.Add("@State", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pState = command.Parameters.Add("@State", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.State == null)
                     {
                         pState.Value = System.DBNull.Value;
@@ -1291,7 +1356,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pState.Value = entity.State;
                     }
 
-                    System.Data.SqlClient.SqlParameter pCountry = command.Parameters.Add("@Country", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pCountry = command.Parameters.Add("@Country", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.Country == null)
                     {
                         pCountry.Value = System.DBNull.Value;
@@ -1301,7 +1366,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pCountry.Value = entity.Country;
                     }
 
-                    System.Data.SqlClient.SqlParameter pPostalCode = command.Parameters.Add("@PostalCode", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pPostalCode = command.Parameters.Add("@PostalCode", System.Data.SqlDbType.NVarChar, 20);
                     if (entity.PostalCode == null)
                     {
                         pPostalCode.Value = System.DBNull.Value;
@@ -1311,7 +1376,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pPostalCode.Value = entity.PostalCode;
                     }
 
-                    System.Data.SqlClient.SqlParameter pPhone = command.Parameters.Add("@Phone", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pPhone = command.Parameters.Add("@Phone", System.Data.SqlDbType.NVarChar, 48);
                     if (entity.Phone == null)
                     {
                         pPhone.Value = System.DBNull.Value;
@@ -1321,7 +1386,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pPhone.Value = entity.Phone;
                     }
 
-                    System.Data.SqlClient.SqlParameter pFax = command.Parameters.Add("@Fax", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pFax = command.Parameters.Add("@Fax", System.Data.SqlDbType.NVarChar, 48);
                     if (entity.Fax == null)
                     {
                         pFax.Value = System.DBNull.Value;
@@ -1331,7 +1396,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pFax.Value = entity.Fax;
                     }
 
-                    System.Data.SqlClient.SqlParameter pEmail = command.Parameters.Add("@Email", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pEmail = command.Parameters.Add("@Email", System.Data.SqlDbType.NVarChar, 120);
                     if (entity.Email == null)
                     {
                         pEmail.Value = System.DBNull.Value;
@@ -1341,7 +1406,10 @@ namespace Generator.SimpleDataAccess.Samples
                         pEmail.Value = entity.Email;
                     }
 
-                    if (command.ExecuteNonQuery() <= 0)
+                    if (command.ExecuteNonQuery() > 0)
+                    {
+                    }
+                    else
                     {
                         throw new InvalidOperationException("Update failed.");
                     }
@@ -1531,7 +1599,7 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[Genre] ([Name]) VALUES (@Name); SET @GenreId = SCOPE_IDENTITY(); "))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[Genre] ([Name]) VALUES (@Name); SET @GenreId = SCOPE_IDENTITY();"))
             {
                 try
                 {
@@ -1539,7 +1607,7 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pGenreId = command.Parameters.Add("@GenreId", System.Data.SqlDbType.Int);
                     pGenreId.Direction = System.Data.ParameterDirection.Output;
 
-                    System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar, 240);
                     if (entity.Name == null)
                     {
                         pName.Value = System.DBNull.Value;
@@ -1572,7 +1640,7 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("UPDATE [dbo].[Genre] SET [Name] = @Name WHERE [GenreId] = @GenreId"))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("UPDATE [dbo].[Genre] SET [Name] = @Name WHERE [GenreId] = @GenreId;"))
             {
                 try
                 {
@@ -1580,7 +1648,7 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pGenreId = command.Parameters.Add("@GenreId", System.Data.SqlDbType.Int);
                     pGenreId.Value = entity.GenreId;
 
-                    System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar, 240);
                     if (entity.Name == null)
                     {
                         pName.Value = System.DBNull.Value;
@@ -1590,7 +1658,10 @@ namespace Generator.SimpleDataAccess.Samples
                         pName.Value = entity.Name;
                     }
 
-                    if (command.ExecuteNonQuery() <= 0)
+                    if (command.ExecuteNonQuery() > 0)
+                    {
+                    }
+                    else
                     {
                         throw new InvalidOperationException("Update failed.");
                     }
@@ -1727,7 +1798,7 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[Invoice] ([CustomerId], [InvoiceDate], [BillingAddress], [BillingCity], [BillingState], [BillingCountry], [BillingPostalCode], [Total]) VALUES (@CustomerId, @InvoiceDate, @BillingAddress, @BillingCity, @BillingState, @BillingCountry, @BillingPostalCode, @Total); SET @InvoiceId = SCOPE_IDENTITY(); "))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[Invoice] ([CustomerId], [InvoiceDate], [BillingAddress], [BillingCity], [BillingState], [BillingCountry], [BillingPostalCode], [Total]) VALUES (@CustomerId, @InvoiceDate, @BillingAddress, @BillingCity, @BillingState, @BillingCountry, @BillingPostalCode, @Total); SET @InvoiceId = SCOPE_IDENTITY();"))
             {
                 try
                 {
@@ -1741,7 +1812,7 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pInvoiceDate = command.Parameters.Add("@InvoiceDate", System.Data.SqlDbType.DateTime);
                     pInvoiceDate.Value = entity.InvoiceDate;
 
-                    System.Data.SqlClient.SqlParameter pBillingAddress = command.Parameters.Add("@BillingAddress", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pBillingAddress = command.Parameters.Add("@BillingAddress", System.Data.SqlDbType.NVarChar, 140);
                     if (entity.BillingAddress == null)
                     {
                         pBillingAddress.Value = System.DBNull.Value;
@@ -1751,7 +1822,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pBillingAddress.Value = entity.BillingAddress;
                     }
 
-                    System.Data.SqlClient.SqlParameter pBillingCity = command.Parameters.Add("@BillingCity", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pBillingCity = command.Parameters.Add("@BillingCity", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.BillingCity == null)
                     {
                         pBillingCity.Value = System.DBNull.Value;
@@ -1761,7 +1832,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pBillingCity.Value = entity.BillingCity;
                     }
 
-                    System.Data.SqlClient.SqlParameter pBillingState = command.Parameters.Add("@BillingState", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pBillingState = command.Parameters.Add("@BillingState", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.BillingState == null)
                     {
                         pBillingState.Value = System.DBNull.Value;
@@ -1771,7 +1842,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pBillingState.Value = entity.BillingState;
                     }
 
-                    System.Data.SqlClient.SqlParameter pBillingCountry = command.Parameters.Add("@BillingCountry", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pBillingCountry = command.Parameters.Add("@BillingCountry", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.BillingCountry == null)
                     {
                         pBillingCountry.Value = System.DBNull.Value;
@@ -1781,7 +1852,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pBillingCountry.Value = entity.BillingCountry;
                     }
 
-                    System.Data.SqlClient.SqlParameter pBillingPostalCode = command.Parameters.Add("@BillingPostalCode", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pBillingPostalCode = command.Parameters.Add("@BillingPostalCode", System.Data.SqlDbType.NVarChar, 20);
                     if (entity.BillingPostalCode == null)
                     {
                         pBillingPostalCode.Value = System.DBNull.Value;
@@ -1817,7 +1888,7 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("UPDATE [dbo].[Invoice] SET [CustomerId] = @CustomerId, [InvoiceDate] = @InvoiceDate, [BillingAddress] = @BillingAddress, [BillingCity] = @BillingCity, [BillingState] = @BillingState, [BillingCountry] = @BillingCountry, [BillingPostalCode] = @BillingPostalCode, [Total] = @Total WHERE [InvoiceId] = @InvoiceId"))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("UPDATE [dbo].[Invoice] SET [CustomerId] = @CustomerId, [InvoiceDate] = @InvoiceDate, [BillingAddress] = @BillingAddress, [BillingCity] = @BillingCity, [BillingState] = @BillingState, [BillingCountry] = @BillingCountry, [BillingPostalCode] = @BillingPostalCode, [Total] = @Total WHERE [InvoiceId] = @InvoiceId;"))
             {
                 try
                 {
@@ -1831,7 +1902,7 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pInvoiceDate = command.Parameters.Add("@InvoiceDate", System.Data.SqlDbType.DateTime);
                     pInvoiceDate.Value = entity.InvoiceDate;
 
-                    System.Data.SqlClient.SqlParameter pBillingAddress = command.Parameters.Add("@BillingAddress", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pBillingAddress = command.Parameters.Add("@BillingAddress", System.Data.SqlDbType.NVarChar, 140);
                     if (entity.BillingAddress == null)
                     {
                         pBillingAddress.Value = System.DBNull.Value;
@@ -1841,7 +1912,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pBillingAddress.Value = entity.BillingAddress;
                     }
 
-                    System.Data.SqlClient.SqlParameter pBillingCity = command.Parameters.Add("@BillingCity", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pBillingCity = command.Parameters.Add("@BillingCity", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.BillingCity == null)
                     {
                         pBillingCity.Value = System.DBNull.Value;
@@ -1851,7 +1922,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pBillingCity.Value = entity.BillingCity;
                     }
 
-                    System.Data.SqlClient.SqlParameter pBillingState = command.Parameters.Add("@BillingState", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pBillingState = command.Parameters.Add("@BillingState", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.BillingState == null)
                     {
                         pBillingState.Value = System.DBNull.Value;
@@ -1861,7 +1932,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pBillingState.Value = entity.BillingState;
                     }
 
-                    System.Data.SqlClient.SqlParameter pBillingCountry = command.Parameters.Add("@BillingCountry", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pBillingCountry = command.Parameters.Add("@BillingCountry", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.BillingCountry == null)
                     {
                         pBillingCountry.Value = System.DBNull.Value;
@@ -1871,7 +1942,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pBillingCountry.Value = entity.BillingCountry;
                     }
 
-                    System.Data.SqlClient.SqlParameter pBillingPostalCode = command.Parameters.Add("@BillingPostalCode", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pBillingPostalCode = command.Parameters.Add("@BillingPostalCode", System.Data.SqlDbType.NVarChar, 20);
                     if (entity.BillingPostalCode == null)
                     {
                         pBillingPostalCode.Value = System.DBNull.Value;
@@ -1884,7 +1955,10 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pTotal = command.Parameters.Add("@Total", System.Data.SqlDbType.Decimal);
                     pTotal.Value = entity.Total;
 
-                    if (command.ExecuteNonQuery() <= 0)
+                    if (command.ExecuteNonQuery() > 0)
+                    {
+                    }
+                    else
                     {
                         throw new InvalidOperationException("Update failed.");
                     }
@@ -2063,7 +2137,7 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[InvoiceLine] ([InvoiceId], [TrackId], [UnitPrice], [Quantity]) VALUES (@InvoiceId, @TrackId, @UnitPrice, @Quantity); SET @InvoiceLineId = SCOPE_IDENTITY(); "))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[InvoiceLine] ([InvoiceId], [TrackId], [UnitPrice], [Quantity]) VALUES (@InvoiceId, @TrackId, @UnitPrice, @Quantity); SET @InvoiceLineId = SCOPE_IDENTITY();"))
             {
                 try
                 {
@@ -2106,7 +2180,7 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("UPDATE [dbo].[InvoiceLine] SET [InvoiceId] = @InvoiceId, [TrackId] = @TrackId, [UnitPrice] = @UnitPrice, [Quantity] = @Quantity WHERE [InvoiceLineId] = @InvoiceLineId"))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("UPDATE [dbo].[InvoiceLine] SET [InvoiceId] = @InvoiceId, [TrackId] = @TrackId, [UnitPrice] = @UnitPrice, [Quantity] = @Quantity WHERE [InvoiceLineId] = @InvoiceLineId;"))
             {
                 try
                 {
@@ -2126,7 +2200,10 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pQuantity = command.Parameters.Add("@Quantity", System.Data.SqlDbType.Int);
                     pQuantity.Value = entity.Quantity;
 
-                    if (command.ExecuteNonQuery() <= 0)
+                    if (command.ExecuteNonQuery() > 0)
+                    {
+                    }
+                    else
                     {
                         throw new InvalidOperationException("Update failed.");
                     }
@@ -2348,7 +2425,7 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[MediaType] ([Name]) VALUES (@Name); SET @MediaTypeId = SCOPE_IDENTITY(); "))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[MediaType] ([Name]) VALUES (@Name); SET @MediaTypeId = SCOPE_IDENTITY();"))
             {
                 try
                 {
@@ -2356,7 +2433,7 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pMediaTypeId = command.Parameters.Add("@MediaTypeId", System.Data.SqlDbType.Int);
                     pMediaTypeId.Direction = System.Data.ParameterDirection.Output;
 
-                    System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar, 240);
                     if (entity.Name == null)
                     {
                         pName.Value = System.DBNull.Value;
@@ -2389,7 +2466,7 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("UPDATE [dbo].[MediaType] SET [Name] = @Name WHERE [MediaTypeId] = @MediaTypeId"))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("UPDATE [dbo].[MediaType] SET [Name] = @Name WHERE [MediaTypeId] = @MediaTypeId;"))
             {
                 try
                 {
@@ -2397,7 +2474,7 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pMediaTypeId = command.Parameters.Add("@MediaTypeId", System.Data.SqlDbType.Int);
                     pMediaTypeId.Value = entity.MediaTypeId;
 
-                    System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar, 240);
                     if (entity.Name == null)
                     {
                         pName.Value = System.DBNull.Value;
@@ -2407,7 +2484,10 @@ namespace Generator.SimpleDataAccess.Samples
                         pName.Value = entity.Name;
                     }
 
-                    if (command.ExecuteNonQuery() <= 0)
+                    if (command.ExecuteNonQuery() > 0)
+                    {
+                    }
+                    else
                     {
                         throw new InvalidOperationException("Update failed.");
                     }
@@ -2537,7 +2617,7 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[Playlist] ([Name]) VALUES (@Name); SET @PlaylistId = SCOPE_IDENTITY(); "))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[Playlist] ([Name]) VALUES (@Name); SET @PlaylistId = SCOPE_IDENTITY();"))
             {
                 try
                 {
@@ -2545,7 +2625,7 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pPlaylistId = command.Parameters.Add("@PlaylistId", System.Data.SqlDbType.Int);
                     pPlaylistId.Direction = System.Data.ParameterDirection.Output;
 
-                    System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar, 240);
                     if (entity.Name == null)
                     {
                         pName.Value = System.DBNull.Value;
@@ -2578,7 +2658,7 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("UPDATE [dbo].[Playlist] SET [Name] = @Name WHERE [PlaylistId] = @PlaylistId"))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("UPDATE [dbo].[Playlist] SET [Name] = @Name WHERE [PlaylistId] = @PlaylistId;"))
             {
                 try
                 {
@@ -2586,7 +2666,7 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pPlaylistId = command.Parameters.Add("@PlaylistId", System.Data.SqlDbType.Int);
                     pPlaylistId.Value = entity.PlaylistId;
 
-                    System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar, 240);
                     if (entity.Name == null)
                     {
                         pName.Value = System.DBNull.Value;
@@ -2596,7 +2676,10 @@ namespace Generator.SimpleDataAccess.Samples
                         pName.Value = entity.Name;
                     }
 
-                    if (command.ExecuteNonQuery() <= 0)
+                    if (command.ExecuteNonQuery() > 0)
+                    {
+                    }
+                    else
                     {
                         throw new InvalidOperationException("Update failed.");
                     }
@@ -2759,7 +2842,7 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("UPDATE [dbo].[PlaylistTrack] SET  WHERE [PlaylistId] = @PlaylistId AND [TrackId] = @TrackId"))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("UPDATE [dbo].[PlaylistTrack] SET  WHERE [PlaylistId] = @PlaylistId AND [TrackId] = @TrackId;"))
             {
                 try
                 {
@@ -2770,7 +2853,10 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pTrackId = command.Parameters.Add("@TrackId", System.Data.SqlDbType.Int);
                     pTrackId.Value = entity.TrackId;
 
-                    if (command.ExecuteNonQuery() <= 0)
+                    if (command.ExecuteNonQuery() > 0)
+                    {
+                    }
+                    else
                     {
                         throw new InvalidOperationException("Update failed.");
                     }
@@ -3026,7 +3112,7 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[Track] ([Name], [AlbumId], [MediaTypeId], [GenreId], [Composer], [Milliseconds], [Bytes], [UnitPrice]) VALUES (@Name, @AlbumId, @MediaTypeId, @GenreId, @Composer, @Milliseconds, @Bytes, @UnitPrice); SET @TrackId = SCOPE_IDENTITY(); "))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[Track] ([Name], [AlbumId], [MediaTypeId], [GenreId], [Composer], [Milliseconds], [Bytes], [UnitPrice]) VALUES (@Name, @AlbumId, @MediaTypeId, @GenreId, @Composer, @Milliseconds, @Bytes, @UnitPrice); SET @TrackId = SCOPE_IDENTITY();"))
             {
                 try
                 {
@@ -3034,7 +3120,7 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pTrackId = command.Parameters.Add("@TrackId", System.Data.SqlDbType.Int);
                     pTrackId.Direction = System.Data.ParameterDirection.Output;
 
-                    System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar, 400);
                     pName.Value = entity.Name;
 
                     System.Data.SqlClient.SqlParameter pAlbumId = command.Parameters.Add("@AlbumId", System.Data.SqlDbType.Int);
@@ -3060,7 +3146,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pGenreId.Value = entity.GenreId;
                     }
 
-                    System.Data.SqlClient.SqlParameter pComposer = command.Parameters.Add("@Composer", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pComposer = command.Parameters.Add("@Composer", System.Data.SqlDbType.NVarChar, 440);
                     if (entity.Composer == null)
                     {
                         pComposer.Value = System.DBNull.Value;
@@ -3109,7 +3195,7 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("UPDATE [dbo].[Track] SET [Name] = @Name, [AlbumId] = @AlbumId, [MediaTypeId] = @MediaTypeId, [GenreId] = @GenreId, [Composer] = @Composer, [Milliseconds] = @Milliseconds, [Bytes] = @Bytes, [UnitPrice] = @UnitPrice WHERE [TrackId] = @TrackId"))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("UPDATE [dbo].[Track] SET [Name] = @Name, [AlbumId] = @AlbumId, [MediaTypeId] = @MediaTypeId, [GenreId] = @GenreId, [Composer] = @Composer, [Milliseconds] = @Milliseconds, [Bytes] = @Bytes, [UnitPrice] = @UnitPrice WHERE [TrackId] = @TrackId;"))
             {
                 try
                 {
@@ -3117,7 +3203,7 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pTrackId = command.Parameters.Add("@TrackId", System.Data.SqlDbType.Int);
                     pTrackId.Value = entity.TrackId;
 
-                    System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar, 400);
                     pName.Value = entity.Name;
 
                     System.Data.SqlClient.SqlParameter pAlbumId = command.Parameters.Add("@AlbumId", System.Data.SqlDbType.Int);
@@ -3143,7 +3229,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pGenreId.Value = entity.GenreId;
                     }
 
-                    System.Data.SqlClient.SqlParameter pComposer = command.Parameters.Add("@Composer", System.Data.SqlDbType.NVarChar);
+                    System.Data.SqlClient.SqlParameter pComposer = command.Parameters.Add("@Composer", System.Data.SqlDbType.NVarChar, 440);
                     if (entity.Composer == null)
                     {
                         pComposer.Value = System.DBNull.Value;
@@ -3169,7 +3255,10 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pUnitPrice = command.Parameters.Add("@UnitPrice", System.Data.SqlDbType.Decimal);
                     pUnitPrice.Value = entity.UnitPrice;
 
-                    if (command.ExecuteNonQuery() <= 0)
+                    if (command.ExecuteNonQuery() > 0)
+                    {
+                    }
+                    else
                     {
                         throw new InvalidOperationException("Update failed.");
                     }
@@ -3464,7 +3553,7 @@ namespace Generator.SimpleDataAccess.Samples
                     {
                         PopConnection(command);
 
-                        System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar);
+                        System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar, -1);
                         pName.Value = name;
 
                         System.Data.SqlClient.SqlParameter pGenreId = command.Parameters.Add("@GenreId", System.Data.SqlDbType.Int);

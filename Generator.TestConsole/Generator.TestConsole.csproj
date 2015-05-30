@@ -46,6 +46,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Patch\Customer_additional_columns.sql" />
     <Content Include="Patch\InsertGenre.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

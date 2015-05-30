@@ -42,6 +42,34 @@ namespace Generator.TestConsole
                     database.ExecuteInsertGenre("Favorite", out genreIdentity);
                 }
 
+                Customer customer = new Customer();
+                customer.Address = "Alma u. 1";
+                customer.City = "Budapest";
+                customer.Company = null;
+                customer.Country = "Magyarország";
+                customer.Email = "robb83@gmail.com";
+                customer.Fax = null;
+                customer.FirstName = "Róbert";
+                customer.LastName = "Kovács";
+                customer.Phone = null;
+                customer.PostalCode = "1188";
+                customer.State = null;
+                customer.SupportRepId = null;
+
+                database.InsertCustomer(customer);
+
+                int customerID = customer.CustomerId;
+                String fullName = customer.FullName;
+                String fullDetail = customer.FullDetail;
+
+                customer.LastName = "Oláh";
+
+                database.UpdateCustomer(customer);
+
+                customerID = customer.CustomerId;
+                fullName = customer.FullName;
+                fullDetail = customer.FullDetail;
+
                 database.RollbackTransaction();
             }
         }

@@ -277,7 +277,7 @@ namespace Generator.SimpleDataAccess
         public static List<TableInfo> GetTables(SqlConnection connection)
         {
             const String QUERY_TABLES = @"SELECT t.[object_id], t.[name], s.[name] AS [schema_name] FROM [sys].[tables] t INNER JOIN [sys].[schemas] s ON s.[schema_id] = t.[schema_id] ORDER BY t.[name]";
-            const String QUERY_TABLE_COLUMNS = @"SELECT c.[name], CASE WHEN t.[is_user_defined] = 1 THEN (SELECT TOP 1 st.[name] FROM [sys].[types] st WHERE st.[user_type_id] = t.[system_type_id]) ELSE t.[name] END AS [type_name], c.[is_nullable], c.[is_identity], c.[is_computed], CASE WHEN EXISTS(SELECT 1 FROM [sys].[index_columns] ic INNER JOIN [sys].[indexes] i ON ic.index_id = i.index_id WHERE ic.[object_id] = c.[object_id] and ic.[column_id] = c.[column_id] and i.[is_primary_key] = 1) THEN 1 ELSE 0 END AS [is_primary_key], CASE WHEN EXISTS(SELECT 1 FROM [sys].[index_columns] ic INNER JOIN [sys].indexes i on ic.[index_id] = i.[index_id] WHERE ic.[object_id] = c.[object_id] and ic.[column_id] = c.[column_id] and i.[is_unique] = 1) THEN 1 ELSE 0 END AS [is_unique] from [sys].[columns] c INNER JOIN [sys].[types] t on t.[user_type_id] = c.[user_type_id] WHERE c.[object_id] = @ObjectID ORDER BY c.column_id";
+            const String QUERY_TABLE_COLUMNS = @"SELECT c.[name], CASE WHEN t.[is_user_defined] = 1 THEN (SELECT TOP 1 st.[name] FROM [sys].[types] st WHERE st.[user_type_id] = t.[system_type_id]) ELSE t.[name] END AS [type_name], c.[is_nullable], c.[is_identity], c.[is_computed], CASE WHEN EXISTS(SELECT 1 FROM [sys].[index_columns] ic INNER JOIN [sys].[indexes] i ON ic.index_id = i.index_id WHERE ic.[object_id] = c.[object_id] and ic.[column_id] = c.[column_id] and i.[is_primary_key] = 1) THEN 1 ELSE 0 END AS [is_primary_key], CASE WHEN EXISTS(SELECT 1 FROM [sys].[index_columns] ic INNER JOIN [sys].indexes i on ic.[index_id] = i.[index_id] WHERE ic.[object_id] = c.[object_id] and ic.[column_id] = c.[column_id] and i.[is_unique] = 1) THEN 1 ELSE 0 END AS [is_unique], c.[max_length] from [sys].[columns] c INNER JOIN [sys].[types] t on t.[user_type_id] = c.[user_type_id] WHERE c.[object_id] = @ObjectID ORDER BY c.column_id";
             const String QUERY_TABLE_REFERENCES = @"SELECT [fk].[name], c.[name] FROM [sys].[foreign_keys] fk  INNER JOIN [sys].[foreign_key_columns] [fkc] on [fkc].[constraint_object_id] = [fk].[object_id] INNER JOIN [sys].[columns] c on c.[object_id] = [fkc].[parent_object_id] and c.[column_id] = [fkc].[parent_column_id] WHERE [fk].[parent_object_id] = @ObjectID ORDER BY [fk].[name], [fkc].[constraint_column_id]";
             const String QUERY_TABLE_INDEXES = @"SELECT i.name, c.name, i.is_unique, i.is_primary_key FROM sys.indexes i INNER JOIN sys.index_columns ic on i.object_id = ic.object_id and i.index_id = ic.index_id INNER JOIN sys.columns c on c.object_id = ic.object_id and c.column_id = ic.column_id where i.object_id = @ObjectID order by i.name, key_ordinal";
             const String QUERY_PARAMETER_OBJECTID = "@ObjectID";
@@ -320,6 +320,7 @@ namespace Generator.SimpleDataAccess
                             columnInfo.IsComputed = reader.GetBoolean(4);
                             columnInfo.IsPartOfPrimaryKey = reader.GetInt32(5) > 0;
                             columnInfo.IsPartOfUniqueIndex = reader.GetInt32(6) > 0;
+                            columnInfo.MaxLength = reader.GetInt16(7);
                             columnInfo.Type = TypeFrom(columnInfo.DbType);
                             columnInfo.MappingMethodName = MappingMethod(columnInfo.DbType);
                             columnInfo.Ordinal = ordinal;
@@ -390,6 +391,12 @@ namespace Generator.SimpleDataAccess
                             lastIndexInfo.Columns.Add(t.GetColumnByName(columnName));
                         }
                     }
+                }
+
+                if (!t.HasIdentityOrPrimaryKeyOrUniqueIndex())
+                {
+                    // required for computed columns reread (but we could use output clause)
+                    throw new NotSupportedException(String.Format("Not supported table (identity, primary key, unique index): [{0}].[{1}]", t.Schema, t.Name));
                 }
             }
 

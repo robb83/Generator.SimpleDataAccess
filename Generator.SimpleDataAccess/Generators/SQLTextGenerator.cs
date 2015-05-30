@@ -131,14 +131,17 @@ namespace Generator.SimpleDataAccess.Generators
 
             GenerateWhereClause(script, filterColumns);
 
+            script.Append(";");
+            GenerateReRead(script, table, true, filterColumns);
+
             return script.ToString();
         }
 
         public static String GenerateInsert(TableInfo table)
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder script = new StringBuilder();
 
-            sb.AppendFormat("INSERT INTO [{0}].[{1}] (", table.Schema, table.Name);
+            script.AppendFormat("INSERT INTO [{0}].[{1}] (", table.Schema, table.Name);
 
             int counter = 0;
             foreach (var c in table.Columns)
@@ -150,15 +153,15 @@ namespace Generator.SimpleDataAccess.Generators
 
                 if (counter > 0)
                 {
-                    sb.Append(", ");
+                    script.Append(", ");
                 }
 
-                sb.AppendFormat("[{0}]", c.Name);
+                script.AppendFormat("[{0}]", c.Name);
 
                 ++counter;
             }
 
-            sb.Append(") VALUES (");
+            script.Append(") VALUES (");
 
             counter = 0;
             foreach (var c in table.Columns)
@@ -170,25 +173,106 @@ namespace Generator.SimpleDataAccess.Generators
 
                 if (counter > 0)
                 {
-                    sb.Append(", ");
+                    script.Append(", ");
                 }
 
-                sb.Append(c.ParameterName);
+                script.Append(c.ParameterName);
                 ++counter;
             }
 
-            sb.Append(");");
+            script.Append(");");
 
-            foreach (var c in table.Columns)
+            GenerateReRead(script, table, false);
+
+            return script.ToString();
+        }
+
+        private static void GenerateReRead(StringBuilder script, TableInfo tableInfo, bool update, List<ColumnInfo> keys = null)
+        {
+            bool hasIdentity = tableInfo.HasIdentityColumn();
+            bool hasComputedColumns = tableInfo.HasComputedColumns();
+            bool readRequired = (!update && hasIdentity) || hasComputedColumns;
+
+            if (readRequired)
             {
-                if (c.IsIdentity)
+                // compute key
+                ColumnInfo identityColumn = null;
+
+                if (keys == null)
                 {
-                    sb.AppendFormat(" SET {0} = SCOPE_IDENTITY(); ", c.ParameterName);
-                    break;
+                    identityColumn = tableInfo.GetFirstIdentityColumn();
+
+                    if (identityColumn == null)
+                    {
+                        if (keys == null)
+                        {
+                            keys = tableInfo.GetFirstPrimaryKey();
+                        }
+
+                        if (keys == null)
+                        {
+                            keys = tableInfo.GetFirstUniqueKey();
+                        }
+
+                        if (keys == null || keys.Count == 0)
+                        {
+                            throw new InvalidProgramException("No keys found");
+                        }
+                    }
+                }
+
+                if (!hasComputedColumns)
+                {
+                    if (update)
+                    {
+                        throw new InvalidProgramException("Update cannot reread identity column value.");
+                    }
+                    else
+                    {
+                        script.AppendFormat(" SET {0} = SCOPE_IDENTITY();", identityColumn.ParameterName);
+                    }
+                }
+                else
+                {
+                    StringBuilder subquery = new StringBuilder();
+                    
+                    foreach (var columnInfo in tableInfo.Columns)
+                    {
+                        if ((!update && columnInfo.IsIdentity) || columnInfo.IsComputed)
+                        {
+                            if (subquery.Length > 0)
+                            {
+                                subquery.Append(", ");
+                            }
+
+                            subquery.AppendFormat("{0} = [{1}]", columnInfo.ParameterName, columnInfo.Name);
+                        }
+                    }
+
+                    if (keys != null)
+                    {
+                        StringBuilder keySelector = new StringBuilder();
+                        GenerateWhereClause(keySelector, keys);
+
+                        script.AppendFormat(" SELECT {0} FROM [{1}].[{2}] {3}", subquery.ToString(), tableInfo.Schema, tableInfo.Name, keySelector.ToString());
+                    }
+                    else if (identityColumn != null)
+                    {
+                        if (update)
+                        {
+                            script.AppendFormat(" SELECT {0} FROM [{1}].[{2}] WHERE [{3}] = {4}", subquery.ToString(), tableInfo.Schema, tableInfo.Name, identityColumn.Name, identityColumn.ParameterName);
+                        }
+                        else
+                        {
+                            script.AppendFormat(" SELECT {0} FROM [{1}].[{2}] WHERE [{3}] = SCOPE_IDENTITY()", subquery.ToString(), tableInfo.Schema, tableInfo.Name, identityColumn.Name);
+                        }
+                    }
+                    else
+                    {
+                        throw new InvalidProgramException("Something wrong.");
+                    }
                 }
             }
-
-            return sb.ToString();
         }
     }
 }

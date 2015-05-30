@@ -11,6 +11,7 @@ namespace Generator.SimpleDataAccess.Model
         public bool IsComputed;
         public bool IsPartOfPrimaryKey;
         public bool IsPartOfUniqueIndex;
+        public long MaxLength;
         public int Ordinal;
         public Type Type;
         public String MappingMethodName;
