@@ -3155,28 +3155,40 @@ namespace Generator.SimpleDataAccess.Samples
 
         public void ExecuteInsertGenre(System.String name, out System.Int32 genreId)
         {
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("[dbo].[InsertGenre]"))
+            BeginTransaction();
+
+            try
             {
-                command.CommandType = System.Data.CommandType.StoredProcedure;
-
-                try
+                using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("[dbo].[InsertGenre]"))
                 {
-                    PopConnection(command);
+                    command.CommandType = System.Data.CommandType.StoredProcedure;
 
-                    System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar);
-                    pName.Value = name;
+                    try
+                    {
+                        PopConnection(command);
 
-                    System.Data.SqlClient.SqlParameter pGenreId = command.Parameters.Add("@GenreId", System.Data.SqlDbType.Int);
-                    pGenreId.Direction = System.Data.ParameterDirection.Output;
+                        System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar);
+                        pName.Value = name;
 
-                    command.ExecuteNonQuery();
+                        System.Data.SqlClient.SqlParameter pGenreId = command.Parameters.Add("@GenreId", System.Data.SqlDbType.Int);
+                        pGenreId.Direction = System.Data.ParameterDirection.Output;
 
-                    genreId = (System.Int32)pGenreId.Value;
+                        command.ExecuteNonQuery();
+
+                        genreId = (System.Int32)pGenreId.Value;
+                    }
+                    finally
+                    {
+                        PushConnection(command);
+                    }
                 }
-                finally
-                {
-                    PushConnection(command);
-                }
+
+                CommitTransaction();
+            }
+            catch
+            {
+                RollbackTransaction();
+                throw;
             }
         }
         #endregion

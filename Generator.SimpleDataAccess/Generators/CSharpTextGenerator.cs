@@ -81,6 +81,13 @@ namespace Generator.SimpleDataAccess.Generators
             code.AppendFormat("public void Execute{0}({1})", storedProcedureInfo.Name, parameters);
             code.CodeBlockBegin();
 
+            code.AppendLine("BeginTransaction();");
+            code.AppendLine();
+
+
+            code.Append("try");
+            code.CodeBlockBegin();
+
             code.AppendFormat("using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(\"[{0}].[{1}]\"))", storedProcedureInfo.Schema, storedProcedureInfo.Name);
             code.CodeBlockBegin();
             code.AppendLine("command.CommandType = System.Data.CommandType.StoredProcedure;");
@@ -116,13 +123,26 @@ namespace Generator.SimpleDataAccess.Generators
                 code.AppendLine();
             }
 
+            // end of try
             code.CodeBlockEnd();
             code.Append("finally");
             code.CodeBlockBegin();
             code.Append("PushConnection(command);");
             code.CodeBlockEnd();
 
+            // end of using
             code.CodeBlockEnd();
+
+            // end of try
+            code.AppendLine();
+            code.Append("CommitTransaction();");
+            code.CodeBlockEnd();
+            code.Append("catch");
+            code.CodeBlockBegin();
+            code.AppendLine("RollbackTransaction();");
+            code.AppendLine("throw;");
+            code.CodeBlockEnd();
+
             code.CodeBlockEnd();
         }
 
