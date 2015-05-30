@@ -15,8 +15,7 @@ namespace Generator.SimpleDataAccess.Generators
         
         public static void GenerateModel(CodeStringBuilder code, TableInfo tableInfo)
         {
-            code.AppendFormat("public partial class {0}", tableInfo.ClassName);
-            code.CodeBlockBegin();
+            code.CodeBlockBegin("public partial class {0}", tableInfo.ClassName);
 
             foreach (var c in tableInfo.Columns)
             {
@@ -30,12 +29,11 @@ namespace Generator.SimpleDataAccess.Generators
         {
             if (columnInfo.IsNullable && columnInfo.Type.IsValueType)
             {
-                code.AppendLineFormat("if (reader.IsDBNull({0}))", columnInfo.Ordinal);
-                code.CodeBlockBegin();
+                code.CodeBlockBegin("if (reader.IsDBNull({0}))", columnInfo.Ordinal);
                 code.AppendLineFormat("entity.{0} = null;", columnInfo.PropertyName, columnInfo.MappingMethodName, columnInfo.Ordinal);
                 code.CodeBlockEnd();
-                code.AppendLine("else");
-                code.CodeBlockBegin();
+
+                code.CodeBlockBegin("else");
                 code.AppendLineFormat("entity.{0} = reader.{1}({2});", columnInfo.PropertyName, columnInfo.MappingMethodName, columnInfo.Ordinal);
                 code.CodeBlockEnd();
             }
@@ -49,12 +47,11 @@ namespace Generator.SimpleDataAccess.Generators
         {
             if (columnInfo.IsNullable)
             {
-                code.AppendLineFormat("if ({0}.Value == System.DBNull.Value)", columnInfo.LocalParameterVariableName);
-                code.CodeBlockBegin();
+                code.CodeBlockBegin("if ({0}.Value == System.DBNull.Value)", columnInfo.LocalParameterVariableName);
                 code.AppendLineFormat("entity.{0} = null;", columnInfo.PropertyName);
                 code.CodeBlockEnd();
-                code.AppendLine("else");
-                code.CodeBlockBegin();
+                
+                code.CodeBlockBegin("else");
                 code.AppendLineFormat("entity.{0} = ({1}){2}.Value;", columnInfo.PropertyName, columnInfo.FullTypeName ,columnInfo.LocalParameterVariableName);
                 code.CodeBlockEnd();
             }
@@ -66,8 +63,7 @@ namespace Generator.SimpleDataAccess.Generators
 
         public static void GenerateMapping(CodeStringBuilder code, TableInfo tableInfo)
         {
-            code.AppendFormat("public static {0} Read{0}(System.Data.SqlClient.SqlDataReader reader)", tableInfo.ClassName);
-            code.CodeBlockBegin();
+            code.CodeBlockBegin("public static {0} Read{0}(System.Data.SqlClient.SqlDataReader reader)", tableInfo.ClassName);
 
             code.AppendLineFormat("{0} entity = new {0}();", tableInfo.ClassName);
             
@@ -75,10 +71,8 @@ namespace Generator.SimpleDataAccess.Generators
             {
                 GenerateColumnMapperFromSqlDataReader(code, columnInfo);
             }
-
-            code.Append("return entity;");
-
-            code.CodeBlockEnd();
+            
+            code.CodeBlockEnd("return entity;");
         }
 
         public static void GenerateStoredProcedure(CodeStringBuilder code, StoredProcedureInfo storedProcedureInfo)
@@ -101,24 +95,19 @@ namespace Generator.SimpleDataAccess.Generators
                 parameters += " ";
                 parameters += parameterInfo.LocalVariableName;
             }
-
-            code.AppendFormat("public void Execute{0}({1})", storedProcedureInfo.Name, parameters);
-            code.CodeBlockBegin();
+            
+            code.CodeBlockBegin("public void Execute{0}({1})", storedProcedureInfo.Name, parameters);
 
             code.AppendLine("BeginTransaction();");
             code.AppendLine();
 
-
-            code.Append("try");
-            code.CodeBlockBegin();
-
-            code.AppendFormat("using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(\"[{0}].[{1}]\"))", storedProcedureInfo.Schema, storedProcedureInfo.Name);
-            code.CodeBlockBegin();
+            code.CodeBlockBegin("try");
+            
+            code.CodeBlockBegin("using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(\"[{0}].[{1}]\"))", storedProcedureInfo.Schema, storedProcedureInfo.Name);
             code.AppendLine("command.CommandType = System.Data.CommandType.StoredProcedure;");
             code.AppendLine();
-
-            code.Append("try");
-            code.CodeBlockBegin();
+            
+            code.CodeBlockBegin("try");
             code.AppendLine("PopConnection(command);");
             code.AppendLine();
 
@@ -151,8 +140,7 @@ namespace Generator.SimpleDataAccess.Generators
 
             // end of try
             code.CodeBlockEnd();
-            code.Append("finally");
-            code.CodeBlockBegin();
+            code.CodeBlockBegin("finally");
             code.Append("PushConnection(command);");
             code.CodeBlockEnd();
 
@@ -163,8 +151,7 @@ namespace Generator.SimpleDataAccess.Generators
             code.AppendLine();
             code.Append("CommitTransaction();");
             code.CodeBlockEnd();
-            code.Append("catch");
-            code.CodeBlockBegin();
+            code.CodeBlockBegin("catch");
             code.AppendLine("RollbackTransaction();");
             code.AppendLine("throw;");
             code.CodeBlockEnd();
@@ -174,40 +161,33 @@ namespace Generator.SimpleDataAccess.Generators
 
         public static void GenerateCountSelect(CodeStringBuilder code, TableInfo tableInfo)
         {
-            String methodName = "Select" + tableInfo.ClassName + "Count";
-
-            code.AppendFormat("public int {1}()", tableInfo.ClassName, methodName);
-            code.CodeBlockBegin();
-
-            code.AppendFormat("using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(\"{0}\"))", SQLTextGenerator.GenerateSelectCount(tableInfo));
-            code.CodeBlockBegin();
-
-            code.Append("try");
-            code.CodeBlockBegin();
+            code.CodeBlockBegin("public int Select{0}Count()", tableInfo.ClassName);
+            
+            code.CodeBlockBegin("using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(\"{0}\"))", SQLTextGenerator.GenerateSelectCount(tableInfo));
+            
+            code.CodeBlockBegin("try");
             code.AppendLine("PopConnection(command);");
             code.AppendLine();
-
-            code.Append("using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())");
-            code.CodeBlockBegin();
-
-            code.Append("if (reader.Read())");
-            code.CodeBlockBegin();
+            
+            code.CodeBlockBegin("using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())");
+            
+            code.CodeBlockBegin("if (reader.Read())");
             code.AppendFormat("return reader.GetInt32(0);", tableInfo.ClassName);
             code.CodeBlockEnd();
-            code.Append("else");
-            code.CodeBlockBegin();
+            
+            code.CodeBlockBegin("else");
             code.Append("throw new InvalidOperationException(\"Select count failed.\");");
             code.CodeBlockEnd();
 
-            code.CodeBlockEnd();
-            code.CodeBlockEnd();
-            code.Append("finally");
-            code.CodeBlockBegin();
+            code.CodeBlockEnd(); // using
+            code.CodeBlockEnd(); // try
+
+            code.CodeBlockBegin("finally");
             code.Append("PushConnection(command);");
             code.CodeBlockEnd();
 
-            code.CodeBlockEnd();
-            code.CodeBlockEnd();
+            code.CodeBlockEnd(); // using
+            code.CodeBlockEnd(); // method
         }
 
         public static void GenerateSelectMethod(CodeStringBuilder code, TableInfo tableInfo, List<ColumnInfo> filteredColumns, bool singleResult)
@@ -236,20 +216,16 @@ namespace Generator.SimpleDataAccess.Generators
 
             if (singleResult)
             {
-                code.AppendFormat("public {0} {1}({2})", tableInfo.ClassName, methodName, parameters);
-                code.CodeBlockBegin();
+                code.CodeBlockBegin("public {0} {1}({2})", tableInfo.ClassName, methodName, parameters);
             }
             else
             {
-                code.AppendFormat("public List<{0}> {1}({2})", tableInfo.ClassName, methodName, parameters);
-                code.CodeBlockBegin();
+                code.CodeBlockBegin("public List<{0}> {1}({2})", tableInfo.ClassName, methodName, parameters);
             }
-
-            code.AppendFormat("using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(\"{0}\"))", SQLTextGenerator.GenerateSelect(tableInfo, filteredColumns));
-            code.CodeBlockBegin();
-
-            code.Append("try");
-            code.CodeBlockBegin();
+            
+            code.CodeBlockBegin("using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(\"{0}\"))", SQLTextGenerator.GenerateSelect(tableInfo, filteredColumns));
+            
+            code.CodeBlockBegin("try");
             code.AppendLine("PopConnection(command);");
 
             if (filteredColumns != null && filteredColumns.Count > 0)
@@ -267,40 +243,39 @@ namespace Generator.SimpleDataAccess.Generators
                     code.AppendLine();
                 }
             }
-
-            code.Append("using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())");
-            code.CodeBlockBegin();
+            
+            code.CodeBlockBegin("using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())");
 
             if (singleResult)
             {
-                code.Append("if (reader.Read())");
-                code.CodeBlockBegin();
+                code.CodeBlockBegin("if (reader.Read())");
                 code.AppendFormat("return Read{0}(reader);", tableInfo.ClassName);
                 code.CodeBlockEnd();
-                code.Append("else");
-                code.CodeBlockBegin();
+
+                code.CodeBlockBegin("else");
                 code.Append("return null;");
                 code.CodeBlockEnd();
             }
             else
             {
                 code.AppendLineFormat("List<{0}> result = new List<{0}>();", tableInfo.ClassName);
-                code.Append("while (reader.Read())");
-                code.CodeBlockBegin();
+
+                code.CodeBlockBegin("while (reader.Read())");
                 code.AppendFormat("result.Add(Read{0}(reader));", tableInfo.ClassName);
                 code.CodeBlockEnd();
+
                 code.Append("return result;");
             }
 
-            code.CodeBlockEnd();
-            code.CodeBlockEnd();
-            code.Append("finally");
-            code.CodeBlockBegin();
+            code.CodeBlockEnd(); // using
+            code.CodeBlockEnd(); // try
+
+            code.CodeBlockBegin("finally");
             code.Append("PushConnection(command);");
             code.CodeBlockEnd();
 
-            code.CodeBlockEnd();
-            code.CodeBlockEnd();
+            code.CodeBlockEnd(); // using
+            code.CodeBlockEnd(); // method
         }
         
         private static bool IsVariableLength(System.Data.SqlDbType dbType)
@@ -336,12 +311,11 @@ namespace Generator.SimpleDataAccess.Generators
             {
                 if (is_nullable)
                 {
-                    code.AppendLineFormat("if ({0} == null)", valueExpression);
-                    code.CodeBlockBegin();
+                    code.CodeBlockBegin("if ({0} == null)", valueExpression);
                     code.AppendLineFormat("{0}.Value = System.DBNull.Value;", localParameterName);
                     code.CodeBlockEnd();
-                    code.Append("else");
-                    code.CodeBlockBegin();
+                    
+                    code.CodeBlockBegin("else");
                     code.AppendLineFormat("{0}.Value = {1};", localParameterName, valueExpression);
                     code.CodeBlockEnd();
                 }
@@ -355,21 +329,17 @@ namespace Generator.SimpleDataAccess.Generators
         public static void GenerateUpsertMethod(CodeStringBuilder code, TableInfo tableInfo)
         {
             List<ColumnInfo> key = tableInfo.GetFirstPrimaryKey();
-
-            code.AppendFormat("public void Upsert{0}({0} entity)", tableInfo.ClassName);
-            code.CodeBlockBegin();
-
-            code.Append("if (entity == null)");
-            code.CodeBlockBegin();
+            
+            code.CodeBlockBegin("public void Upsert{0}({0} entity)", tableInfo.ClassName);
+            
+            code.CodeBlockBegin("if (entity == null)");
             code.Append("throw new ArgumentNullException(\"entity\");");
             code.CodeBlockEnd();
             code.AppendLine();
-
-            code.AppendFormat("using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(\"{0}\"))", SQLTextGenerator.GenerateMerge(tableInfo, key));
-            code.CodeBlockBegin();
-
-            code.Append("try");
-            code.CodeBlockBegin();
+            
+            code.CodeBlockBegin("using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(\"{0}\"))", SQLTextGenerator.GenerateMerge(tableInfo, key));
+            
+            code.CodeBlockBegin("try");
             code.AppendLine("PopConnection(command);");
 
             foreach (ColumnInfo columnInfo in tableInfo.Columns)
@@ -388,11 +358,9 @@ namespace Generator.SimpleDataAccess.Generators
 
             if (tableInfo.HasComputedColumns() || tableInfo.HasIdentityColumn())
             {
-                code.Append("using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())");
-                code.CodeBlockBegin();
-
-                code.Append("if (reader.Read())");
-                code.CodeBlockBegin();
+                code.CodeBlockBegin("using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())");
+                
+                code.CodeBlockBegin("if (reader.Read())");
 
                 foreach (ColumnInfo columnInfo in tableInfo.Columns)
                 {
@@ -405,8 +373,8 @@ namespace Generator.SimpleDataAccess.Generators
                 }
 
                 code.CodeBlockEnd();
-                code.Append("else");
-                code.CodeBlockBegin();
+
+                code.CodeBlockBegin("else");
                 code.Append("throw new InvalidOperationException(\"Upsert failed.\");");
                 code.CodeBlockEnd();
 
@@ -414,48 +382,35 @@ namespace Generator.SimpleDataAccess.Generators
             }
             else
             {
-                code.Append("if (command.ExecuteNonQuery() <= 0)");
-                code.CodeBlockBegin();
+                code.CodeBlockBegin("if (command.ExecuteNonQuery() <= 0)");
                 code.Append("throw new InvalidOperationException(\"Upsert failed.\");");
                 code.CodeBlockEnd();
             }
+            
+            code.CodeBlockEnd(); // try
 
-            foreach (var columnInfo in tableInfo.Columns)
-            {
-                if (columnInfo.IsComputed)
-                {
-                    GenerateColumnMapperFromSqlParameter(code, columnInfo);
-                }
-            }
-
-            code.CodeBlockEnd();
-            code.Append("finally");
-            code.CodeBlockBegin();
+            code.CodeBlockBegin("finally");
             code.Append("PushConnection(command);");
             code.CodeBlockEnd();
 
-            code.CodeBlockEnd();
-            code.CodeBlockEnd();
+            code.CodeBlockEnd(); // using command
+            code.CodeBlockEnd(); // method
         }
 
         public static void GenerateUpdateMethod(CodeStringBuilder code, TableInfo tableInfo)
         {
             List<ColumnInfo> key = tableInfo.GetFirstPrimaryKey();
-
-            code.AppendFormat("public void Update{0}({0} entity)", tableInfo.ClassName);
-            code.CodeBlockBegin();
-
-            code.Append("if (entity == null)");
-            code.CodeBlockBegin();
+            
+            code.CodeBlockBegin("public void Update{0}({0} entity)", tableInfo.ClassName);
+            
+            code.CodeBlockBegin("if (entity == null)");
             code.Append("throw new ArgumentNullException(\"entity\");");
             code.CodeBlockEnd();
             code.AppendLine();
-
-            code.AppendFormat("using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(\"{0}\"))", SQLTextGenerator.GenerateUpdate(tableInfo, key));
-            code.CodeBlockBegin();
-
-            code.Append("try");
-            code.CodeBlockBegin();
+            
+            code.CodeBlockBegin("using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(\"{0}\"))", SQLTextGenerator.GenerateUpdate(tableInfo, key));
+            
+            code.CodeBlockBegin("try");
             code.AppendLine("PopConnection(command);");
 
             foreach (ColumnInfo columnInfo in tableInfo.Columns)
@@ -471,9 +426,8 @@ namespace Generator.SimpleDataAccess.Generators
                     columnInfo.MaxLength);
                 code.AppendLine();
             }
-
-            code.Append("if (command.ExecuteNonQuery() > 0)");
-            code.CodeBlockBegin();
+            
+            code.CodeBlockBegin("if (command.ExecuteNonQuery() > 0)");
 
             foreach (var columnInfo in tableInfo.Columns)
             {
@@ -484,34 +438,30 @@ namespace Generator.SimpleDataAccess.Generators
             }
 
             code.CodeBlockEnd();
-            code.Append("else");
-            code.CodeBlockBegin();
+            code.CodeBlockBegin("else");
             code.Append("throw new InvalidOperationException(\"Update failed.\");");
             code.CodeBlockEnd();
 
-            code.CodeBlockEnd();
-            code.Append("finally");
-            code.CodeBlockBegin();
+            code.CodeBlockEnd(); // try
+
+            code.CodeBlockBegin("finally");
             code.Append("PushConnection(command);");
             code.CodeBlockEnd();
 
-            code.CodeBlockEnd();
-            code.CodeBlockEnd();
+            code.CodeBlockEnd(); // using command
+            code.CodeBlockEnd(); // method
         }
 
         public static void GenerateInsertMethod(CodeStringBuilder code, TableInfo tableInfo)
         {
-            code.AppendFormat("public void Insert{0}({0} entity)", tableInfo.ClassName);
-            code.CodeBlockBegin();
-
-            code.Append("if (entity == null)");
-            code.CodeBlockBegin();
+            code.CodeBlockBegin("public void Insert{0}({0} entity)", tableInfo.ClassName);
+            
+            code.CodeBlockBegin("if (entity == null)");
             code.Append("throw new ArgumentNullException(\"entity\");");
             code.CodeBlockEnd();
             code.AppendLine();
-
-            code.AppendFormat("using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(\"{0}\"))", SQLTextGenerator.GenerateInsert(tableInfo));
-            code.CodeBlockBegin();
+            
+            code.CodeBlockBegin("using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(\"{0}\"))", SQLTextGenerator.GenerateInsert(tableInfo));
 
             code.Append("try");
             code.CodeBlockBegin();
@@ -530,9 +480,8 @@ namespace Generator.SimpleDataAccess.Generators
                     columnInfo.MaxLength);
                 code.AppendLine();
             }
-
-            code.Append("if (command.ExecuteNonQuery() > 0)");
-            code.CodeBlockBegin();
+            
+            code.CodeBlockBegin("if (command.ExecuteNonQuery() > 0)");
 
             foreach (var columnInfo in tableInfo.Columns)
             {
@@ -543,14 +492,12 @@ namespace Generator.SimpleDataAccess.Generators
             }
 
             code.CodeBlockEnd();
-            code.Append("else");
-            code.CodeBlockBegin();
+            code.CodeBlockBegin("else");
             code.Append("throw new InvalidOperationException(\"Insert failed.\");");
             code.CodeBlockEnd();
 
             code.CodeBlockEnd();
-            code.Append("finally");
-            code.CodeBlockBegin();
+            code.CodeBlockBegin("finally");
             code.Append("PushConnection(command);");
             code.CodeBlockEnd();
 
@@ -581,15 +528,12 @@ namespace Generator.SimpleDataAccess.Generators
                     parameters += columnInfo.LocalVariableName;
                 }
             }
-
-            code.AppendFormat("public void {0}({1})", methodName, parameters);
-            code.CodeBlockBegin();
-
-            code.AppendFormat("using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(\"{0}\"))", SQLTextGenerator.GenerateDelete(tableInfo, filteredColumns));
-            code.CodeBlockBegin();
-
-            code.Append("try");
-            code.CodeBlockBegin();
+            
+            code.CodeBlockBegin("public void {0}({1})", methodName, parameters);
+            
+            code.CodeBlockBegin("using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(\"{0}\"))", SQLTextGenerator.GenerateDelete(tableInfo, filteredColumns));
+            
+            code.CodeBlockBegin("try");
             code.AppendLine("PopConnection(command);");
 
             if (filteredColumns != null && filteredColumns.Count > 0)
@@ -611,13 +555,14 @@ namespace Generator.SimpleDataAccess.Generators
 
             code.Append("command.ExecuteNonQuery();");
 
-            code.CodeBlockEnd();
-            code.Append("finally");
-            code.CodeBlockBegin();
+            code.CodeBlockEnd(); // try
+
+            code.CodeBlockBegin("finally");
             code.Append("PushConnection(command);");
             code.CodeBlockEnd();
-            code.CodeBlockEnd();
-            code.CodeBlockEnd();
+
+            code.CodeBlockEnd(); // using command
+            code.CodeBlockEnd(); // method
         }
 
         public static void GenerateDatabaseAccessCode(DatabaseSchemaInfo schemaInfo, String outputFilename)
@@ -630,8 +575,7 @@ namespace Generator.SimpleDataAccess.Generators
             code.AppendLine();
 
             // namespace
-            code.AppendFormat("namespace {0}", schemaInfo.Namespace);
-            code.CodeBlockBegin();
+            code.CodeBlockBegin("namespace {0}", schemaInfo.Namespace);
 
             // model
             code.AppendLine("#region Models");
@@ -645,9 +589,9 @@ namespace Generator.SimpleDataAccess.Generators
             code.AppendLine();
 
             // class - DataAccess wrapper
-            code.AppendLineFormat("public partial class {0} : IDisposable", schemaInfo.ClassName);
-            code.CodeBlockBegin();
+            code.CodeBlockBegin("public partial class {0} : IDisposable", schemaInfo.ClassName);
 
+            // variable
             code.AppendLine();
             code.AppendLine("private System.Data.SqlClient.SqlConnection connection;");
             code.AppendLine("private System.Data.SqlClient.SqlTransaction transaction;");

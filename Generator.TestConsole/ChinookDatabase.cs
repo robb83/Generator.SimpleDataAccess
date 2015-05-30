@@ -148,7 +148,7 @@ namespace Generator.SimpleDataAccess.Samples
             entity.AlbumId = reader.GetInt32(0);
             entity.Title = reader.GetString(1);
             entity.ArtistId = reader.GetInt32(2);
-            return entity;
+        return entity;
         }
 
         public void UpsertAlbum(Album entity)
@@ -418,7 +418,7 @@ namespace Generator.SimpleDataAccess.Samples
             Artist entity = new Artist();
             entity.ArtistId = reader.GetInt32(0);
             entity.Name = reader.GetString(1);
-            return entity;
+        return entity;
         }
 
         public void UpsertArtist(Artist entity)
@@ -675,7 +675,7 @@ namespace Generator.SimpleDataAccess.Samples
             entity.FullName = reader.GetString(13);
             entity.Comment = reader.GetString(14);
             entity.FullDetail = reader.GetString(15);
-            return entity;
+        return entity;
         }
 
         public void UpsertCustomer(Customer entity)
@@ -820,15 +820,6 @@ namespace Generator.SimpleDataAccess.Samples
                         {
                             throw new InvalidOperationException("Upsert failed.");
                         }
-                    }
-                    entity.FullName = (System.String)pFullName.Value;
-                    if (pFullDetail.Value == System.DBNull.Value)
-                    {
-                        entity.FullDetail = null;
-                    }
-                    else
-                    {
-                        entity.FullDetail = (System.String)pFullDetail.Value;
                     }
                 }
                 finally
@@ -1349,7 +1340,7 @@ namespace Generator.SimpleDataAccess.Samples
             entity.Phone = reader.GetString(12);
             entity.Fax = reader.GetString(13);
             entity.Email = reader.GetString(14);
-            return entity;
+        return entity;
         }
 
         public void UpsertEmployee(Employee entity)
@@ -1993,7 +1984,7 @@ namespace Generator.SimpleDataAccess.Samples
             Genre entity = new Genre();
             entity.GenreId = reader.GetInt32(0);
             entity.Name = reader.GetString(1);
-            return entity;
+        return entity;
         }
 
         public void UpsertGenre(Genre entity)
@@ -2236,7 +2227,7 @@ namespace Generator.SimpleDataAccess.Samples
             entity.BillingCountry = reader.GetString(6);
             entity.BillingPostalCode = reader.GetString(7);
             entity.Total = reader.GetDecimal(8);
-            return entity;
+        return entity;
         }
 
         public void UpsertInvoice(Invoice entity)
@@ -2668,7 +2659,7 @@ namespace Generator.SimpleDataAccess.Samples
             entity.TrackId = reader.GetInt32(2);
             entity.UnitPrice = reader.GetDecimal(3);
             entity.Quantity = reader.GetInt32(4);
-            return entity;
+        return entity;
         }
 
         public void UpsertInvoiceLine(InvoiceLine entity)
@@ -3002,7 +2993,7 @@ namespace Generator.SimpleDataAccess.Samples
             MediaType entity = new MediaType();
             entity.MediaTypeId = reader.GetInt32(0);
             entity.Name = reader.GetString(1);
-            return entity;
+        return entity;
         }
 
         public void UpsertMediaType(MediaType entity)
@@ -3238,7 +3229,7 @@ namespace Generator.SimpleDataAccess.Samples
             Playlist entity = new Playlist();
             entity.PlaylistId = reader.GetInt32(0);
             entity.Name = reader.GetString(1);
-            return entity;
+        return entity;
         }
 
         public void UpsertPlaylist(Playlist entity)
@@ -3474,7 +3465,7 @@ namespace Generator.SimpleDataAccess.Samples
             PlaylistTrack entity = new PlaylistTrack();
             entity.PlaylistId = reader.GetInt32(0);
             entity.TrackId = reader.GetInt32(1);
-            return entity;
+        return entity;
         }
 
         public void UpsertPlaylistTrack(PlaylistTrack entity)
@@ -3807,7 +3798,7 @@ namespace Generator.SimpleDataAccess.Samples
                 entity.Bytes = reader.GetInt32(7);
             }
             entity.UnitPrice = reader.GetDecimal(8);
-            return entity;
+        return entity;
         }
 
         public void UpsertTrack(Track entity)

@@ -60,7 +60,7 @@
         public System.Int32 ArtistId { get; set; }
     }
 
-    #region Insert, Update, Delete, Select, Mapping - dbo.Album
+    #region Upsert, Insert, Update, Delete, Select, Mapping - dbo.Album
 
     public static Album ReadAlbum(System.Data.SqlClient.SqlDataReader reader)
     {
@@ -71,6 +71,46 @@
         return entity;
     }
 
+    public void UpsertAlbum(Album entity)
+    {
+        if (entity == null)
+        {
+            throw new ArgumentNullException("entity");
+        }
+
+        using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("MERGE [dbo].[Album] AS T USING (SELECT @AlbumId, @Title, @ArtistId) AS S (AlbumId, [Title], [ArtistId]) ON (S.[AlbumId] = T.[AlbumId]) WHEN MATCHED THEN UPDATE SET [Title] = S.[Title], [ArtistId] = S.[ArtistId] WHEN NOT MATCHED THEN INSERT ([Title], [ArtistId]) VALUES (S.[Title], S.[ArtistId]) OUTPUT inserted.[AlbumId];"))
+        {
+            try
+            {
+                PopConnection(command);
+                System.Data.SqlClient.SqlParameter pAlbumId = command.Parameters.Add("@AlbumId", System.Data.SqlDbType.Int);
+                pAlbumId.Value = entity.AlbumId;
+
+                System.Data.SqlClient.SqlParameter pTitle = command.Parameters.Add("@Title", System.Data.SqlDbType.NVarChar, 320);
+                pTitle.Value = entity.Title;
+
+                System.Data.SqlClient.SqlParameter pArtistId = command.Parameters.Add("@ArtistId", System.Data.SqlDbType.Int);
+                pArtistId.Value = entity.ArtistId;
+
+                using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        entity.AlbumId = reader.GetInt32(0);
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("Upsert failed.");
+                    }
+                }
+            }
+            finally
+            {
+                PushConnection(command);
+            }
+        }
+    }
+
     public void InsertAlbum(Album entity)
     {
         if (entity == null)
@@ -78,7 +118,7 @@
             throw new ArgumentNullException("entity");
         }
 
-        using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[Album] ([Title], [ArtistId]) VALUES (@Title, @ArtistId); SET @AlbumId = SCOPE_IDENTITY(); "))
+        using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[Album] ([Title], [ArtistId]) VALUES (@Title, @ArtistId); SET @AlbumId = SCOPE_IDENTITY();"))
         {
             try
             {
@@ -86,7 +126,7 @@
                 System.Data.SqlClient.SqlParameter pAlbumId = command.Parameters.Add("@AlbumId", System.Data.SqlDbType.Int);
                 pAlbumId.Direction = System.Data.ParameterDirection.Output;
 
-                System.Data.SqlClient.SqlParameter pTitle = command.Parameters.Add("@Title", System.Data.SqlDbType.NVarChar);
+                System.Data.SqlClient.SqlParameter pTitle = command.Parameters.Add("@Title", System.Data.SqlDbType.NVarChar, 320);
                 pTitle.Value = entity.Title;
 
                 System.Data.SqlClient.SqlParameter pArtistId = command.Parameters.Add("@ArtistId", System.Data.SqlDbType.Int);
@@ -115,7 +155,7 @@
             throw new ArgumentNullException("entity");
         }
 
-        using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("UPDATE [dbo].[Album] SET [Title] = @Title, [ArtistId] = @ArtistId WHERE [AlbumId] = @AlbumId"))
+        using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("UPDATE [dbo].[Album] SET [Title] = @Title, [ArtistId] = @ArtistId WHERE [AlbumId] = @AlbumId;"))
         {
             try
             {
@@ -123,13 +163,16 @@
                 System.Data.SqlClient.SqlParameter pAlbumId = command.Parameters.Add("@AlbumId", System.Data.SqlDbType.Int);
                 pAlbumId.Value = entity.AlbumId;
 
-                System.Data.SqlClient.SqlParameter pTitle = command.Parameters.Add("@Title", System.Data.SqlDbType.NVarChar);
+                System.Data.SqlClient.SqlParameter pTitle = command.Parameters.Add("@Title", System.Data.SqlDbType.NVarChar, 320);
                 pTitle.Value = entity.Title;
 
                 System.Data.SqlClient.SqlParameter pArtistId = command.Parameters.Add("@ArtistId", System.Data.SqlDbType.Int);
                 pArtistId.Value = entity.ArtistId;
 
-                if (command.ExecuteNonQuery() <= 0)
+                if (command.ExecuteNonQuery() > 0)
+                {
+                }
+                else
                 {
                     throw new InvalidOperationException("Update failed.");
                 }
@@ -156,6 +199,33 @@
                         result.Add(ReadAlbum(reader));
                     }
                     return result;
+                }
+            }
+            finally
+            {
+                PushConnection(command);
+            }
+        }
+    }
+
+    public int SelectAlbumCount()
+    {
+        using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT Count(*) FROM [dbo].[Album]"))
+        {
+            try
+            {
+                PopConnection(command);
+
+                using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        return reader.GetInt32(0);
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("Select count failed.");
+                    }
                 }
             }
             finally

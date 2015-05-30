@@ -56,25 +56,48 @@ namespace Generator.SimpleDataAccess
             this.AppendLine();
         }
 
-        public void CodeBlockBegin()
+        public void CodeBlockBegin(String chunk, params Object[] args)
         {
+            CodeBlockBegin(String.Format(chunk, args));
+        }
+
+        public void CodeBlockBegin(String chunk = null)
+        {
+            if (chunk != null)
+            {
+                this.Append(chunk);
+            }
+
             if (!this.endWithNewLine)
             {
                 this.AppendLine();
             }
+
             this.Append("{");
             this.AppendLine();
 
             this.Push();
         }
 
-        public void CodeBlockEnd()
+        public void CodeBlockEnd(String chunk, params Object[] args)
+        {
+            CodeBlockEnd(String.Format(chunk, args));
+        }
+
+        public void CodeBlockEnd(String chunk = null)
         {
             this.Pop();
+
+            if (chunk != null)
+            {
+                this.Append(chunk);
+            }
+
             if (!this.endWithNewLine)
             {
                 this.AppendLine();
             }
+
             this.Append("}");
             this.AppendLine();
         }
