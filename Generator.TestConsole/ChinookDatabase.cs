@@ -115,7 +115,7 @@ namespace Generator.SimpleDataAccess.Samples
 
     #endregion
 
-    public class ChinookDatabase : IDisposable
+    public partial class ChinookDatabase : IDisposable
     {
 
         private System.Data.SqlClient.SqlConnection connection;
@@ -233,6 +233,33 @@ namespace Generator.SimpleDataAccess.Samples
                             result.Add(ReadAlbum(reader));
                         }
                         return result;
+                    }
+                }
+                finally
+                {
+                    PushConnection(command);
+                }
+            }
+        }
+
+        public int SelectAlbumCount()
+        {
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT Count(*) FROM [dbo].[Album]"))
+            {
+                try
+                {
+                    PopConnection(command);
+
+                    using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return reader.GetInt32(0);
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("Select count failed.");
+                        }
                     }
                 }
                 finally
@@ -441,6 +468,33 @@ namespace Generator.SimpleDataAccess.Samples
                             result.Add(ReadArtist(reader));
                         }
                         return result;
+                    }
+                }
+                finally
+                {
+                    PushConnection(command);
+                }
+            }
+        }
+
+        public int SelectArtistCount()
+        {
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT Count(*) FROM [dbo].[Artist]"))
+            {
+                try
+                {
+                    PopConnection(command);
+
+                    using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return reader.GetInt32(0);
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("Select count failed.");
+                        }
                     }
                 }
                 finally
@@ -799,6 +853,33 @@ namespace Generator.SimpleDataAccess.Samples
                             result.Add(ReadCustomer(reader));
                         }
                         return result;
+                    }
+                }
+                finally
+                {
+                    PushConnection(command);
+                }
+            }
+        }
+
+        public int SelectCustomerCount()
+        {
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT Count(*) FROM [dbo].[Customer]"))
+            {
+                try
+                {
+                    PopConnection(command);
+
+                    using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return reader.GetInt32(0);
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("Select count failed.");
+                        }
                     }
                 }
                 finally
@@ -1296,6 +1377,33 @@ namespace Generator.SimpleDataAccess.Samples
             }
         }
 
+        public int SelectEmployeeCount()
+        {
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT Count(*) FROM [dbo].[Employee]"))
+            {
+                try
+                {
+                    PopConnection(command);
+
+                    using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return reader.GetInt32(0);
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("Select count failed.");
+                        }
+                    }
+                }
+                finally
+                {
+                    PushConnection(command);
+                }
+            }
+        }
+
         public List<Employee> SelectEmployeeByReportsTo(System.Nullable<System.Int32> reportsTo)
         {
             using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT [EmployeeId], [LastName], [FirstName], [Title], [ReportsTo], [BirthDate], [HireDate], [Address], [City], [State], [Country], [PostalCode], [Phone], [Fax], [Email] FROM [dbo].[Employee] WHERE [ReportsTo] = @ReportsTo"))
@@ -1509,6 +1617,33 @@ namespace Generator.SimpleDataAccess.Samples
                             result.Add(ReadGenre(reader));
                         }
                         return result;
+                    }
+                }
+                finally
+                {
+                    PushConnection(command);
+                }
+            }
+        }
+
+        public int SelectGenreCount()
+        {
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT Count(*) FROM [dbo].[Genre]"))
+            {
+                try
+                {
+                    PopConnection(command);
+
+                    using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return reader.GetInt32(0);
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("Select count failed.");
+                        }
                     }
                 }
                 finally
@@ -1785,6 +1920,33 @@ namespace Generator.SimpleDataAccess.Samples
             }
         }
 
+        public int SelectInvoiceCount()
+        {
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT Count(*) FROM [dbo].[Invoice]"))
+            {
+                try
+                {
+                    PopConnection(command);
+
+                    using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return reader.GetInt32(0);
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("Select count failed.");
+                        }
+                    }
+                }
+                finally
+                {
+                    PushConnection(command);
+                }
+            }
+        }
+
         public List<Invoice> SelectInvoiceByCustomerId(System.Int32 customerId)
         {
             using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT [InvoiceId], [CustomerId], [InvoiceDate], [BillingAddress], [BillingCity], [BillingState], [BillingCountry], [BillingPostalCode], [Total] FROM [dbo].[Invoice] WHERE [CustomerId] = @CustomerId"))
@@ -1991,6 +2153,33 @@ namespace Generator.SimpleDataAccess.Samples
                             result.Add(ReadInvoiceLine(reader));
                         }
                         return result;
+                    }
+                }
+                finally
+                {
+                    PushConnection(command);
+                }
+            }
+        }
+
+        public int SelectInvoiceLineCount()
+        {
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT Count(*) FROM [dbo].[InvoiceLine]"))
+            {
+                try
+                {
+                    PopConnection(command);
+
+                    using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return reader.GetInt32(0);
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("Select count failed.");
+                        }
                     }
                 }
                 finally
@@ -2254,6 +2443,33 @@ namespace Generator.SimpleDataAccess.Samples
             }
         }
 
+        public int SelectMediaTypeCount()
+        {
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT Count(*) FROM [dbo].[MediaType]"))
+            {
+                try
+                {
+                    PopConnection(command);
+
+                    using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return reader.GetInt32(0);
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("Select count failed.");
+                        }
+                    }
+                }
+                finally
+                {
+                    PushConnection(command);
+                }
+            }
+        }
+
         public MediaType SelectMediaTypeByMediaTypeId(System.Int32 mediaTypeId)
         {
             using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT [MediaTypeId], [Name] FROM [dbo].[MediaType] WHERE [MediaTypeId] = @MediaTypeId"))
@@ -2416,6 +2632,33 @@ namespace Generator.SimpleDataAccess.Samples
             }
         }
 
+        public int SelectPlaylistCount()
+        {
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT Count(*) FROM [dbo].[Playlist]"))
+            {
+                try
+                {
+                    PopConnection(command);
+
+                    using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return reader.GetInt32(0);
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("Select count failed.");
+                        }
+                    }
+                }
+                finally
+                {
+                    PushConnection(command);
+                }
+            }
+        }
+
         public Playlist SelectPlaylistByPlaylistId(System.Int32 playlistId)
         {
             using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT [PlaylistId], [Name] FROM [dbo].[Playlist] WHERE [PlaylistId] = @PlaylistId"))
@@ -2554,6 +2797,33 @@ namespace Generator.SimpleDataAccess.Samples
                             result.Add(ReadPlaylistTrack(reader));
                         }
                         return result;
+                    }
+                }
+                finally
+                {
+                    PushConnection(command);
+                }
+            }
+        }
+
+        public int SelectPlaylistTrackCount()
+        {
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT Count(*) FROM [dbo].[PlaylistTrack]"))
+            {
+                try
+                {
+                    PopConnection(command);
+
+                    using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return reader.GetInt32(0);
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("Select count failed.");
+                        }
                     }
                 }
                 finally
@@ -2926,6 +3196,33 @@ namespace Generator.SimpleDataAccess.Samples
                             result.Add(ReadTrack(reader));
                         }
                         return result;
+                    }
+                }
+                finally
+                {
+                    PushConnection(command);
+                }
+            }
+        }
+
+        public int SelectTrackCount()
+        {
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT Count(*) FROM [dbo].[Track]"))
+            {
+                try
+                {
+                    PopConnection(command);
+
+                    using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return reader.GetInt32(0);
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("Select count failed.");
+                        }
                     }
                 }
                 finally

@@ -3,7 +3,8 @@
 	Nullable column filter support (accept null value)
 	Special column value support (UpdatedAt: GETUTCDATE, GETDATE)
 	Update concurrent support
-	Upsert, paged select and stored procedure support
+	Upsert, paged select, dynamic filter and stored procedure support
 	External or User friendly template support
-	Select WITH(NOLOCK) support
+	Select WITH(NOLOCK) and other transaction isolation support
 	Connection keep alive support (if transaction is not explicitly opened)
+	System type size support in SqlParameter (optional)

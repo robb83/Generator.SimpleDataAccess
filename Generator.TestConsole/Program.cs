@@ -35,6 +35,13 @@ namespace Generator.TestConsole
 
                 database.DeleteAlbumByAlbumId(album.AlbumId);
 
+                int genreCount = database.SelectGenreCount();
+                if (genreCount > 0)
+                {
+                    int genreIdentity;
+                    database.ExecuteInsertGenre("Favorite", out genreIdentity);
+                }
+
                 database.RollbackTransaction();
             }
         }

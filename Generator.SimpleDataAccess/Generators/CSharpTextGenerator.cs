@@ -146,6 +146,44 @@ namespace Generator.SimpleDataAccess.Generators
             code.CodeBlockEnd();
         }
 
+        public static void GenerateCountSelect(CodeStringBuilder code, TableInfo tableInfo)
+        {
+            String methodName = "Select" + tableInfo.ClassName + "Count";
+
+            code.AppendFormat("public int {1}()", tableInfo.ClassName, methodName);
+            code.CodeBlockBegin();
+
+            code.AppendFormat("using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(\"{0}\"))", SQLTextGenerator.GenerateSelectCount(tableInfo));
+            code.CodeBlockBegin();
+
+            code.Append("try");
+            code.CodeBlockBegin();
+            code.AppendLine("PopConnection(command);");
+            code.AppendLine();
+
+            code.Append("using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())");
+            code.CodeBlockBegin();
+
+            code.Append("if (reader.Read())");
+            code.CodeBlockBegin();
+            code.AppendFormat("return reader.GetInt32(0);", tableInfo.ClassName);
+            code.CodeBlockEnd();
+            code.Append("else");
+            code.CodeBlockBegin();
+            code.Append("throw new InvalidOperationException(\"Select count failed.\");");
+            code.CodeBlockEnd();
+
+            code.CodeBlockEnd();
+            code.CodeBlockEnd();
+            code.Append("finally");
+            code.CodeBlockBegin();
+            code.Append("PushConnection(command);");
+            code.CodeBlockEnd();
+
+            code.CodeBlockEnd();
+            code.CodeBlockEnd();
+        }
+
         public static void GenerateSelectMethod(CodeStringBuilder code, TableInfo tableInfo, List<ColumnInfo> filteredColumns, bool singleResult)
         {
             String methodName = "Select" + tableInfo.ClassName;
@@ -458,7 +496,7 @@ namespace Generator.SimpleDataAccess.Generators
             code.AppendLine();
 
             // class - DataAccess wrapper
-            code.AppendLineFormat("public class {0} : IDisposable", schemaInfo.ClassName);
+            code.AppendLineFormat("public partial class {0} : IDisposable", schemaInfo.ClassName);
             code.CodeBlockBegin();
 
             code.AppendLine();
@@ -501,6 +539,9 @@ namespace Generator.SimpleDataAccess.Generators
                 code.AppendLine();
 
                 CSharpTextGenerator.GenerateSelectMethod(code, t, null, false);
+                code.AppendLine();
+
+                CSharpTextGenerator.GenerateCountSelect(code, t);
                 code.AppendLine();
 
                 Dictionary<String, Filter> filterColumnLists = new Dictionary<string, Filter>();
