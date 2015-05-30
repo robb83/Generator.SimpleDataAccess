@@ -148,7 +148,7 @@ namespace Generator.SimpleDataAccess.Samples
             entity.AlbumId = reader.GetInt32(0);
             entity.Title = reader.GetString(1);
             entity.ArtistId = reader.GetInt32(2);
-        return entity;
+            return entity;
         }
 
         public void UpsertAlbum(Album entity)
@@ -315,6 +315,36 @@ namespace Generator.SimpleDataAccess.Samples
             }
         }
 
+        public List<Album> SelectAlbumPaged(int firstIndex, int lastIndex)
+        {
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT * FROM ( SELECT [AlbumId], [Title], [ArtistId], ROW_NUMBER() OVER(ORDER BY [AlbumId]) AS _ROW_NUMBER FROM [dbo].[Album] ) AS T0 WHERE _ROW_NUMBER BETWEEN @__FirstIndex AND @__LastIndex ORDER BY [AlbumId]"))
+            {
+                try
+                {
+                    PopConnection(command);
+                    System.Data.SqlClient.SqlParameter pFirstIndex = command.Parameters.Add("@__FirstIndex", System.Data.SqlDbType.Int);
+                    pFirstIndex.Value = firstIndex;
+
+                    System.Data.SqlClient.SqlParameter pLastIndex = command.Parameters.Add("@__LastIndex", System.Data.SqlDbType.Int);
+                    pLastIndex.Value = lastIndex;
+
+                    using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
+                    {
+                        List<Album> result = new List<Album>();
+                        while (reader.Read())
+                        {
+                            result.Add(ReadAlbum(reader));
+                        }
+                        return result;
+                    }
+                }
+                finally
+                {
+                    PushConnection(command);
+                }
+            }
+        }
+
         public List<Album> SelectAlbumByArtistId(System.Int32 artistId)
         {
             using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT [AlbumId], [Title], [ArtistId] FROM [dbo].[Album] WHERE [ArtistId] = @ArtistId"))
@@ -418,7 +448,7 @@ namespace Generator.SimpleDataAccess.Samples
             Artist entity = new Artist();
             entity.ArtistId = reader.GetInt32(0);
             entity.Name = reader.GetString(1);
-        return entity;
+            return entity;
         }
 
         public void UpsertArtist(Artist entity)
@@ -597,6 +627,36 @@ namespace Generator.SimpleDataAccess.Samples
             }
         }
 
+        public List<Artist> SelectArtistPaged(int firstIndex, int lastIndex)
+        {
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT * FROM ( SELECT [ArtistId], [Name], ROW_NUMBER() OVER(ORDER BY [ArtistId]) AS _ROW_NUMBER FROM [dbo].[Artist] ) AS T0 WHERE _ROW_NUMBER BETWEEN @__FirstIndex AND @__LastIndex ORDER BY [ArtistId]"))
+            {
+                try
+                {
+                    PopConnection(command);
+                    System.Data.SqlClient.SqlParameter pFirstIndex = command.Parameters.Add("@__FirstIndex", System.Data.SqlDbType.Int);
+                    pFirstIndex.Value = firstIndex;
+
+                    System.Data.SqlClient.SqlParameter pLastIndex = command.Parameters.Add("@__LastIndex", System.Data.SqlDbType.Int);
+                    pLastIndex.Value = lastIndex;
+
+                    using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
+                    {
+                        List<Artist> result = new List<Artist>();
+                        while (reader.Read())
+                        {
+                            result.Add(ReadArtist(reader));
+                        }
+                        return result;
+                    }
+                }
+                finally
+                {
+                    PushConnection(command);
+                }
+            }
+        }
+
         public Artist SelectArtistByArtistId(System.Int32 artistId)
         {
             using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT [ArtistId], [Name] FROM [dbo].[Artist] WHERE [ArtistId] = @ArtistId"))
@@ -675,7 +735,7 @@ namespace Generator.SimpleDataAccess.Samples
             entity.FullName = reader.GetString(13);
             entity.Comment = reader.GetString(14);
             entity.FullDetail = reader.GetString(15);
-        return entity;
+            return entity;
         }
 
         public void UpsertCustomer(Customer entity)
@@ -1189,6 +1249,36 @@ namespace Generator.SimpleDataAccess.Samples
             }
         }
 
+        public List<Customer> SelectCustomerPaged(int firstIndex, int lastIndex)
+        {
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT * FROM ( SELECT [CustomerId], [FirstName], [LastName], [Company], [Address], [City], [State], [Country], [PostalCode], [Phone], [Fax], [Email], [SupportRepId], [FullName], [Comment], [FullDetail], ROW_NUMBER() OVER(ORDER BY [CustomerId]) AS _ROW_NUMBER FROM [dbo].[Customer] ) AS T0 WHERE _ROW_NUMBER BETWEEN @__FirstIndex AND @__LastIndex ORDER BY [CustomerId]"))
+            {
+                try
+                {
+                    PopConnection(command);
+                    System.Data.SqlClient.SqlParameter pFirstIndex = command.Parameters.Add("@__FirstIndex", System.Data.SqlDbType.Int);
+                    pFirstIndex.Value = firstIndex;
+
+                    System.Data.SqlClient.SqlParameter pLastIndex = command.Parameters.Add("@__LastIndex", System.Data.SqlDbType.Int);
+                    pLastIndex.Value = lastIndex;
+
+                    using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
+                    {
+                        List<Customer> result = new List<Customer>();
+                        while (reader.Read())
+                        {
+                            result.Add(ReadCustomer(reader));
+                        }
+                        return result;
+                    }
+                }
+                finally
+                {
+                    PushConnection(command);
+                }
+            }
+        }
+
         public List<Customer> SelectCustomerBySupportRepId(System.Nullable<System.Int32> supportRepId)
         {
             using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT [CustomerId], [FirstName], [LastName], [Company], [Address], [City], [State], [Country], [PostalCode], [Phone], [Fax], [Email], [SupportRepId], [FullName], [Comment], [FullDetail] FROM [dbo].[Customer] WHERE [SupportRepId] = @SupportRepId"))
@@ -1340,7 +1430,7 @@ namespace Generator.SimpleDataAccess.Samples
             entity.Phone = reader.GetString(12);
             entity.Fax = reader.GetString(13);
             entity.Email = reader.GetString(14);
-        return entity;
+            return entity;
         }
 
         public void UpsertEmployee(Employee entity)
@@ -1867,6 +1957,36 @@ namespace Generator.SimpleDataAccess.Samples
             }
         }
 
+        public List<Employee> SelectEmployeePaged(int firstIndex, int lastIndex)
+        {
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT * FROM ( SELECT [EmployeeId], [LastName], [FirstName], [Title], [ReportsTo], [BirthDate], [HireDate], [Address], [City], [State], [Country], [PostalCode], [Phone], [Fax], [Email], ROW_NUMBER() OVER(ORDER BY [EmployeeId]) AS _ROW_NUMBER FROM [dbo].[Employee] ) AS T0 WHERE _ROW_NUMBER BETWEEN @__FirstIndex AND @__LastIndex ORDER BY [EmployeeId]"))
+            {
+                try
+                {
+                    PopConnection(command);
+                    System.Data.SqlClient.SqlParameter pFirstIndex = command.Parameters.Add("@__FirstIndex", System.Data.SqlDbType.Int);
+                    pFirstIndex.Value = firstIndex;
+
+                    System.Data.SqlClient.SqlParameter pLastIndex = command.Parameters.Add("@__LastIndex", System.Data.SqlDbType.Int);
+                    pLastIndex.Value = lastIndex;
+
+                    using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
+                    {
+                        List<Employee> result = new List<Employee>();
+                        while (reader.Read())
+                        {
+                            result.Add(ReadEmployee(reader));
+                        }
+                        return result;
+                    }
+                }
+                finally
+                {
+                    PushConnection(command);
+                }
+            }
+        }
+
         public List<Employee> SelectEmployeeByReportsTo(System.Nullable<System.Int32> reportsTo)
         {
             using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT [EmployeeId], [LastName], [FirstName], [Title], [ReportsTo], [BirthDate], [HireDate], [Address], [City], [State], [Country], [PostalCode], [Phone], [Fax], [Email] FROM [dbo].[Employee] WHERE [ReportsTo] = @ReportsTo"))
@@ -1984,7 +2104,7 @@ namespace Generator.SimpleDataAccess.Samples
             Genre entity = new Genre();
             entity.GenreId = reader.GetInt32(0);
             entity.Name = reader.GetString(1);
-        return entity;
+            return entity;
         }
 
         public void UpsertGenre(Genre entity)
@@ -2163,6 +2283,36 @@ namespace Generator.SimpleDataAccess.Samples
             }
         }
 
+        public List<Genre> SelectGenrePaged(int firstIndex, int lastIndex)
+        {
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT * FROM ( SELECT [GenreId], [Name], ROW_NUMBER() OVER(ORDER BY [GenreId]) AS _ROW_NUMBER FROM [dbo].[Genre] ) AS T0 WHERE _ROW_NUMBER BETWEEN @__FirstIndex AND @__LastIndex ORDER BY [GenreId]"))
+            {
+                try
+                {
+                    PopConnection(command);
+                    System.Data.SqlClient.SqlParameter pFirstIndex = command.Parameters.Add("@__FirstIndex", System.Data.SqlDbType.Int);
+                    pFirstIndex.Value = firstIndex;
+
+                    System.Data.SqlClient.SqlParameter pLastIndex = command.Parameters.Add("@__LastIndex", System.Data.SqlDbType.Int);
+                    pLastIndex.Value = lastIndex;
+
+                    using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
+                    {
+                        List<Genre> result = new List<Genre>();
+                        while (reader.Read())
+                        {
+                            result.Add(ReadGenre(reader));
+                        }
+                        return result;
+                    }
+                }
+                finally
+                {
+                    PushConnection(command);
+                }
+            }
+        }
+
         public Genre SelectGenreByGenreId(System.Int32 genreId)
         {
             using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT [GenreId], [Name] FROM [dbo].[Genre] WHERE [GenreId] = @GenreId"))
@@ -2227,7 +2377,7 @@ namespace Generator.SimpleDataAccess.Samples
             entity.BillingCountry = reader.GetString(6);
             entity.BillingPostalCode = reader.GetString(7);
             entity.Total = reader.GetDecimal(8);
-        return entity;
+            return entity;
         }
 
         public void UpsertInvoice(Invoice entity)
@@ -2553,6 +2703,36 @@ namespace Generator.SimpleDataAccess.Samples
             }
         }
 
+        public List<Invoice> SelectInvoicePaged(int firstIndex, int lastIndex)
+        {
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT * FROM ( SELECT [InvoiceId], [CustomerId], [InvoiceDate], [BillingAddress], [BillingCity], [BillingState], [BillingCountry], [BillingPostalCode], [Total], ROW_NUMBER() OVER(ORDER BY [InvoiceId]) AS _ROW_NUMBER FROM [dbo].[Invoice] ) AS T0 WHERE _ROW_NUMBER BETWEEN @__FirstIndex AND @__LastIndex ORDER BY [InvoiceId]"))
+            {
+                try
+                {
+                    PopConnection(command);
+                    System.Data.SqlClient.SqlParameter pFirstIndex = command.Parameters.Add("@__FirstIndex", System.Data.SqlDbType.Int);
+                    pFirstIndex.Value = firstIndex;
+
+                    System.Data.SqlClient.SqlParameter pLastIndex = command.Parameters.Add("@__LastIndex", System.Data.SqlDbType.Int);
+                    pLastIndex.Value = lastIndex;
+
+                    using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
+                    {
+                        List<Invoice> result = new List<Invoice>();
+                        while (reader.Read())
+                        {
+                            result.Add(ReadInvoice(reader));
+                        }
+                        return result;
+                    }
+                }
+                finally
+                {
+                    PushConnection(command);
+                }
+            }
+        }
+
         public List<Invoice> SelectInvoiceByCustomerId(System.Int32 customerId)
         {
             using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT [InvoiceId], [CustomerId], [InvoiceDate], [BillingAddress], [BillingCity], [BillingState], [BillingCountry], [BillingPostalCode], [Total] FROM [dbo].[Invoice] WHERE [CustomerId] = @CustomerId"))
@@ -2659,7 +2839,7 @@ namespace Generator.SimpleDataAccess.Samples
             entity.TrackId = reader.GetInt32(2);
             entity.UnitPrice = reader.GetDecimal(3);
             entity.Quantity = reader.GetInt32(4);
-        return entity;
+            return entity;
         }
 
         public void UpsertInvoiceLine(InvoiceLine entity)
@@ -2844,6 +3024,36 @@ namespace Generator.SimpleDataAccess.Samples
             }
         }
 
+        public List<InvoiceLine> SelectInvoiceLinePaged(int firstIndex, int lastIndex)
+        {
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT * FROM ( SELECT [InvoiceLineId], [InvoiceId], [TrackId], [UnitPrice], [Quantity], ROW_NUMBER() OVER(ORDER BY [InvoiceLineId]) AS _ROW_NUMBER FROM [dbo].[InvoiceLine] ) AS T0 WHERE _ROW_NUMBER BETWEEN @__FirstIndex AND @__LastIndex ORDER BY [InvoiceLineId]"))
+            {
+                try
+                {
+                    PopConnection(command);
+                    System.Data.SqlClient.SqlParameter pFirstIndex = command.Parameters.Add("@__FirstIndex", System.Data.SqlDbType.Int);
+                    pFirstIndex.Value = firstIndex;
+
+                    System.Data.SqlClient.SqlParameter pLastIndex = command.Parameters.Add("@__LastIndex", System.Data.SqlDbType.Int);
+                    pLastIndex.Value = lastIndex;
+
+                    using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
+                    {
+                        List<InvoiceLine> result = new List<InvoiceLine>();
+                        while (reader.Read())
+                        {
+                            result.Add(ReadInvoiceLine(reader));
+                        }
+                        return result;
+                    }
+                }
+                finally
+                {
+                    PushConnection(command);
+                }
+            }
+        }
+
         public List<InvoiceLine> SelectInvoiceLineByInvoiceId(System.Int32 invoiceId)
         {
             using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT [InvoiceLineId], [InvoiceId], [TrackId], [UnitPrice], [Quantity] FROM [dbo].[InvoiceLine] WHERE [InvoiceId] = @InvoiceId"))
@@ -2993,7 +3203,7 @@ namespace Generator.SimpleDataAccess.Samples
             MediaType entity = new MediaType();
             entity.MediaTypeId = reader.GetInt32(0);
             entity.Name = reader.GetString(1);
-        return entity;
+            return entity;
         }
 
         public void UpsertMediaType(MediaType entity)
@@ -3172,6 +3382,36 @@ namespace Generator.SimpleDataAccess.Samples
             }
         }
 
+        public List<MediaType> SelectMediaTypePaged(int firstIndex, int lastIndex)
+        {
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT * FROM ( SELECT [MediaTypeId], [Name], ROW_NUMBER() OVER(ORDER BY [MediaTypeId]) AS _ROW_NUMBER FROM [dbo].[MediaType] ) AS T0 WHERE _ROW_NUMBER BETWEEN @__FirstIndex AND @__LastIndex ORDER BY [MediaTypeId]"))
+            {
+                try
+                {
+                    PopConnection(command);
+                    System.Data.SqlClient.SqlParameter pFirstIndex = command.Parameters.Add("@__FirstIndex", System.Data.SqlDbType.Int);
+                    pFirstIndex.Value = firstIndex;
+
+                    System.Data.SqlClient.SqlParameter pLastIndex = command.Parameters.Add("@__LastIndex", System.Data.SqlDbType.Int);
+                    pLastIndex.Value = lastIndex;
+
+                    using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
+                    {
+                        List<MediaType> result = new List<MediaType>();
+                        while (reader.Read())
+                        {
+                            result.Add(ReadMediaType(reader));
+                        }
+                        return result;
+                    }
+                }
+                finally
+                {
+                    PushConnection(command);
+                }
+            }
+        }
+
         public MediaType SelectMediaTypeByMediaTypeId(System.Int32 mediaTypeId)
         {
             using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT [MediaTypeId], [Name] FROM [dbo].[MediaType] WHERE [MediaTypeId] = @MediaTypeId"))
@@ -3229,7 +3469,7 @@ namespace Generator.SimpleDataAccess.Samples
             Playlist entity = new Playlist();
             entity.PlaylistId = reader.GetInt32(0);
             entity.Name = reader.GetString(1);
-        return entity;
+            return entity;
         }
 
         public void UpsertPlaylist(Playlist entity)
@@ -3408,6 +3648,36 @@ namespace Generator.SimpleDataAccess.Samples
             }
         }
 
+        public List<Playlist> SelectPlaylistPaged(int firstIndex, int lastIndex)
+        {
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT * FROM ( SELECT [PlaylistId], [Name], ROW_NUMBER() OVER(ORDER BY [PlaylistId]) AS _ROW_NUMBER FROM [dbo].[Playlist] ) AS T0 WHERE _ROW_NUMBER BETWEEN @__FirstIndex AND @__LastIndex ORDER BY [PlaylistId]"))
+            {
+                try
+                {
+                    PopConnection(command);
+                    System.Data.SqlClient.SqlParameter pFirstIndex = command.Parameters.Add("@__FirstIndex", System.Data.SqlDbType.Int);
+                    pFirstIndex.Value = firstIndex;
+
+                    System.Data.SqlClient.SqlParameter pLastIndex = command.Parameters.Add("@__LastIndex", System.Data.SqlDbType.Int);
+                    pLastIndex.Value = lastIndex;
+
+                    using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
+                    {
+                        List<Playlist> result = new List<Playlist>();
+                        while (reader.Read())
+                        {
+                            result.Add(ReadPlaylist(reader));
+                        }
+                        return result;
+                    }
+                }
+                finally
+                {
+                    PushConnection(command);
+                }
+            }
+        }
+
         public Playlist SelectPlaylistByPlaylistId(System.Int32 playlistId)
         {
             using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT [PlaylistId], [Name] FROM [dbo].[Playlist] WHERE [PlaylistId] = @PlaylistId"))
@@ -3465,7 +3735,7 @@ namespace Generator.SimpleDataAccess.Samples
             PlaylistTrack entity = new PlaylistTrack();
             entity.PlaylistId = reader.GetInt32(0);
             entity.TrackId = reader.GetInt32(1);
-        return entity;
+            return entity;
         }
 
         public void UpsertPlaylistTrack(PlaylistTrack entity)
@@ -3606,6 +3876,36 @@ namespace Generator.SimpleDataAccess.Samples
                         {
                             throw new InvalidOperationException("Select count failed.");
                         }
+                    }
+                }
+                finally
+                {
+                    PushConnection(command);
+                }
+            }
+        }
+
+        public List<PlaylistTrack> SelectPlaylistTrackPaged(int firstIndex, int lastIndex)
+        {
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT * FROM ( SELECT [PlaylistId], [TrackId], ROW_NUMBER() OVER(ORDER BY [PlaylistId], [TrackId]) AS _ROW_NUMBER FROM [dbo].[PlaylistTrack] ) AS T0 WHERE _ROW_NUMBER BETWEEN @__FirstIndex AND @__LastIndex ORDER BY [PlaylistId], [TrackId]"))
+            {
+                try
+                {
+                    PopConnection(command);
+                    System.Data.SqlClient.SqlParameter pFirstIndex = command.Parameters.Add("@__FirstIndex", System.Data.SqlDbType.Int);
+                    pFirstIndex.Value = firstIndex;
+
+                    System.Data.SqlClient.SqlParameter pLastIndex = command.Parameters.Add("@__LastIndex", System.Data.SqlDbType.Int);
+                    pLastIndex.Value = lastIndex;
+
+                    using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
+                    {
+                        List<PlaylistTrack> result = new List<PlaylistTrack>();
+                        while (reader.Read())
+                        {
+                            result.Add(ReadPlaylistTrack(reader));
+                        }
+                        return result;
                     }
                 }
                 finally
@@ -3798,7 +4098,7 @@ namespace Generator.SimpleDataAccess.Samples
                 entity.Bytes = reader.GetInt32(7);
             }
             entity.UnitPrice = reader.GetDecimal(8);
-        return entity;
+            return entity;
         }
 
         public void UpsertTrack(Track entity)
@@ -4094,6 +4394,36 @@ namespace Generator.SimpleDataAccess.Samples
                         {
                             throw new InvalidOperationException("Select count failed.");
                         }
+                    }
+                }
+                finally
+                {
+                    PushConnection(command);
+                }
+            }
+        }
+
+        public List<Track> SelectTrackPaged(int firstIndex, int lastIndex)
+        {
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("SELECT * FROM ( SELECT [TrackId], [Name], [AlbumId], [MediaTypeId], [GenreId], [Composer], [Milliseconds], [Bytes], [UnitPrice], ROW_NUMBER() OVER(ORDER BY [TrackId]) AS _ROW_NUMBER FROM [dbo].[Track] ) AS T0 WHERE _ROW_NUMBER BETWEEN @__FirstIndex AND @__LastIndex ORDER BY [TrackId]"))
+            {
+                try
+                {
+                    PopConnection(command);
+                    System.Data.SqlClient.SqlParameter pFirstIndex = command.Parameters.Add("@__FirstIndex", System.Data.SqlDbType.Int);
+                    pFirstIndex.Value = firstIndex;
+
+                    System.Data.SqlClient.SqlParameter pLastIndex = command.Parameters.Add("@__LastIndex", System.Data.SqlDbType.Int);
+                    pLastIndex.Value = lastIndex;
+
+                    using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
+                    {
+                        List<Track> result = new List<Track>();
+                        while (reader.Read())
+                        {
+                            result.Add(ReadTrack(reader));
+                        }
+                        return result;
                     }
                 }
                 finally

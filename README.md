@@ -48,6 +48,20 @@
 
         database.UpsertArtist(artist2);
 
+        int artitsCount = database.SelectArtistCount();
+        int pageSize = 10, pageIndex = 0;
+        while(true)
+        {
+            List<Artist> page = database.SelectArtistPaged(pageIndex * pageSize + 1, pageIndex * pageSize + pageSize - 1);
+
+            if (page.Count == 0)
+            {
+                break;
+            }
+
+            ++pageIndex;
+        }
+
         database.RollbackTransaction();
     }
 

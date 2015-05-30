@@ -190,6 +190,52 @@ namespace Generator.SimpleDataAccess.Generators
             code.CodeBlockEnd(); // method
         }
 
+        public static void GenerateSelectPagedMethod(CodeStringBuilder code, TableInfo tableInfo)
+        {
+            List<ColumnInfo> key = tableInfo.GetFirstPrimaryKey();
+
+            if (key == null || key.Count == 0)
+            {
+                return;
+            }
+
+            String firstIndexParameterName = "@__FirstIndex", firstIndexLocalVariableName = "pFirstIndex", firstIndex = "firstIndex";
+            String lastIndexParameterName = "@__LastIndex", lastIndexLocalVariableName = "pLastIndex", lastIndex = "lastIndex";
+
+            code.CodeBlockBegin("public List<{0}> Select{0}Paged(int {1}, int {2})", tableInfo.ClassName, firstIndex, lastIndex);
+
+            code.CodeBlockBegin("using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(\"{0}\"))", SQLTextGenerator.GenerateSelectPaged(tableInfo, firstIndexParameterName, lastIndexParameterName, key));
+
+            code.CodeBlockBegin("try");
+            code.AppendLine("PopConnection(command);");
+
+            GenerateSqlParameter(code, firstIndex, firstIndexLocalVariableName, firstIndexParameterName, System.Data.SqlDbType.Int, false, false, -1);
+            code.AppendLine();
+
+            GenerateSqlParameter(code, lastIndex, lastIndexLocalVariableName, lastIndexParameterName, System.Data.SqlDbType.Int, false, false, -1);
+            code.AppendLine();
+
+            code.CodeBlockBegin("using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())");
+
+            code.AppendLineFormat("List<{0}> result = new List<{0}>();", tableInfo.ClassName);
+
+            code.CodeBlockBegin("while (reader.Read())");
+            code.AppendFormat("result.Add(Read{0}(reader));", tableInfo.ClassName);
+            code.CodeBlockEnd();
+
+            code.Append("return result;");
+
+            code.CodeBlockEnd(); // using
+            code.CodeBlockEnd(); // try
+
+            code.CodeBlockBegin("finally");
+            code.Append("PushConnection(command);");
+            code.CodeBlockEnd();
+
+            code.CodeBlockEnd(); // using
+            code.CodeBlockEnd(); // method
+        }
+
         public static void GenerateSelectMethod(CodeStringBuilder code, TableInfo tableInfo, List<ColumnInfo> filteredColumns, bool singleResult)
         {
             String methodName = "Select" + tableInfo.ClassName;
@@ -282,10 +328,15 @@ namespace Generator.SimpleDataAccess.Generators
         {
             switch(dbType)
             {
+                case System.Data.SqlDbType.Binary:
+                case System.Data.SqlDbType.Char:
+                case System.Data.SqlDbType.Image:
                 case System.Data.SqlDbType.NText:
                 case System.Data.SqlDbType.NVarChar:
-                case System.Data.SqlDbType.VarChar:
+                case System.Data.SqlDbType.NChar:
                 case System.Data.SqlDbType.Text:
+                case System.Data.SqlDbType.VarChar:
+                case System.Data.SqlDbType.VarBinary:
                     return true;
                 default:
                     return false;
@@ -638,6 +689,9 @@ namespace Generator.SimpleDataAccess.Generators
                 code.AppendLine();
 
                 CSharpTextGenerator.GenerateCountSelect(code, t);
+                code.AppendLine();
+
+                CSharpTextGenerator.GenerateSelectPagedMethod(code, t);
                 code.AppendLine();
 
                 Dictionary<String, Filter> filterColumnLists = new Dictionary<string, Filter>();

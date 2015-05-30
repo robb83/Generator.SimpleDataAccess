@@ -86,12 +86,12 @@ namespace Generator.SimpleDataAccess
 
         public void CodeBlockEnd(String chunk = null)
         {
-            this.Pop();
-
             if (chunk != null)
             {
                 this.Append(chunk);
             }
+
+            this.Pop();
 
             if (!this.endWithNewLine)
             {
