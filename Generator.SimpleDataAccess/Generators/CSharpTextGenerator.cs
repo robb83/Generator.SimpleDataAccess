@@ -456,23 +456,21 @@ namespace Generator.SimpleDataAccess.Generators
             code.CodeBlockEnd(); // method
         }
 
-        public static void GenerateUpdateMethod(CodeStringBuilder code, TableInfo tableInfo)
+        public static void GenerateUpdateMethod(CodeStringBuilder code, String methodName, String entityTypeName, String script, List<ColumnInfo> key, List<ColumnInfo> insertableColumns, List<ColumnInfo> computedColumns)
         {
-            List<ColumnInfo> key = tableInfo.GetFirstPrimaryKey();
-            
-            code.CodeBlockBegin("public void Update{0}({0} entity)", tableInfo.ClassName);
+            code.CodeBlockBegin("public void {0}({1} entity)", methodName, entityTypeName);
             
             code.CodeBlockBegin("if (entity == null)");
             code.Append("throw new ArgumentNullException(\"entity\");");
             code.CodeBlockEnd();
             code.AppendLine();
             
-            code.CodeBlockBegin("using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(\"{0}\"))", SQLTextGenerator.GenerateUpdate(tableInfo, key));
+            code.CodeBlockBegin("using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(\"{0}\"))", script);
             
             code.CodeBlockBegin("try");
             code.AppendLine("PopConnection(command);");
 
-            foreach (ColumnInfo columnInfo in tableInfo.Columns)
+            foreach (ColumnInfo columnInfo in key)
             {
                 GenerateSqlParameter(
                     code,
@@ -481,19 +479,44 @@ namespace Generator.SimpleDataAccess.Generators
                     columnInfo.ParameterName,
                     columnInfo.DbType,
                     columnInfo.IsNullable,
-                    columnInfo.IsComputed,
+                    false,
                     columnInfo.MaxLength);
                 code.AppendLine();
             }
-            
+
+            foreach (ColumnInfo columnInfo in insertableColumns)
+            {
+                GenerateSqlParameter(
+                    code,
+                    String.Format("entity.{0}", columnInfo.PropertyName),
+                    columnInfo.LocalParameterVariableName,
+                    columnInfo.ParameterName,
+                    columnInfo.DbType,
+                    columnInfo.IsNullable,
+                    false,
+                    columnInfo.MaxLength);
+                code.AppendLine();
+            }
+
+            foreach (ColumnInfo columnInfo in computedColumns)
+            {
+                GenerateSqlParameter(
+                    code,
+                    String.Format("entity.{0}", columnInfo.PropertyName),
+                    columnInfo.LocalParameterVariableName,
+                    columnInfo.ParameterName,
+                    columnInfo.DbType,
+                    columnInfo.IsNullable,
+                    true,
+                    columnInfo.MaxLength);
+                code.AppendLine();
+            }
+
             code.CodeBlockBegin("if (command.ExecuteNonQuery() > 0)");
 
-            foreach (var columnInfo in tableInfo.Columns)
+            foreach (var columnInfo in computedColumns)
             {
-                if (columnInfo.IsComputed)
-                {
-                    GenerateColumnMapperFromSqlParameter(code, columnInfo);
-                }
+                GenerateColumnMapperFromSqlParameter(code, columnInfo);
             }
 
             code.CodeBlockEnd();
@@ -510,44 +533,59 @@ namespace Generator.SimpleDataAccess.Generators
             code.CodeBlockEnd(); // using command
             code.CodeBlockEnd(); // method
         }
-
-        public static void GenerateInsertMethod(CodeStringBuilder code, TableInfo tableInfo)
+        
+        public static void GenerateInsertMethod(CodeStringBuilder code, String methodName, String entityTypeName, String script, List<ColumnInfo> insertableColumns, List<ColumnInfo> computedColumns)
         {
-            code.CodeBlockBegin("public void Insert{0}({0} entity)", tableInfo.ClassName);
-            
+            code.CodeBlockBegin("public void {0}({1} entity)", methodName, entityTypeName);
+
             code.CodeBlockBegin("if (entity == null)");
             code.Append("throw new ArgumentNullException(\"entity\");");
             code.CodeBlockEnd();
             code.AppendLine();
-            
-            code.CodeBlockBegin("using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(\"{0}\"))", SQLTextGenerator.GenerateInsert(tableInfo));
 
-            code.Append("try");
-            code.CodeBlockBegin();
+            code.CodeBlockBegin("using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(\"{0}\"))", script);
+            
+            code.CodeBlockBegin("try");
             code.AppendLine("PopConnection(command);");
 
-            foreach (ColumnInfo columnInfo in tableInfo.Columns)
+            foreach (ColumnInfo columnInfo in insertableColumns)
             {
+                if (columnInfo.IsComputed || columnInfo.IsIdentity)
+                {
+                    throw new NotSupportedException("Computed columns are not insertable.");
+                }
+
                 GenerateSqlParameter(
-                    code, 
-                    String.Format("entity.{0}", columnInfo.PropertyName), 
-                    columnInfo.LocalParameterVariableName, 
-                    columnInfo.ParameterName, 
-                    columnInfo.DbType, 
-                    columnInfo.IsNullable, 
-                    columnInfo.IsIdentity || columnInfo.IsComputed,
+                    code,
+                    String.Format("entity.{0}", columnInfo.PropertyName),
+                    columnInfo.LocalParameterVariableName,
+                    columnInfo.ParameterName,
+                    columnInfo.DbType,
+                    columnInfo.IsNullable,
+                    false,
                     columnInfo.MaxLength);
                 code.AppendLine();
             }
-            
+
+            foreach (ColumnInfo columnInfo in computedColumns)
+            {
+                GenerateSqlParameter(
+                    code,
+                    String.Format("entity.{0}", columnInfo.PropertyName),
+                    columnInfo.LocalParameterVariableName,
+                    columnInfo.ParameterName,
+                    columnInfo.DbType,
+                    columnInfo.IsNullable,
+                    true,
+                    columnInfo.MaxLength);
+                code.AppendLine();
+            }
+
             code.CodeBlockBegin("if (command.ExecuteNonQuery() > 0)");
 
-            foreach (var columnInfo in tableInfo.Columns)
+            foreach (var columnInfo in computedColumns)
             {
-                if (columnInfo.IsIdentity || columnInfo.IsComputed)
-                {
-                    GenerateColumnMapperFromSqlParameter(code, columnInfo);
-                }
+                GenerateColumnMapperFromSqlParameter(code, columnInfo);
             }
 
             code.CodeBlockEnd();
@@ -624,247 +662,5 @@ namespace Generator.SimpleDataAccess.Generators
             code.CodeBlockEnd(); // method
         }
 
-        public static void GenerateDatabaseAccessCode(DatabaseSchemaInfo schemaInfo, String outputFilename)
-        {
-            CodeStringBuilder code = new CodeStringBuilder();
-
-            // usings
-            code.AppendLine("using System;");
-            code.AppendLine("using System.Collections.Generic;");
-            code.AppendLine();
-
-            // namespace
-            code.CodeBlockBegin("namespace {0}", schemaInfo.Namespace);
-
-            // model
-            code.AppendLine("#region Models");
-            code.AppendLine();
-            foreach (var t in schemaInfo.Tables)
-            {
-                CSharpTextGenerator.GenerateModel(code, t);
-                code.AppendLine();
-            }
-            code.AppendLine("#endregion");
-            code.AppendLine();
-
-            // class - DataAccess wrapper
-            code.CodeBlockBegin("public partial class {0} : IDisposable", schemaInfo.ClassName);
-
-            // variable
-            code.AppendLine();
-            code.AppendLine("private System.Data.SqlClient.SqlConnection connection;");
-            code.AppendLine("private System.Data.SqlClient.SqlTransaction transaction;");
-            code.AppendLine("private int transactionCounter;");
-            code.AppendLine("private String connectionString;");
-            code.AppendLine("private bool externalResource;");
-            code.AppendLine();
-
-            // constructor 1
-            code.AppendFormat("public {0}(String connectionString)", schemaInfo.ClassName);
-            code.CodeBlockBegin();
-            code.AppendLine("this.externalResource = false;");
-            code.AppendLine("this.connectionString = connectionString;");
-            code.CodeBlockEnd();
-            code.AppendLine();
-
-            // constructor 2
-            code.AppendFormat("public {0}(System.Data.SqlClient.SqlConnection connection, System.Data.SqlClient.SqlTransaction transaction)", schemaInfo.ClassName);
-            code.CodeBlockBegin();
-            code.AppendLine("this.externalResource = true;");
-            code.AppendLine("this.connection = connection;");
-            code.AppendLine("this.transaction = transaction;");
-            code.CodeBlockEnd();
-            code.AppendLine();
-
-            foreach (var t in schemaInfo.Tables)
-            {
-                code.AppendLineFormat("#region Upsert, Insert, Update, Delete, Select, Mapping - {0}", t.ToString());
-                code.AppendLine();
-
-                CSharpTextGenerator.GenerateMapping(code, t);
-                code.AppendLine();
-
-                CSharpTextGenerator.GenerateUpsertMethod(code, t);
-                code.AppendLine();
-
-                CSharpTextGenerator.GenerateInsertMethod(code, t);
-                code.AppendLine();
-
-                CSharpTextGenerator.GenerateUpdateMethod(code, t);
-                code.AppendLine();
-
-                CSharpTextGenerator.GenerateSelectMethod(code, t, null, false);
-                code.AppendLine();
-
-                CSharpTextGenerator.GenerateCountSelect(code, t);
-                code.AppendLine();
-
-                CSharpTextGenerator.GenerateSelectPagedMethod(code, t);
-                code.AppendLine();
-
-                Dictionary<String, Filter> filterColumnLists = new Dictionary<string, Filter>();
-                
-                foreach (var i in t.Indexes)
-                {
-                    String key = String.Join(":", i.Columns.OrderBy(ci => ci.Name).Select(ci => ci.Name));
-                    if (!filterColumnLists.ContainsKey(key))
-                    {
-                        filterColumnLists.Add(key, new Filter
-                        {
-                            IsUnique = i.IsUnique,
-                            Columns = i.Columns
-                        });
-                    }
-                }
-
-                foreach (var fk in t.ForeignKeys)
-                {
-
-                    String key = String.Join(":", fk.Columns.OrderBy(ci => ci.Name).Select(ci => ci.Name));
-                    if (!filterColumnLists.ContainsKey(key))
-                    {
-                        filterColumnLists.Add(key, new Filter
-                        {
-                            IsUnique = false,
-                            Columns = fk.Columns
-                        });
-                    }
-                }
-
-                foreach (KeyValuePair<String, Filter> keyValue in filterColumnLists)
-                {
-                    CSharpTextGenerator.GenerateSelectMethod(code, t, keyValue.Value.Columns, keyValue.Value.IsUnique);
-                    code.AppendLine();
-
-                    CSharpTextGenerator.GenerateDeleteMethod(code, t, keyValue.Value.Columns);
-                    code.AppendLine();
-                }
-
-                code.AppendLine("#endregion");
-                code.AppendLine();
-            }
-
-            foreach(StoredProcedureInfo storedProcedureInfo in schemaInfo.StoredProcedures)
-            {
-                code.AppendLine("#region Stored Procedures");
-                code.AppendLine();
-
-                GenerateStoredProcedure(code, storedProcedureInfo);
-
-                code.AppendLine("#endregion");
-                code.AppendLine();
-            }
-
-            code.Append(@"
-private void PopConnection(System.Data.SqlClient.SqlCommand command)
-{
-    if (this.connection != null)
-    {
-        command.Connection = this.connection;
-        command.Transaction = this.transaction;
-    }
-    else
-    {
-        command.Connection = new System.Data.SqlClient.SqlConnection(this.connectionString);
-        command.Connection.Open();
-    }
-}
-
-private void PushConnection(System.Data.SqlClient.SqlCommand command)
-{
-    System.Data.SqlClient.SqlConnection connection = command.Connection;
-    System.Data.SqlClient.SqlTransaction transaction = command.Transaction;
-
-    command.Connection = null;
-    command.Transaction = null;
-
-    if (connection != null && this.connection != connection)
-    {
-        connection.Close();
-    }
-}
-
-public void BeginTransaction()
-{
-    if (this.connection == null)
-    {
-        this.connection = new System.Data.SqlClient.SqlConnection(this.connectionString);
-        this.connection.Open();
-    }
-
-    if (this.transaction == null)
-    {
-        this.transaction = this.connection.BeginTransaction();
-    }
-
-    ++this.transactionCounter;
-}
-
-public void CommitTransaction()
-{
-    if (this.transaction == null || this.transactionCounter <= 0)
-    {
-        throw new InvalidOperationException(""currentTransaction"");
-    }
-
-    --this.transactionCounter;
-
-    if (this.transactionCounter == 0)
-    {
-        this.transaction.Commit();
-        this.transaction = null;
-    }
-}
-
-public void RollbackTransaction()
-{
-    if (this.transaction == null || this.transactionCounter <= 0)
-    {
-        throw new InvalidOperationException(""currentTransaction"");
-    }
-
-    this.transactionCounter = 0;
-    this.transaction.Rollback();
-    this.transaction = null;
-}
-
-public void Dispose()
-{
-    if (this.externalResource)
-    {
-        return;
-    }
-
-    try
-    {
-        if (this.transaction != null)
-        {
-            this.transaction.Rollback();
-            this.transaction = null;
-            this.transactionCounter = 0;
-        }
-    }
-    finally
-    {
-        if (this.connection != null)
-        {
-            this.connection.Close();
-            this.connection = null;
-        }
-    }
-}
-");
-
-            code.CodeBlockEnd();
-            code.CodeBlockEnd();
-
-            File.WriteAllText(outputFilename, code.ToString());
-        }
-
-        class Filter
-        {
-            public bool IsUnique;
-            public List<ColumnInfo> Columns;
-        }
     }
 }

@@ -39,6 +39,63 @@ namespace Generator.SimpleDataAccess.Model
             return null;
         }
 
+        public List<ColumnInfo> GetEditableColumns()
+        {
+            List<ColumnInfo> result = new List<ColumnInfo>();
+
+            foreach (ColumnInfo columnInfo in this.Columns)
+            {
+                if (!columnInfo.IsIdentity && !columnInfo.IsComputed)
+                {
+                    result.Add(columnInfo);
+                }
+            }
+
+            return result;
+        }
+
+        public List<ColumnInfo> GetIdentityColumns()
+        {
+            List<ColumnInfo> result = new List<ColumnInfo>();
+
+            foreach (ColumnInfo columnInfo in this.Columns)
+            {
+                if (columnInfo.IsIdentity)
+                {
+                    result.Add(columnInfo);
+                }
+            }
+
+            return result;
+        }
+
+        public List<ColumnInfo> GetComputedColumns()
+        {
+            List<ColumnInfo> result = new List<ColumnInfo>();
+
+            foreach (ColumnInfo columnInfo in this.Columns)
+            {
+                if (columnInfo.IsComputed)
+                {
+                    result.Add(columnInfo);
+                }
+            }
+
+            return result;
+        }
+
+        public List<ColumnInfo> GetKey()
+        {
+            List<ColumnInfo> result = GetFirstPrimaryKey();
+
+            if (result == null)
+            {
+                result = GetFirstUniqueKey();
+            }
+
+            return result;
+        }
+
         public List<ColumnInfo> GetFirstPrimaryKey()
         {
             foreach (var i in this.Indexes)

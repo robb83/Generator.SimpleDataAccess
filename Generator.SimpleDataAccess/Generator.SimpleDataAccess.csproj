@@ -44,6 +44,7 @@
     <Compile Include="CodeStringBuilder.cs" />
     <Compile Include="DatabaseSchemaExtractor.cs" />
     <Compile Include="Generators\CSharpTextGenerator.cs" />
+    <Compile Include="Generators\SimpleDataAccessGenerator.cs" />
     <Compile Include="Generators\SQLTextGenerator.cs" />
     <Compile Include="Model\ColumnInfo.cs" />
     <Compile Include="Model\ForeignKeyInfo.cs" />

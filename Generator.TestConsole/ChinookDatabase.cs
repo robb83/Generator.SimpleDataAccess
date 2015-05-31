@@ -203,14 +203,14 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
-                    System.Data.SqlClient.SqlParameter pAlbumId = command.Parameters.Add("@AlbumId", System.Data.SqlDbType.Int);
-                    pAlbumId.Direction = System.Data.ParameterDirection.Output;
-
                     System.Data.SqlClient.SqlParameter pTitle = command.Parameters.Add("@Title", System.Data.SqlDbType.NVarChar, 320);
                     pTitle.Value = entity.Title;
 
                     System.Data.SqlClient.SqlParameter pArtistId = command.Parameters.Add("@ArtistId", System.Data.SqlDbType.Int);
                     pArtistId.Value = entity.ArtistId;
+
+                    System.Data.SqlClient.SqlParameter pAlbumId = command.Parameters.Add("@AlbumId", System.Data.SqlDbType.Int);
+                    pAlbumId.Direction = System.Data.ParameterDirection.Output;
 
                     if (command.ExecuteNonQuery() > 0)
                     {
@@ -507,9 +507,6 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
-                    System.Data.SqlClient.SqlParameter pArtistId = command.Parameters.Add("@ArtistId", System.Data.SqlDbType.Int);
-                    pArtistId.Direction = System.Data.ParameterDirection.Output;
-
                     System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar, 240);
                     if (entity.Name == null)
                     {
@@ -519,6 +516,9 @@ namespace Generator.SimpleDataAccess.Samples
                     {
                         pName.Value = entity.Name;
                     }
+
+                    System.Data.SqlClient.SqlParameter pArtistId = command.Parameters.Add("@ArtistId", System.Data.SqlDbType.Int);
+                    pArtistId.Direction = System.Data.ParameterDirection.Output;
 
                     if (command.ExecuteNonQuery() > 0)
                     {
@@ -896,14 +896,11 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[Customer] ([FirstName], [LastName], [Company], [Address], [City], [State], [Country], [PostalCode], [Phone], [Fax], [Email], [SupportRepId], [Comment]) VALUES (@FirstName, @LastName, @Company, @Address, @City, @State, @Country, @PostalCode, @Phone, @Fax, @Email, @SupportRepId, @Comment); SELECT @CustomerId = [CustomerId], @FullName = [FullName], @FullDetail = [FullDetail] FROM [dbo].[Customer] WHERE [CustomerId] = SCOPE_IDENTITY()"))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[Customer] ([FirstName], [LastName], [Company], [Address], [City], [State], [Country], [PostalCode], [Phone], [Fax], [Email], [SupportRepId], [Comment]) VALUES (@FirstName, @LastName, @Company, @Address, @City, @State, @Country, @PostalCode, @Phone, @Fax, @Email, @SupportRepId, @Comment); SELECT @FullName = [FullName], @FullName = [FullName], @FullDetail = [FullDetail] FROM [dbo].[Customer] WHERE [CustomerId] = SCOPE_IDENTITY()"))
             {
                 try
                 {
                     PopConnection(command);
-                    System.Data.SqlClient.SqlParameter pCustomerId = command.Parameters.Add("@CustomerId", System.Data.SqlDbType.Int);
-                    pCustomerId.Direction = System.Data.ParameterDirection.Output;
-
                     System.Data.SqlClient.SqlParameter pFirstName = command.Parameters.Add("@FirstName", System.Data.SqlDbType.NVarChar, 80);
                     pFirstName.Value = entity.FirstName;
 
@@ -1003,9 +1000,6 @@ namespace Generator.SimpleDataAccess.Samples
                         pSupportRepId.Value = entity.SupportRepId;
                     }
 
-                    System.Data.SqlClient.SqlParameter pFullName = command.Parameters.Add("@FullName", System.Data.SqlDbType.NVarChar, 122);
-                    pFullName.Direction = System.Data.ParameterDirection.Output;
-
                     System.Data.SqlClient.SqlParameter pComment = command.Parameters.Add("@Comment", System.Data.SqlDbType.NVarChar, -1);
                     if (entity.Comment == null)
                     {
@@ -1015,6 +1009,12 @@ namespace Generator.SimpleDataAccess.Samples
                     {
                         pComment.Value = entity.Comment;
                     }
+
+                    System.Data.SqlClient.SqlParameter pCustomerId = command.Parameters.Add("@CustomerId", System.Data.SqlDbType.Int);
+                    pCustomerId.Direction = System.Data.ParameterDirection.Output;
+
+                    System.Data.SqlClient.SqlParameter pFullName = command.Parameters.Add("@FullName", System.Data.SqlDbType.NVarChar, 122);
+                    pFullName.Direction = System.Data.ParameterDirection.Output;
 
                     System.Data.SqlClient.SqlParameter pFullDetail = command.Parameters.Add("@FullDetail", System.Data.SqlDbType.NVarChar, -1);
                     pFullDetail.Direction = System.Data.ParameterDirection.Output;
@@ -1051,7 +1051,7 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("UPDATE [dbo].[Customer] SET [FirstName] = @FirstName, [LastName] = @LastName, [Company] = @Company, [Address] = @Address, [City] = @City, [State] = @State, [Country] = @Country, [PostalCode] = @PostalCode, [Phone] = @Phone, [Fax] = @Fax, [Email] = @Email, [SupportRepId] = @SupportRepId, [Comment] = @Comment WHERE [CustomerId] = @CustomerId; SELECT @FullName = [FullName], @FullDetail = [FullDetail] FROM [dbo].[Customer]  WHERE [CustomerId] = @CustomerId"))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("UPDATE [dbo].[Customer] SET [FirstName] = @FirstName, [LastName] = @LastName, [Company] = @Company, [Address] = @Address, [City] = @City, [State] = @State, [Country] = @Country, [PostalCode] = @PostalCode, [Phone] = @Phone, [Fax] = @Fax, [Email] = @Email, [SupportRepId] = @SupportRepId, [Comment] = @Comment WHERE [CustomerId] = @CustomerId;SELECT @FullName = [FullName], @FullDetail = [FullDetail] FROM [dbo].[Customer] WHERE [CustomerId] = @CustomerId"))
             {
                 try
                 {
@@ -1158,9 +1158,6 @@ namespace Generator.SimpleDataAccess.Samples
                         pSupportRepId.Value = entity.SupportRepId;
                     }
 
-                    System.Data.SqlClient.SqlParameter pFullName = command.Parameters.Add("@FullName", System.Data.SqlDbType.NVarChar, 122);
-                    pFullName.Direction = System.Data.ParameterDirection.Output;
-
                     System.Data.SqlClient.SqlParameter pComment = command.Parameters.Add("@Comment", System.Data.SqlDbType.NVarChar, -1);
                     if (entity.Comment == null)
                     {
@@ -1170,6 +1167,9 @@ namespace Generator.SimpleDataAccess.Samples
                     {
                         pComment.Value = entity.Comment;
                     }
+
+                    System.Data.SqlClient.SqlParameter pFullName = command.Parameters.Add("@FullName", System.Data.SqlDbType.NVarChar, 122);
+                    pFullName.Direction = System.Data.ParameterDirection.Output;
 
                     System.Data.SqlClient.SqlParameter pFullDetail = command.Parameters.Add("@FullDetail", System.Data.SqlDbType.NVarChar, -1);
                     pFullDetail.Direction = System.Data.ParameterDirection.Output;
@@ -1605,9 +1605,6 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
-                    System.Data.SqlClient.SqlParameter pEmployeeId = command.Parameters.Add("@EmployeeId", System.Data.SqlDbType.Int);
-                    pEmployeeId.Direction = System.Data.ParameterDirection.Output;
-
                     System.Data.SqlClient.SqlParameter pLastName = command.Parameters.Add("@LastName", System.Data.SqlDbType.NVarChar, 40);
                     pLastName.Value = entity.LastName;
 
@@ -1733,6 +1730,9 @@ namespace Generator.SimpleDataAccess.Samples
                     {
                         pEmail.Value = entity.Email;
                     }
+
+                    System.Data.SqlClient.SqlParameter pEmployeeId = command.Parameters.Add("@EmployeeId", System.Data.SqlDbType.Int);
+                    pEmployeeId.Direction = System.Data.ParameterDirection.Output;
 
                     if (command.ExecuteNonQuery() > 0)
                     {
@@ -2163,9 +2163,6 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
-                    System.Data.SqlClient.SqlParameter pGenreId = command.Parameters.Add("@GenreId", System.Data.SqlDbType.Int);
-                    pGenreId.Direction = System.Data.ParameterDirection.Output;
-
                     System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar, 240);
                     if (entity.Name == null)
                     {
@@ -2175,6 +2172,9 @@ namespace Generator.SimpleDataAccess.Samples
                     {
                         pName.Value = entity.Name;
                     }
+
+                    System.Data.SqlClient.SqlParameter pGenreId = command.Parameters.Add("@GenreId", System.Data.SqlDbType.Int);
+                    pGenreId.Direction = System.Data.ParameterDirection.Output;
 
                     if (command.ExecuteNonQuery() > 0)
                     {
@@ -2485,9 +2485,6 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
-                    System.Data.SqlClient.SqlParameter pInvoiceId = command.Parameters.Add("@InvoiceId", System.Data.SqlDbType.Int);
-                    pInvoiceId.Direction = System.Data.ParameterDirection.Output;
-
                     System.Data.SqlClient.SqlParameter pCustomerId = command.Parameters.Add("@CustomerId", System.Data.SqlDbType.Int);
                     pCustomerId.Value = entity.CustomerId;
 
@@ -2546,6 +2543,9 @@ namespace Generator.SimpleDataAccess.Samples
 
                     System.Data.SqlClient.SqlParameter pTotal = command.Parameters.Add("@Total", System.Data.SqlDbType.Decimal);
                     pTotal.Value = entity.Total;
+
+                    System.Data.SqlClient.SqlParameter pInvoiceId = command.Parameters.Add("@InvoiceId", System.Data.SqlDbType.Int);
+                    pInvoiceId.Direction = System.Data.ParameterDirection.Output;
 
                     if (command.ExecuteNonQuery() > 0)
                     {
@@ -2900,9 +2900,6 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
-                    System.Data.SqlClient.SqlParameter pInvoiceLineId = command.Parameters.Add("@InvoiceLineId", System.Data.SqlDbType.Int);
-                    pInvoiceLineId.Direction = System.Data.ParameterDirection.Output;
-
                     System.Data.SqlClient.SqlParameter pInvoiceId = command.Parameters.Add("@InvoiceId", System.Data.SqlDbType.Int);
                     pInvoiceId.Value = entity.InvoiceId;
 
@@ -2914,6 +2911,9 @@ namespace Generator.SimpleDataAccess.Samples
 
                     System.Data.SqlClient.SqlParameter pQuantity = command.Parameters.Add("@Quantity", System.Data.SqlDbType.Int);
                     pQuantity.Value = entity.Quantity;
+
+                    System.Data.SqlClient.SqlParameter pInvoiceLineId = command.Parameters.Add("@InvoiceLineId", System.Data.SqlDbType.Int);
+                    pInvoiceLineId.Direction = System.Data.ParameterDirection.Output;
 
                     if (command.ExecuteNonQuery() > 0)
                     {
@@ -3262,9 +3262,6 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
-                    System.Data.SqlClient.SqlParameter pMediaTypeId = command.Parameters.Add("@MediaTypeId", System.Data.SqlDbType.Int);
-                    pMediaTypeId.Direction = System.Data.ParameterDirection.Output;
-
                     System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar, 240);
                     if (entity.Name == null)
                     {
@@ -3274,6 +3271,9 @@ namespace Generator.SimpleDataAccess.Samples
                     {
                         pName.Value = entity.Name;
                     }
+
+                    System.Data.SqlClient.SqlParameter pMediaTypeId = command.Parameters.Add("@MediaTypeId", System.Data.SqlDbType.Int);
+                    pMediaTypeId.Direction = System.Data.ParameterDirection.Output;
 
                     if (command.ExecuteNonQuery() > 0)
                     {
@@ -3528,9 +3528,6 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
-                    System.Data.SqlClient.SqlParameter pPlaylistId = command.Parameters.Add("@PlaylistId", System.Data.SqlDbType.Int);
-                    pPlaylistId.Direction = System.Data.ParameterDirection.Output;
-
                     System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar, 240);
                     if (entity.Name == null)
                     {
@@ -3540,6 +3537,9 @@ namespace Generator.SimpleDataAccess.Samples
                     {
                         pName.Value = entity.Name;
                     }
+
+                    System.Data.SqlClient.SqlParameter pPlaylistId = command.Parameters.Add("@PlaylistId", System.Data.SqlDbType.Int);
+                    pPlaylistId.Direction = System.Data.ParameterDirection.Output;
 
                     if (command.ExecuteNonQuery() > 0)
                     {
@@ -3801,38 +3801,6 @@ namespace Generator.SimpleDataAccess.Samples
             }
         }
 
-        public void UpdatePlaylistTrack(PlaylistTrack entity)
-        {
-            if (entity == null)
-            {
-                throw new ArgumentNullException("entity");
-            }
-
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("UPDATE [dbo].[PlaylistTrack] SET  WHERE [PlaylistId] = @PlaylistId AND [TrackId] = @TrackId;"))
-            {
-                try
-                {
-                    PopConnection(command);
-                    System.Data.SqlClient.SqlParameter pPlaylistId = command.Parameters.Add("@PlaylistId", System.Data.SqlDbType.Int);
-                    pPlaylistId.Value = entity.PlaylistId;
-
-                    System.Data.SqlClient.SqlParameter pTrackId = command.Parameters.Add("@TrackId", System.Data.SqlDbType.Int);
-                    pTrackId.Value = entity.TrackId;
-
-                    if (command.ExecuteNonQuery() > 0)
-                    {
-                    }
-                    else
-                    {
-                        throw new InvalidOperationException("Update failed.");
-                    }
-                }
-                finally
-                {
-                    PushConnection(command);
-                }
-            }
-        }
 
         public List<PlaylistTrack> SelectPlaylistTrack()
         {
@@ -4199,9 +4167,6 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
-                    System.Data.SqlClient.SqlParameter pTrackId = command.Parameters.Add("@TrackId", System.Data.SqlDbType.Int);
-                    pTrackId.Direction = System.Data.ParameterDirection.Output;
-
                     System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar, 400);
                     pName.Value = entity.Name;
 
@@ -4253,6 +4218,9 @@ namespace Generator.SimpleDataAccess.Samples
 
                     System.Data.SqlClient.SqlParameter pUnitPrice = command.Parameters.Add("@UnitPrice", System.Data.SqlDbType.Decimal);
                     pUnitPrice.Value = entity.UnitPrice;
+
+                    System.Data.SqlClient.SqlParameter pTrackId = command.Parameters.Add("@TrackId", System.Data.SqlDbType.Int);
+                    pTrackId.Direction = System.Data.ParameterDirection.Output;
 
                     if (command.ExecuteNonQuery() > 0)
                     {

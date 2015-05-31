@@ -28,7 +28,7 @@ namespace Generator.SimpleDataAccess
                 schema.Namespace = ns;
                 schema.ClassName = dataAccessClassName;
 
-                CSharpTextGenerator.GenerateDatabaseAccessCode(schema, outputFileName);
+                SimpleDataAccessGenerator.GenerateDatabaseAccessCode(schema, outputFileName);
             }
         }
     }
