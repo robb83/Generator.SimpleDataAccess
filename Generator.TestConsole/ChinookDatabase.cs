@@ -163,12 +163,16 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @Title
                     System.Data.SqlClient.SqlParameter pTitle = command.Parameters.Add("@Title", System.Data.SqlDbType.NVarChar, 320);
                     pTitle.Value = entity.Title;
 
+                    // Parameter settings: @ArtistId
                     System.Data.SqlClient.SqlParameter pArtistId = command.Parameters.Add("@ArtistId", System.Data.SqlDbType.Int);
                     pArtistId.Value = entity.ArtistId;
 
+                    // Parameter settings: @AlbumId
                     System.Data.SqlClient.SqlParameter pAlbumId = command.Parameters.Add("@AlbumId", System.Data.SqlDbType.Int);
                     pAlbumId.Value = entity.AlbumId;
 
@@ -203,16 +207,21 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @Title
                     System.Data.SqlClient.SqlParameter pTitle = command.Parameters.Add("@Title", System.Data.SqlDbType.NVarChar, 320);
                     pTitle.Value = entity.Title;
 
+                    // Parameter settings: @ArtistId
                     System.Data.SqlClient.SqlParameter pArtistId = command.Parameters.Add("@ArtistId", System.Data.SqlDbType.Int);
                     pArtistId.Value = entity.ArtistId;
 
+                    // Parameter settings: @AlbumId
                     System.Data.SqlClient.SqlParameter pAlbumId = command.Parameters.Add("@AlbumId", System.Data.SqlDbType.Int);
                     pAlbumId.Direction = System.Data.ParameterDirection.Output;
 
                     command.ExecuteNonQuery();
+
                     if (pAlbumId.Value == System.DBNull.Value)
                     {
                         throw new InvalidOperationException("Invalid output value: pAlbumId");
@@ -238,12 +247,16 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @AlbumId
                     System.Data.SqlClient.SqlParameter pAlbumId = command.Parameters.Add("@AlbumId", System.Data.SqlDbType.Int);
                     pAlbumId.Value = entity.AlbumId;
 
+                    // Parameter settings: @Title
                     System.Data.SqlClient.SqlParameter pTitle = command.Parameters.Add("@Title", System.Data.SqlDbType.NVarChar, 320);
                     pTitle.Value = entity.Title;
 
+                    // Parameter settings: @ArtistId
                     System.Data.SqlClient.SqlParameter pArtistId = command.Parameters.Add("@ArtistId", System.Data.SqlDbType.Int);
                     pArtistId.Value = entity.ArtistId;
 
@@ -266,6 +279,7 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
                     using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
                     {
                         List<Album> result = new List<Album>();
@@ -317,6 +331,7 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
                     System.Data.SqlClient.SqlParameter pFirstIndex = command.Parameters.Add("@__FirstIndex", System.Data.SqlDbType.Int);
                     pFirstIndex.Value = firstIndex;
 
@@ -347,6 +362,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @ArtistId
                     System.Data.SqlClient.SqlParameter pArtistId = command.Parameters.Add("@ArtistId", System.Data.SqlDbType.Int);
                     pArtistId.Value = artistId;
 
@@ -374,6 +391,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @ArtistId
                     System.Data.SqlClient.SqlParameter pArtistId = command.Parameters.Add("@ArtistId", System.Data.SqlDbType.Int);
                     pArtistId.Value = artistId;
 
@@ -393,6 +412,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @AlbumId
                     System.Data.SqlClient.SqlParameter pAlbumId = command.Parameters.Add("@AlbumId", System.Data.SqlDbType.Int);
                     pAlbumId.Value = albumId;
 
@@ -422,6 +443,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @AlbumId
                     System.Data.SqlClient.SqlParameter pAlbumId = command.Parameters.Add("@AlbumId", System.Data.SqlDbType.Int);
                     pAlbumId.Value = albumId;
 
@@ -458,6 +481,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @Name
                     System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar, 240);
                     if (entity.Name == null)
                     {
@@ -468,6 +493,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pName.Value = entity.Name;
                     }
 
+                    // Parameter settings: @ArtistId
                     System.Data.SqlClient.SqlParameter pArtistId = command.Parameters.Add("@ArtistId", System.Data.SqlDbType.Int);
                     pArtistId.Value = entity.ArtistId;
 
@@ -502,6 +528,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @Name
                     System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar, 240);
                     if (entity.Name == null)
                     {
@@ -512,10 +540,12 @@ namespace Generator.SimpleDataAccess.Samples
                         pName.Value = entity.Name;
                     }
 
+                    // Parameter settings: @ArtistId
                     System.Data.SqlClient.SqlParameter pArtistId = command.Parameters.Add("@ArtistId", System.Data.SqlDbType.Int);
                     pArtistId.Direction = System.Data.ParameterDirection.Output;
 
                     command.ExecuteNonQuery();
+
                     if (pArtistId.Value == System.DBNull.Value)
                     {
                         throw new InvalidOperationException("Invalid output value: pArtistId");
@@ -541,9 +571,12 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @ArtistId
                     System.Data.SqlClient.SqlParameter pArtistId = command.Parameters.Add("@ArtistId", System.Data.SqlDbType.Int);
                     pArtistId.Value = entity.ArtistId;
 
+                    // Parameter settings: @Name
                     System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar, 240);
                     if (entity.Name == null)
                     {
@@ -573,6 +606,7 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
                     using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
                     {
                         List<Artist> result = new List<Artist>();
@@ -624,6 +658,7 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
                     System.Data.SqlClient.SqlParameter pFirstIndex = command.Parameters.Add("@__FirstIndex", System.Data.SqlDbType.Int);
                     pFirstIndex.Value = firstIndex;
 
@@ -654,6 +689,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @ArtistId
                     System.Data.SqlClient.SqlParameter pArtistId = command.Parameters.Add("@ArtistId", System.Data.SqlDbType.Int);
                     pArtistId.Value = artistId;
 
@@ -683,6 +720,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @ArtistId
                     System.Data.SqlClient.SqlParameter pArtistId = command.Parameters.Add("@ArtistId", System.Data.SqlDbType.Int);
                     pArtistId.Value = artistId;
 
@@ -740,12 +779,16 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @FirstName
                     System.Data.SqlClient.SqlParameter pFirstName = command.Parameters.Add("@FirstName", System.Data.SqlDbType.NVarChar, 80);
                     pFirstName.Value = entity.FirstName;
 
+                    // Parameter settings: @LastName
                     System.Data.SqlClient.SqlParameter pLastName = command.Parameters.Add("@LastName", System.Data.SqlDbType.NVarChar, 40);
                     pLastName.Value = entity.LastName;
 
+                    // Parameter settings: @Company
                     System.Data.SqlClient.SqlParameter pCompany = command.Parameters.Add("@Company", System.Data.SqlDbType.NVarChar, 160);
                     if (entity.Company == null)
                     {
@@ -756,6 +799,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pCompany.Value = entity.Company;
                     }
 
+                    // Parameter settings: @Address
                     System.Data.SqlClient.SqlParameter pAddress = command.Parameters.Add("@Address", System.Data.SqlDbType.NVarChar, 140);
                     if (entity.Address == null)
                     {
@@ -766,6 +810,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pAddress.Value = entity.Address;
                     }
 
+                    // Parameter settings: @City
                     System.Data.SqlClient.SqlParameter pCity = command.Parameters.Add("@City", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.City == null)
                     {
@@ -776,6 +821,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pCity.Value = entity.City;
                     }
 
+                    // Parameter settings: @State
                     System.Data.SqlClient.SqlParameter pState = command.Parameters.Add("@State", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.State == null)
                     {
@@ -786,6 +832,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pState.Value = entity.State;
                     }
 
+                    // Parameter settings: @Country
                     System.Data.SqlClient.SqlParameter pCountry = command.Parameters.Add("@Country", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.Country == null)
                     {
@@ -796,6 +843,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pCountry.Value = entity.Country;
                     }
 
+                    // Parameter settings: @PostalCode
                     System.Data.SqlClient.SqlParameter pPostalCode = command.Parameters.Add("@PostalCode", System.Data.SqlDbType.NVarChar, 20);
                     if (entity.PostalCode == null)
                     {
@@ -806,6 +854,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pPostalCode.Value = entity.PostalCode;
                     }
 
+                    // Parameter settings: @Phone
                     System.Data.SqlClient.SqlParameter pPhone = command.Parameters.Add("@Phone", System.Data.SqlDbType.NVarChar, 48);
                     if (entity.Phone == null)
                     {
@@ -816,6 +865,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pPhone.Value = entity.Phone;
                     }
 
+                    // Parameter settings: @Fax
                     System.Data.SqlClient.SqlParameter pFax = command.Parameters.Add("@Fax", System.Data.SqlDbType.NVarChar, 48);
                     if (entity.Fax == null)
                     {
@@ -826,9 +876,11 @@ namespace Generator.SimpleDataAccess.Samples
                         pFax.Value = entity.Fax;
                     }
 
+                    // Parameter settings: @Email
                     System.Data.SqlClient.SqlParameter pEmail = command.Parameters.Add("@Email", System.Data.SqlDbType.NVarChar, 120);
                     pEmail.Value = entity.Email;
 
+                    // Parameter settings: @SupportRepId
                     System.Data.SqlClient.SqlParameter pSupportRepId = command.Parameters.Add("@SupportRepId", System.Data.SqlDbType.Int);
                     if (entity.SupportRepId == null)
                     {
@@ -839,6 +891,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pSupportRepId.Value = entity.SupportRepId;
                     }
 
+                    // Parameter settings: @Comment
                     System.Data.SqlClient.SqlParameter pComment = command.Parameters.Add("@Comment", System.Data.SqlDbType.NVarChar, -1);
                     if (entity.Comment == null)
                     {
@@ -849,6 +902,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pComment.Value = entity.Comment;
                     }
 
+                    // Parameter settings: @CustomerId
                     System.Data.SqlClient.SqlParameter pCustomerId = command.Parameters.Add("@CustomerId", System.Data.SqlDbType.Int);
                     pCustomerId.Value = entity.CustomerId;
 
@@ -885,12 +939,16 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @FirstName
                     System.Data.SqlClient.SqlParameter pFirstName = command.Parameters.Add("@FirstName", System.Data.SqlDbType.NVarChar, 80);
                     pFirstName.Value = entity.FirstName;
 
+                    // Parameter settings: @LastName
                     System.Data.SqlClient.SqlParameter pLastName = command.Parameters.Add("@LastName", System.Data.SqlDbType.NVarChar, 40);
                     pLastName.Value = entity.LastName;
 
+                    // Parameter settings: @Company
                     System.Data.SqlClient.SqlParameter pCompany = command.Parameters.Add("@Company", System.Data.SqlDbType.NVarChar, 160);
                     if (entity.Company == null)
                     {
@@ -901,6 +959,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pCompany.Value = entity.Company;
                     }
 
+                    // Parameter settings: @Address
                     System.Data.SqlClient.SqlParameter pAddress = command.Parameters.Add("@Address", System.Data.SqlDbType.NVarChar, 140);
                     if (entity.Address == null)
                     {
@@ -911,6 +970,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pAddress.Value = entity.Address;
                     }
 
+                    // Parameter settings: @City
                     System.Data.SqlClient.SqlParameter pCity = command.Parameters.Add("@City", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.City == null)
                     {
@@ -921,6 +981,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pCity.Value = entity.City;
                     }
 
+                    // Parameter settings: @State
                     System.Data.SqlClient.SqlParameter pState = command.Parameters.Add("@State", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.State == null)
                     {
@@ -931,6 +992,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pState.Value = entity.State;
                     }
 
+                    // Parameter settings: @Country
                     System.Data.SqlClient.SqlParameter pCountry = command.Parameters.Add("@Country", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.Country == null)
                     {
@@ -941,6 +1003,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pCountry.Value = entity.Country;
                     }
 
+                    // Parameter settings: @PostalCode
                     System.Data.SqlClient.SqlParameter pPostalCode = command.Parameters.Add("@PostalCode", System.Data.SqlDbType.NVarChar, 20);
                     if (entity.PostalCode == null)
                     {
@@ -951,6 +1014,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pPostalCode.Value = entity.PostalCode;
                     }
 
+                    // Parameter settings: @Phone
                     System.Data.SqlClient.SqlParameter pPhone = command.Parameters.Add("@Phone", System.Data.SqlDbType.NVarChar, 48);
                     if (entity.Phone == null)
                     {
@@ -961,6 +1025,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pPhone.Value = entity.Phone;
                     }
 
+                    // Parameter settings: @Fax
                     System.Data.SqlClient.SqlParameter pFax = command.Parameters.Add("@Fax", System.Data.SqlDbType.NVarChar, 48);
                     if (entity.Fax == null)
                     {
@@ -971,9 +1036,11 @@ namespace Generator.SimpleDataAccess.Samples
                         pFax.Value = entity.Fax;
                     }
 
+                    // Parameter settings: @Email
                     System.Data.SqlClient.SqlParameter pEmail = command.Parameters.Add("@Email", System.Data.SqlDbType.NVarChar, 120);
                     pEmail.Value = entity.Email;
 
+                    // Parameter settings: @SupportRepId
                     System.Data.SqlClient.SqlParameter pSupportRepId = command.Parameters.Add("@SupportRepId", System.Data.SqlDbType.Int);
                     if (entity.SupportRepId == null)
                     {
@@ -984,6 +1051,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pSupportRepId.Value = entity.SupportRepId;
                     }
 
+                    // Parameter settings: @Comment
                     System.Data.SqlClient.SqlParameter pComment = command.Parameters.Add("@Comment", System.Data.SqlDbType.NVarChar, -1);
                     if (entity.Comment == null)
                     {
@@ -994,16 +1062,20 @@ namespace Generator.SimpleDataAccess.Samples
                         pComment.Value = entity.Comment;
                     }
 
+                    // Parameter settings: @CustomerId
                     System.Data.SqlClient.SqlParameter pCustomerId = command.Parameters.Add("@CustomerId", System.Data.SqlDbType.Int);
                     pCustomerId.Direction = System.Data.ParameterDirection.Output;
 
+                    // Parameter settings: @FullName
                     System.Data.SqlClient.SqlParameter pFullName = command.Parameters.Add("@FullName", System.Data.SqlDbType.NVarChar, 122);
                     pFullName.Direction = System.Data.ParameterDirection.Output;
 
+                    // Parameter settings: @FullDetail
                     System.Data.SqlClient.SqlParameter pFullDetail = command.Parameters.Add("@FullDetail", System.Data.SqlDbType.NVarChar, -1);
                     pFullDetail.Direction = System.Data.ParameterDirection.Output;
 
                     command.ExecuteNonQuery();
+
                     if (pCustomerId.Value == System.DBNull.Value)
                     {
                         throw new InvalidOperationException("Invalid output value: pCustomerId");
@@ -1042,15 +1114,20 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @CustomerId
                     System.Data.SqlClient.SqlParameter pCustomerId = command.Parameters.Add("@CustomerId", System.Data.SqlDbType.Int);
                     pCustomerId.Value = entity.CustomerId;
 
+                    // Parameter settings: @FirstName
                     System.Data.SqlClient.SqlParameter pFirstName = command.Parameters.Add("@FirstName", System.Data.SqlDbType.NVarChar, 80);
                     pFirstName.Value = entity.FirstName;
 
+                    // Parameter settings: @LastName
                     System.Data.SqlClient.SqlParameter pLastName = command.Parameters.Add("@LastName", System.Data.SqlDbType.NVarChar, 40);
                     pLastName.Value = entity.LastName;
 
+                    // Parameter settings: @Company
                     System.Data.SqlClient.SqlParameter pCompany = command.Parameters.Add("@Company", System.Data.SqlDbType.NVarChar, 160);
                     if (entity.Company == null)
                     {
@@ -1061,6 +1138,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pCompany.Value = entity.Company;
                     }
 
+                    // Parameter settings: @Address
                     System.Data.SqlClient.SqlParameter pAddress = command.Parameters.Add("@Address", System.Data.SqlDbType.NVarChar, 140);
                     if (entity.Address == null)
                     {
@@ -1071,6 +1149,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pAddress.Value = entity.Address;
                     }
 
+                    // Parameter settings: @City
                     System.Data.SqlClient.SqlParameter pCity = command.Parameters.Add("@City", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.City == null)
                     {
@@ -1081,6 +1160,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pCity.Value = entity.City;
                     }
 
+                    // Parameter settings: @State
                     System.Data.SqlClient.SqlParameter pState = command.Parameters.Add("@State", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.State == null)
                     {
@@ -1091,6 +1171,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pState.Value = entity.State;
                     }
 
+                    // Parameter settings: @Country
                     System.Data.SqlClient.SqlParameter pCountry = command.Parameters.Add("@Country", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.Country == null)
                     {
@@ -1101,6 +1182,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pCountry.Value = entity.Country;
                     }
 
+                    // Parameter settings: @PostalCode
                     System.Data.SqlClient.SqlParameter pPostalCode = command.Parameters.Add("@PostalCode", System.Data.SqlDbType.NVarChar, 20);
                     if (entity.PostalCode == null)
                     {
@@ -1111,6 +1193,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pPostalCode.Value = entity.PostalCode;
                     }
 
+                    // Parameter settings: @Phone
                     System.Data.SqlClient.SqlParameter pPhone = command.Parameters.Add("@Phone", System.Data.SqlDbType.NVarChar, 48);
                     if (entity.Phone == null)
                     {
@@ -1121,6 +1204,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pPhone.Value = entity.Phone;
                     }
 
+                    // Parameter settings: @Fax
                     System.Data.SqlClient.SqlParameter pFax = command.Parameters.Add("@Fax", System.Data.SqlDbType.NVarChar, 48);
                     if (entity.Fax == null)
                     {
@@ -1131,9 +1215,11 @@ namespace Generator.SimpleDataAccess.Samples
                         pFax.Value = entity.Fax;
                     }
 
+                    // Parameter settings: @Email
                     System.Data.SqlClient.SqlParameter pEmail = command.Parameters.Add("@Email", System.Data.SqlDbType.NVarChar, 120);
                     pEmail.Value = entity.Email;
 
+                    // Parameter settings: @SupportRepId
                     System.Data.SqlClient.SqlParameter pSupportRepId = command.Parameters.Add("@SupportRepId", System.Data.SqlDbType.Int);
                     if (entity.SupportRepId == null)
                     {
@@ -1144,6 +1230,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pSupportRepId.Value = entity.SupportRepId;
                     }
 
+                    // Parameter settings: @Comment
                     System.Data.SqlClient.SqlParameter pComment = command.Parameters.Add("@Comment", System.Data.SqlDbType.NVarChar, -1);
                     if (entity.Comment == null)
                     {
@@ -1154,9 +1241,11 @@ namespace Generator.SimpleDataAccess.Samples
                         pComment.Value = entity.Comment;
                     }
 
+                    // Parameter settings: @FullName
                     System.Data.SqlClient.SqlParameter pFullName = command.Parameters.Add("@FullName", System.Data.SqlDbType.NVarChar, 122);
                     pFullName.Direction = System.Data.ParameterDirection.Output;
 
+                    // Parameter settings: @FullDetail
                     System.Data.SqlClient.SqlParameter pFullDetail = command.Parameters.Add("@FullDetail", System.Data.SqlDbType.NVarChar, -1);
                     pFullDetail.Direction = System.Data.ParameterDirection.Output;
 
@@ -1189,6 +1278,7 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
                     using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
                     {
                         List<Customer> result = new List<Customer>();
@@ -1240,6 +1330,7 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
                     System.Data.SqlClient.SqlParameter pFirstIndex = command.Parameters.Add("@__FirstIndex", System.Data.SqlDbType.Int);
                     pFirstIndex.Value = firstIndex;
 
@@ -1270,6 +1361,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @SupportRepId
                     System.Data.SqlClient.SqlParameter pSupportRepId = command.Parameters.Add("@SupportRepId", System.Data.SqlDbType.Int);
                     if (supportRepId == null)
                     {
@@ -1304,6 +1397,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @SupportRepId
                     System.Data.SqlClient.SqlParameter pSupportRepId = command.Parameters.Add("@SupportRepId", System.Data.SqlDbType.Int);
                     if (supportRepId == null)
                     {
@@ -1330,6 +1425,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @CustomerId
                     System.Data.SqlClient.SqlParameter pCustomerId = command.Parameters.Add("@CustomerId", System.Data.SqlDbType.Int);
                     pCustomerId.Value = customerId;
 
@@ -1359,6 +1456,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @CustomerId
                     System.Data.SqlClient.SqlParameter pCustomerId = command.Parameters.Add("@CustomerId", System.Data.SqlDbType.Int);
                     pCustomerId.Value = customerId;
 
@@ -1429,12 +1528,16 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @LastName
                     System.Data.SqlClient.SqlParameter pLastName = command.Parameters.Add("@LastName", System.Data.SqlDbType.NVarChar, 40);
                     pLastName.Value = entity.LastName;
 
+                    // Parameter settings: @FirstName
                     System.Data.SqlClient.SqlParameter pFirstName = command.Parameters.Add("@FirstName", System.Data.SqlDbType.NVarChar, 40);
                     pFirstName.Value = entity.FirstName;
 
+                    // Parameter settings: @Title
                     System.Data.SqlClient.SqlParameter pTitle = command.Parameters.Add("@Title", System.Data.SqlDbType.NVarChar, 60);
                     if (entity.Title == null)
                     {
@@ -1445,6 +1548,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pTitle.Value = entity.Title;
                     }
 
+                    // Parameter settings: @ReportsTo
                     System.Data.SqlClient.SqlParameter pReportsTo = command.Parameters.Add("@ReportsTo", System.Data.SqlDbType.Int);
                     if (entity.ReportsTo == null)
                     {
@@ -1455,6 +1559,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pReportsTo.Value = entity.ReportsTo;
                     }
 
+                    // Parameter settings: @BirthDate
                     System.Data.SqlClient.SqlParameter pBirthDate = command.Parameters.Add("@BirthDate", System.Data.SqlDbType.DateTime);
                     if (entity.BirthDate == null)
                     {
@@ -1465,6 +1570,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pBirthDate.Value = entity.BirthDate;
                     }
 
+                    // Parameter settings: @HireDate
                     System.Data.SqlClient.SqlParameter pHireDate = command.Parameters.Add("@HireDate", System.Data.SqlDbType.DateTime);
                     if (entity.HireDate == null)
                     {
@@ -1475,6 +1581,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pHireDate.Value = entity.HireDate;
                     }
 
+                    // Parameter settings: @Address
                     System.Data.SqlClient.SqlParameter pAddress = command.Parameters.Add("@Address", System.Data.SqlDbType.NVarChar, 140);
                     if (entity.Address == null)
                     {
@@ -1485,6 +1592,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pAddress.Value = entity.Address;
                     }
 
+                    // Parameter settings: @City
                     System.Data.SqlClient.SqlParameter pCity = command.Parameters.Add("@City", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.City == null)
                     {
@@ -1495,6 +1603,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pCity.Value = entity.City;
                     }
 
+                    // Parameter settings: @State
                     System.Data.SqlClient.SqlParameter pState = command.Parameters.Add("@State", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.State == null)
                     {
@@ -1505,6 +1614,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pState.Value = entity.State;
                     }
 
+                    // Parameter settings: @Country
                     System.Data.SqlClient.SqlParameter pCountry = command.Parameters.Add("@Country", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.Country == null)
                     {
@@ -1515,6 +1625,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pCountry.Value = entity.Country;
                     }
 
+                    // Parameter settings: @PostalCode
                     System.Data.SqlClient.SqlParameter pPostalCode = command.Parameters.Add("@PostalCode", System.Data.SqlDbType.NVarChar, 20);
                     if (entity.PostalCode == null)
                     {
@@ -1525,6 +1636,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pPostalCode.Value = entity.PostalCode;
                     }
 
+                    // Parameter settings: @Phone
                     System.Data.SqlClient.SqlParameter pPhone = command.Parameters.Add("@Phone", System.Data.SqlDbType.NVarChar, 48);
                     if (entity.Phone == null)
                     {
@@ -1535,6 +1647,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pPhone.Value = entity.Phone;
                     }
 
+                    // Parameter settings: @Fax
                     System.Data.SqlClient.SqlParameter pFax = command.Parameters.Add("@Fax", System.Data.SqlDbType.NVarChar, 48);
                     if (entity.Fax == null)
                     {
@@ -1545,6 +1658,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pFax.Value = entity.Fax;
                     }
 
+                    // Parameter settings: @Email
                     System.Data.SqlClient.SqlParameter pEmail = command.Parameters.Add("@Email", System.Data.SqlDbType.NVarChar, 120);
                     if (entity.Email == null)
                     {
@@ -1555,6 +1669,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pEmail.Value = entity.Email;
                     }
 
+                    // Parameter settings: @EmployeeId
                     System.Data.SqlClient.SqlParameter pEmployeeId = command.Parameters.Add("@EmployeeId", System.Data.SqlDbType.Int);
                     pEmployeeId.Value = entity.EmployeeId;
 
@@ -1589,12 +1704,16 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @LastName
                     System.Data.SqlClient.SqlParameter pLastName = command.Parameters.Add("@LastName", System.Data.SqlDbType.NVarChar, 40);
                     pLastName.Value = entity.LastName;
 
+                    // Parameter settings: @FirstName
                     System.Data.SqlClient.SqlParameter pFirstName = command.Parameters.Add("@FirstName", System.Data.SqlDbType.NVarChar, 40);
                     pFirstName.Value = entity.FirstName;
 
+                    // Parameter settings: @Title
                     System.Data.SqlClient.SqlParameter pTitle = command.Parameters.Add("@Title", System.Data.SqlDbType.NVarChar, 60);
                     if (entity.Title == null)
                     {
@@ -1605,6 +1724,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pTitle.Value = entity.Title;
                     }
 
+                    // Parameter settings: @ReportsTo
                     System.Data.SqlClient.SqlParameter pReportsTo = command.Parameters.Add("@ReportsTo", System.Data.SqlDbType.Int);
                     if (entity.ReportsTo == null)
                     {
@@ -1615,6 +1735,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pReportsTo.Value = entity.ReportsTo;
                     }
 
+                    // Parameter settings: @BirthDate
                     System.Data.SqlClient.SqlParameter pBirthDate = command.Parameters.Add("@BirthDate", System.Data.SqlDbType.DateTime);
                     if (entity.BirthDate == null)
                     {
@@ -1625,6 +1746,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pBirthDate.Value = entity.BirthDate;
                     }
 
+                    // Parameter settings: @HireDate
                     System.Data.SqlClient.SqlParameter pHireDate = command.Parameters.Add("@HireDate", System.Data.SqlDbType.DateTime);
                     if (entity.HireDate == null)
                     {
@@ -1635,6 +1757,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pHireDate.Value = entity.HireDate;
                     }
 
+                    // Parameter settings: @Address
                     System.Data.SqlClient.SqlParameter pAddress = command.Parameters.Add("@Address", System.Data.SqlDbType.NVarChar, 140);
                     if (entity.Address == null)
                     {
@@ -1645,6 +1768,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pAddress.Value = entity.Address;
                     }
 
+                    // Parameter settings: @City
                     System.Data.SqlClient.SqlParameter pCity = command.Parameters.Add("@City", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.City == null)
                     {
@@ -1655,6 +1779,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pCity.Value = entity.City;
                     }
 
+                    // Parameter settings: @State
                     System.Data.SqlClient.SqlParameter pState = command.Parameters.Add("@State", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.State == null)
                     {
@@ -1665,6 +1790,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pState.Value = entity.State;
                     }
 
+                    // Parameter settings: @Country
                     System.Data.SqlClient.SqlParameter pCountry = command.Parameters.Add("@Country", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.Country == null)
                     {
@@ -1675,6 +1801,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pCountry.Value = entity.Country;
                     }
 
+                    // Parameter settings: @PostalCode
                     System.Data.SqlClient.SqlParameter pPostalCode = command.Parameters.Add("@PostalCode", System.Data.SqlDbType.NVarChar, 20);
                     if (entity.PostalCode == null)
                     {
@@ -1685,6 +1812,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pPostalCode.Value = entity.PostalCode;
                     }
 
+                    // Parameter settings: @Phone
                     System.Data.SqlClient.SqlParameter pPhone = command.Parameters.Add("@Phone", System.Data.SqlDbType.NVarChar, 48);
                     if (entity.Phone == null)
                     {
@@ -1695,6 +1823,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pPhone.Value = entity.Phone;
                     }
 
+                    // Parameter settings: @Fax
                     System.Data.SqlClient.SqlParameter pFax = command.Parameters.Add("@Fax", System.Data.SqlDbType.NVarChar, 48);
                     if (entity.Fax == null)
                     {
@@ -1705,6 +1834,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pFax.Value = entity.Fax;
                     }
 
+                    // Parameter settings: @Email
                     System.Data.SqlClient.SqlParameter pEmail = command.Parameters.Add("@Email", System.Data.SqlDbType.NVarChar, 120);
                     if (entity.Email == null)
                     {
@@ -1715,10 +1845,12 @@ namespace Generator.SimpleDataAccess.Samples
                         pEmail.Value = entity.Email;
                     }
 
+                    // Parameter settings: @EmployeeId
                     System.Data.SqlClient.SqlParameter pEmployeeId = command.Parameters.Add("@EmployeeId", System.Data.SqlDbType.Int);
                     pEmployeeId.Direction = System.Data.ParameterDirection.Output;
 
                     command.ExecuteNonQuery();
+
                     if (pEmployeeId.Value == System.DBNull.Value)
                     {
                         throw new InvalidOperationException("Invalid output value: pEmployeeId");
@@ -1744,15 +1876,20 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @EmployeeId
                     System.Data.SqlClient.SqlParameter pEmployeeId = command.Parameters.Add("@EmployeeId", System.Data.SqlDbType.Int);
                     pEmployeeId.Value = entity.EmployeeId;
 
+                    // Parameter settings: @LastName
                     System.Data.SqlClient.SqlParameter pLastName = command.Parameters.Add("@LastName", System.Data.SqlDbType.NVarChar, 40);
                     pLastName.Value = entity.LastName;
 
+                    // Parameter settings: @FirstName
                     System.Data.SqlClient.SqlParameter pFirstName = command.Parameters.Add("@FirstName", System.Data.SqlDbType.NVarChar, 40);
                     pFirstName.Value = entity.FirstName;
 
+                    // Parameter settings: @Title
                     System.Data.SqlClient.SqlParameter pTitle = command.Parameters.Add("@Title", System.Data.SqlDbType.NVarChar, 60);
                     if (entity.Title == null)
                     {
@@ -1763,6 +1900,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pTitle.Value = entity.Title;
                     }
 
+                    // Parameter settings: @ReportsTo
                     System.Data.SqlClient.SqlParameter pReportsTo = command.Parameters.Add("@ReportsTo", System.Data.SqlDbType.Int);
                     if (entity.ReportsTo == null)
                     {
@@ -1773,6 +1911,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pReportsTo.Value = entity.ReportsTo;
                     }
 
+                    // Parameter settings: @BirthDate
                     System.Data.SqlClient.SqlParameter pBirthDate = command.Parameters.Add("@BirthDate", System.Data.SqlDbType.DateTime);
                     if (entity.BirthDate == null)
                     {
@@ -1783,6 +1922,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pBirthDate.Value = entity.BirthDate;
                     }
 
+                    // Parameter settings: @HireDate
                     System.Data.SqlClient.SqlParameter pHireDate = command.Parameters.Add("@HireDate", System.Data.SqlDbType.DateTime);
                     if (entity.HireDate == null)
                     {
@@ -1793,6 +1933,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pHireDate.Value = entity.HireDate;
                     }
 
+                    // Parameter settings: @Address
                     System.Data.SqlClient.SqlParameter pAddress = command.Parameters.Add("@Address", System.Data.SqlDbType.NVarChar, 140);
                     if (entity.Address == null)
                     {
@@ -1803,6 +1944,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pAddress.Value = entity.Address;
                     }
 
+                    // Parameter settings: @City
                     System.Data.SqlClient.SqlParameter pCity = command.Parameters.Add("@City", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.City == null)
                     {
@@ -1813,6 +1955,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pCity.Value = entity.City;
                     }
 
+                    // Parameter settings: @State
                     System.Data.SqlClient.SqlParameter pState = command.Parameters.Add("@State", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.State == null)
                     {
@@ -1823,6 +1966,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pState.Value = entity.State;
                     }
 
+                    // Parameter settings: @Country
                     System.Data.SqlClient.SqlParameter pCountry = command.Parameters.Add("@Country", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.Country == null)
                     {
@@ -1833,6 +1977,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pCountry.Value = entity.Country;
                     }
 
+                    // Parameter settings: @PostalCode
                     System.Data.SqlClient.SqlParameter pPostalCode = command.Parameters.Add("@PostalCode", System.Data.SqlDbType.NVarChar, 20);
                     if (entity.PostalCode == null)
                     {
@@ -1843,6 +1988,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pPostalCode.Value = entity.PostalCode;
                     }
 
+                    // Parameter settings: @Phone
                     System.Data.SqlClient.SqlParameter pPhone = command.Parameters.Add("@Phone", System.Data.SqlDbType.NVarChar, 48);
                     if (entity.Phone == null)
                     {
@@ -1853,6 +1999,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pPhone.Value = entity.Phone;
                     }
 
+                    // Parameter settings: @Fax
                     System.Data.SqlClient.SqlParameter pFax = command.Parameters.Add("@Fax", System.Data.SqlDbType.NVarChar, 48);
                     if (entity.Fax == null)
                     {
@@ -1863,6 +2010,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pFax.Value = entity.Fax;
                     }
 
+                    // Parameter settings: @Email
                     System.Data.SqlClient.SqlParameter pEmail = command.Parameters.Add("@Email", System.Data.SqlDbType.NVarChar, 120);
                     if (entity.Email == null)
                     {
@@ -1892,6 +2040,7 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
                     using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
                     {
                         List<Employee> result = new List<Employee>();
@@ -1943,6 +2092,7 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
                     System.Data.SqlClient.SqlParameter pFirstIndex = command.Parameters.Add("@__FirstIndex", System.Data.SqlDbType.Int);
                     pFirstIndex.Value = firstIndex;
 
@@ -1973,6 +2123,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @ReportsTo
                     System.Data.SqlClient.SqlParameter pReportsTo = command.Parameters.Add("@ReportsTo", System.Data.SqlDbType.Int);
                     if (reportsTo == null)
                     {
@@ -2007,6 +2159,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @ReportsTo
                     System.Data.SqlClient.SqlParameter pReportsTo = command.Parameters.Add("@ReportsTo", System.Data.SqlDbType.Int);
                     if (reportsTo == null)
                     {
@@ -2033,6 +2187,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @EmployeeId
                     System.Data.SqlClient.SqlParameter pEmployeeId = command.Parameters.Add("@EmployeeId", System.Data.SqlDbType.Int);
                     pEmployeeId.Value = employeeId;
 
@@ -2062,6 +2218,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @EmployeeId
                     System.Data.SqlClient.SqlParameter pEmployeeId = command.Parameters.Add("@EmployeeId", System.Data.SqlDbType.Int);
                     pEmployeeId.Value = employeeId;
 
@@ -2098,6 +2256,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @Name
                     System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar, 240);
                     if (entity.Name == null)
                     {
@@ -2108,6 +2268,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pName.Value = entity.Name;
                     }
 
+                    // Parameter settings: @GenreId
                     System.Data.SqlClient.SqlParameter pGenreId = command.Parameters.Add("@GenreId", System.Data.SqlDbType.Int);
                     pGenreId.Value = entity.GenreId;
 
@@ -2142,6 +2303,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @Name
                     System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar, 240);
                     if (entity.Name == null)
                     {
@@ -2152,10 +2315,12 @@ namespace Generator.SimpleDataAccess.Samples
                         pName.Value = entity.Name;
                     }
 
+                    // Parameter settings: @GenreId
                     System.Data.SqlClient.SqlParameter pGenreId = command.Parameters.Add("@GenreId", System.Data.SqlDbType.Int);
                     pGenreId.Direction = System.Data.ParameterDirection.Output;
 
                     command.ExecuteNonQuery();
+
                     if (pGenreId.Value == System.DBNull.Value)
                     {
                         throw new InvalidOperationException("Invalid output value: pGenreId");
@@ -2181,9 +2346,12 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @GenreId
                     System.Data.SqlClient.SqlParameter pGenreId = command.Parameters.Add("@GenreId", System.Data.SqlDbType.Int);
                     pGenreId.Value = entity.GenreId;
 
+                    // Parameter settings: @Name
                     System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar, 240);
                     if (entity.Name == null)
                     {
@@ -2213,6 +2381,7 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
                     using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
                     {
                         List<Genre> result = new List<Genre>();
@@ -2264,6 +2433,7 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
                     System.Data.SqlClient.SqlParameter pFirstIndex = command.Parameters.Add("@__FirstIndex", System.Data.SqlDbType.Int);
                     pFirstIndex.Value = firstIndex;
 
@@ -2294,6 +2464,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @GenreId
                     System.Data.SqlClient.SqlParameter pGenreId = command.Parameters.Add("@GenreId", System.Data.SqlDbType.Int);
                     pGenreId.Value = genreId;
 
@@ -2323,6 +2495,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @GenreId
                     System.Data.SqlClient.SqlParameter pGenreId = command.Parameters.Add("@GenreId", System.Data.SqlDbType.Int);
                     pGenreId.Value = genreId;
 
@@ -2366,12 +2540,16 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @CustomerId
                     System.Data.SqlClient.SqlParameter pCustomerId = command.Parameters.Add("@CustomerId", System.Data.SqlDbType.Int);
                     pCustomerId.Value = entity.CustomerId;
 
+                    // Parameter settings: @InvoiceDate
                     System.Data.SqlClient.SqlParameter pInvoiceDate = command.Parameters.Add("@InvoiceDate", System.Data.SqlDbType.DateTime);
                     pInvoiceDate.Value = entity.InvoiceDate;
 
+                    // Parameter settings: @BillingAddress
                     System.Data.SqlClient.SqlParameter pBillingAddress = command.Parameters.Add("@BillingAddress", System.Data.SqlDbType.NVarChar, 140);
                     if (entity.BillingAddress == null)
                     {
@@ -2382,6 +2560,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pBillingAddress.Value = entity.BillingAddress;
                     }
 
+                    // Parameter settings: @BillingCity
                     System.Data.SqlClient.SqlParameter pBillingCity = command.Parameters.Add("@BillingCity", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.BillingCity == null)
                     {
@@ -2392,6 +2571,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pBillingCity.Value = entity.BillingCity;
                     }
 
+                    // Parameter settings: @BillingState
                     System.Data.SqlClient.SqlParameter pBillingState = command.Parameters.Add("@BillingState", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.BillingState == null)
                     {
@@ -2402,6 +2582,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pBillingState.Value = entity.BillingState;
                     }
 
+                    // Parameter settings: @BillingCountry
                     System.Data.SqlClient.SqlParameter pBillingCountry = command.Parameters.Add("@BillingCountry", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.BillingCountry == null)
                     {
@@ -2412,6 +2593,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pBillingCountry.Value = entity.BillingCountry;
                     }
 
+                    // Parameter settings: @BillingPostalCode
                     System.Data.SqlClient.SqlParameter pBillingPostalCode = command.Parameters.Add("@BillingPostalCode", System.Data.SqlDbType.NVarChar, 20);
                     if (entity.BillingPostalCode == null)
                     {
@@ -2422,9 +2604,11 @@ namespace Generator.SimpleDataAccess.Samples
                         pBillingPostalCode.Value = entity.BillingPostalCode;
                     }
 
+                    // Parameter settings: @Total
                     System.Data.SqlClient.SqlParameter pTotal = command.Parameters.Add("@Total", System.Data.SqlDbType.Decimal);
                     pTotal.Value = entity.Total;
 
+                    // Parameter settings: @InvoiceId
                     System.Data.SqlClient.SqlParameter pInvoiceId = command.Parameters.Add("@InvoiceId", System.Data.SqlDbType.Int);
                     pInvoiceId.Value = entity.InvoiceId;
 
@@ -2459,12 +2643,16 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @CustomerId
                     System.Data.SqlClient.SqlParameter pCustomerId = command.Parameters.Add("@CustomerId", System.Data.SqlDbType.Int);
                     pCustomerId.Value = entity.CustomerId;
 
+                    // Parameter settings: @InvoiceDate
                     System.Data.SqlClient.SqlParameter pInvoiceDate = command.Parameters.Add("@InvoiceDate", System.Data.SqlDbType.DateTime);
                     pInvoiceDate.Value = entity.InvoiceDate;
 
+                    // Parameter settings: @BillingAddress
                     System.Data.SqlClient.SqlParameter pBillingAddress = command.Parameters.Add("@BillingAddress", System.Data.SqlDbType.NVarChar, 140);
                     if (entity.BillingAddress == null)
                     {
@@ -2475,6 +2663,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pBillingAddress.Value = entity.BillingAddress;
                     }
 
+                    // Parameter settings: @BillingCity
                     System.Data.SqlClient.SqlParameter pBillingCity = command.Parameters.Add("@BillingCity", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.BillingCity == null)
                     {
@@ -2485,6 +2674,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pBillingCity.Value = entity.BillingCity;
                     }
 
+                    // Parameter settings: @BillingState
                     System.Data.SqlClient.SqlParameter pBillingState = command.Parameters.Add("@BillingState", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.BillingState == null)
                     {
@@ -2495,6 +2685,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pBillingState.Value = entity.BillingState;
                     }
 
+                    // Parameter settings: @BillingCountry
                     System.Data.SqlClient.SqlParameter pBillingCountry = command.Parameters.Add("@BillingCountry", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.BillingCountry == null)
                     {
@@ -2505,6 +2696,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pBillingCountry.Value = entity.BillingCountry;
                     }
 
+                    // Parameter settings: @BillingPostalCode
                     System.Data.SqlClient.SqlParameter pBillingPostalCode = command.Parameters.Add("@BillingPostalCode", System.Data.SqlDbType.NVarChar, 20);
                     if (entity.BillingPostalCode == null)
                     {
@@ -2515,13 +2707,16 @@ namespace Generator.SimpleDataAccess.Samples
                         pBillingPostalCode.Value = entity.BillingPostalCode;
                     }
 
+                    // Parameter settings: @Total
                     System.Data.SqlClient.SqlParameter pTotal = command.Parameters.Add("@Total", System.Data.SqlDbType.Decimal);
                     pTotal.Value = entity.Total;
 
+                    // Parameter settings: @InvoiceId
                     System.Data.SqlClient.SqlParameter pInvoiceId = command.Parameters.Add("@InvoiceId", System.Data.SqlDbType.Int);
                     pInvoiceId.Direction = System.Data.ParameterDirection.Output;
 
                     command.ExecuteNonQuery();
+
                     if (pInvoiceId.Value == System.DBNull.Value)
                     {
                         throw new InvalidOperationException("Invalid output value: pInvoiceId");
@@ -2547,15 +2742,20 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @InvoiceId
                     System.Data.SqlClient.SqlParameter pInvoiceId = command.Parameters.Add("@InvoiceId", System.Data.SqlDbType.Int);
                     pInvoiceId.Value = entity.InvoiceId;
 
+                    // Parameter settings: @CustomerId
                     System.Data.SqlClient.SqlParameter pCustomerId = command.Parameters.Add("@CustomerId", System.Data.SqlDbType.Int);
                     pCustomerId.Value = entity.CustomerId;
 
+                    // Parameter settings: @InvoiceDate
                     System.Data.SqlClient.SqlParameter pInvoiceDate = command.Parameters.Add("@InvoiceDate", System.Data.SqlDbType.DateTime);
                     pInvoiceDate.Value = entity.InvoiceDate;
 
+                    // Parameter settings: @BillingAddress
                     System.Data.SqlClient.SqlParameter pBillingAddress = command.Parameters.Add("@BillingAddress", System.Data.SqlDbType.NVarChar, 140);
                     if (entity.BillingAddress == null)
                     {
@@ -2566,6 +2766,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pBillingAddress.Value = entity.BillingAddress;
                     }
 
+                    // Parameter settings: @BillingCity
                     System.Data.SqlClient.SqlParameter pBillingCity = command.Parameters.Add("@BillingCity", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.BillingCity == null)
                     {
@@ -2576,6 +2777,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pBillingCity.Value = entity.BillingCity;
                     }
 
+                    // Parameter settings: @BillingState
                     System.Data.SqlClient.SqlParameter pBillingState = command.Parameters.Add("@BillingState", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.BillingState == null)
                     {
@@ -2586,6 +2788,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pBillingState.Value = entity.BillingState;
                     }
 
+                    // Parameter settings: @BillingCountry
                     System.Data.SqlClient.SqlParameter pBillingCountry = command.Parameters.Add("@BillingCountry", System.Data.SqlDbType.NVarChar, 80);
                     if (entity.BillingCountry == null)
                     {
@@ -2596,6 +2799,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pBillingCountry.Value = entity.BillingCountry;
                     }
 
+                    // Parameter settings: @BillingPostalCode
                     System.Data.SqlClient.SqlParameter pBillingPostalCode = command.Parameters.Add("@BillingPostalCode", System.Data.SqlDbType.NVarChar, 20);
                     if (entity.BillingPostalCode == null)
                     {
@@ -2606,6 +2810,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pBillingPostalCode.Value = entity.BillingPostalCode;
                     }
 
+                    // Parameter settings: @Total
                     System.Data.SqlClient.SqlParameter pTotal = command.Parameters.Add("@Total", System.Data.SqlDbType.Decimal);
                     pTotal.Value = entity.Total;
 
@@ -2628,6 +2833,7 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
                     using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
                     {
                         List<Invoice> result = new List<Invoice>();
@@ -2679,6 +2885,7 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
                     System.Data.SqlClient.SqlParameter pFirstIndex = command.Parameters.Add("@__FirstIndex", System.Data.SqlDbType.Int);
                     pFirstIndex.Value = firstIndex;
 
@@ -2709,6 +2916,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @CustomerId
                     System.Data.SqlClient.SqlParameter pCustomerId = command.Parameters.Add("@CustomerId", System.Data.SqlDbType.Int);
                     pCustomerId.Value = customerId;
 
@@ -2736,6 +2945,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @CustomerId
                     System.Data.SqlClient.SqlParameter pCustomerId = command.Parameters.Add("@CustomerId", System.Data.SqlDbType.Int);
                     pCustomerId.Value = customerId;
 
@@ -2755,6 +2966,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @InvoiceId
                     System.Data.SqlClient.SqlParameter pInvoiceId = command.Parameters.Add("@InvoiceId", System.Data.SqlDbType.Int);
                     pInvoiceId.Value = invoiceId;
 
@@ -2784,6 +2997,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @InvoiceId
                     System.Data.SqlClient.SqlParameter pInvoiceId = command.Parameters.Add("@InvoiceId", System.Data.SqlDbType.Int);
                     pInvoiceId.Value = invoiceId;
 
@@ -2823,18 +3038,24 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @InvoiceId
                     System.Data.SqlClient.SqlParameter pInvoiceId = command.Parameters.Add("@InvoiceId", System.Data.SqlDbType.Int);
                     pInvoiceId.Value = entity.InvoiceId;
 
+                    // Parameter settings: @TrackId
                     System.Data.SqlClient.SqlParameter pTrackId = command.Parameters.Add("@TrackId", System.Data.SqlDbType.Int);
                     pTrackId.Value = entity.TrackId;
 
+                    // Parameter settings: @UnitPrice
                     System.Data.SqlClient.SqlParameter pUnitPrice = command.Parameters.Add("@UnitPrice", System.Data.SqlDbType.Decimal);
                     pUnitPrice.Value = entity.UnitPrice;
 
+                    // Parameter settings: @Quantity
                     System.Data.SqlClient.SqlParameter pQuantity = command.Parameters.Add("@Quantity", System.Data.SqlDbType.Int);
                     pQuantity.Value = entity.Quantity;
 
+                    // Parameter settings: @InvoiceLineId
                     System.Data.SqlClient.SqlParameter pInvoiceLineId = command.Parameters.Add("@InvoiceLineId", System.Data.SqlDbType.Int);
                     pInvoiceLineId.Value = entity.InvoiceLineId;
 
@@ -2869,22 +3090,29 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @InvoiceId
                     System.Data.SqlClient.SqlParameter pInvoiceId = command.Parameters.Add("@InvoiceId", System.Data.SqlDbType.Int);
                     pInvoiceId.Value = entity.InvoiceId;
 
+                    // Parameter settings: @TrackId
                     System.Data.SqlClient.SqlParameter pTrackId = command.Parameters.Add("@TrackId", System.Data.SqlDbType.Int);
                     pTrackId.Value = entity.TrackId;
 
+                    // Parameter settings: @UnitPrice
                     System.Data.SqlClient.SqlParameter pUnitPrice = command.Parameters.Add("@UnitPrice", System.Data.SqlDbType.Decimal);
                     pUnitPrice.Value = entity.UnitPrice;
 
+                    // Parameter settings: @Quantity
                     System.Data.SqlClient.SqlParameter pQuantity = command.Parameters.Add("@Quantity", System.Data.SqlDbType.Int);
                     pQuantity.Value = entity.Quantity;
 
+                    // Parameter settings: @InvoiceLineId
                     System.Data.SqlClient.SqlParameter pInvoiceLineId = command.Parameters.Add("@InvoiceLineId", System.Data.SqlDbType.Int);
                     pInvoiceLineId.Direction = System.Data.ParameterDirection.Output;
 
                     command.ExecuteNonQuery();
+
                     if (pInvoiceLineId.Value == System.DBNull.Value)
                     {
                         throw new InvalidOperationException("Invalid output value: pInvoiceLineId");
@@ -2910,18 +3138,24 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @InvoiceLineId
                     System.Data.SqlClient.SqlParameter pInvoiceLineId = command.Parameters.Add("@InvoiceLineId", System.Data.SqlDbType.Int);
                     pInvoiceLineId.Value = entity.InvoiceLineId;
 
+                    // Parameter settings: @InvoiceId
                     System.Data.SqlClient.SqlParameter pInvoiceId = command.Parameters.Add("@InvoiceId", System.Data.SqlDbType.Int);
                     pInvoiceId.Value = entity.InvoiceId;
 
+                    // Parameter settings: @TrackId
                     System.Data.SqlClient.SqlParameter pTrackId = command.Parameters.Add("@TrackId", System.Data.SqlDbType.Int);
                     pTrackId.Value = entity.TrackId;
 
+                    // Parameter settings: @UnitPrice
                     System.Data.SqlClient.SqlParameter pUnitPrice = command.Parameters.Add("@UnitPrice", System.Data.SqlDbType.Decimal);
                     pUnitPrice.Value = entity.UnitPrice;
 
+                    // Parameter settings: @Quantity
                     System.Data.SqlClient.SqlParameter pQuantity = command.Parameters.Add("@Quantity", System.Data.SqlDbType.Int);
                     pQuantity.Value = entity.Quantity;
 
@@ -2944,6 +3178,7 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
                     using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
                     {
                         List<InvoiceLine> result = new List<InvoiceLine>();
@@ -2995,6 +3230,7 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
                     System.Data.SqlClient.SqlParameter pFirstIndex = command.Parameters.Add("@__FirstIndex", System.Data.SqlDbType.Int);
                     pFirstIndex.Value = firstIndex;
 
@@ -3025,6 +3261,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @InvoiceId
                     System.Data.SqlClient.SqlParameter pInvoiceId = command.Parameters.Add("@InvoiceId", System.Data.SqlDbType.Int);
                     pInvoiceId.Value = invoiceId;
 
@@ -3052,6 +3290,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @InvoiceId
                     System.Data.SqlClient.SqlParameter pInvoiceId = command.Parameters.Add("@InvoiceId", System.Data.SqlDbType.Int);
                     pInvoiceId.Value = invoiceId;
 
@@ -3071,6 +3311,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @TrackId
                     System.Data.SqlClient.SqlParameter pTrackId = command.Parameters.Add("@TrackId", System.Data.SqlDbType.Int);
                     pTrackId.Value = trackId;
 
@@ -3098,6 +3340,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @TrackId
                     System.Data.SqlClient.SqlParameter pTrackId = command.Parameters.Add("@TrackId", System.Data.SqlDbType.Int);
                     pTrackId.Value = trackId;
 
@@ -3117,6 +3361,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @InvoiceLineId
                     System.Data.SqlClient.SqlParameter pInvoiceLineId = command.Parameters.Add("@InvoiceLineId", System.Data.SqlDbType.Int);
                     pInvoiceLineId.Value = invoiceLineId;
 
@@ -3146,6 +3392,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @InvoiceLineId
                     System.Data.SqlClient.SqlParameter pInvoiceLineId = command.Parameters.Add("@InvoiceLineId", System.Data.SqlDbType.Int);
                     pInvoiceLineId.Value = invoiceLineId;
 
@@ -3182,6 +3430,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @Name
                     System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar, 240);
                     if (entity.Name == null)
                     {
@@ -3192,6 +3442,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pName.Value = entity.Name;
                     }
 
+                    // Parameter settings: @MediaTypeId
                     System.Data.SqlClient.SqlParameter pMediaTypeId = command.Parameters.Add("@MediaTypeId", System.Data.SqlDbType.Int);
                     pMediaTypeId.Value = entity.MediaTypeId;
 
@@ -3226,6 +3477,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @Name
                     System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar, 240);
                     if (entity.Name == null)
                     {
@@ -3236,10 +3489,12 @@ namespace Generator.SimpleDataAccess.Samples
                         pName.Value = entity.Name;
                     }
 
+                    // Parameter settings: @MediaTypeId
                     System.Data.SqlClient.SqlParameter pMediaTypeId = command.Parameters.Add("@MediaTypeId", System.Data.SqlDbType.Int);
                     pMediaTypeId.Direction = System.Data.ParameterDirection.Output;
 
                     command.ExecuteNonQuery();
+
                     if (pMediaTypeId.Value == System.DBNull.Value)
                     {
                         throw new InvalidOperationException("Invalid output value: pMediaTypeId");
@@ -3265,9 +3520,12 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @MediaTypeId
                     System.Data.SqlClient.SqlParameter pMediaTypeId = command.Parameters.Add("@MediaTypeId", System.Data.SqlDbType.Int);
                     pMediaTypeId.Value = entity.MediaTypeId;
 
+                    // Parameter settings: @Name
                     System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar, 240);
                     if (entity.Name == null)
                     {
@@ -3297,6 +3555,7 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
                     using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
                     {
                         List<MediaType> result = new List<MediaType>();
@@ -3348,6 +3607,7 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
                     System.Data.SqlClient.SqlParameter pFirstIndex = command.Parameters.Add("@__FirstIndex", System.Data.SqlDbType.Int);
                     pFirstIndex.Value = firstIndex;
 
@@ -3378,6 +3638,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @MediaTypeId
                     System.Data.SqlClient.SqlParameter pMediaTypeId = command.Parameters.Add("@MediaTypeId", System.Data.SqlDbType.Int);
                     pMediaTypeId.Value = mediaTypeId;
 
@@ -3407,6 +3669,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @MediaTypeId
                     System.Data.SqlClient.SqlParameter pMediaTypeId = command.Parameters.Add("@MediaTypeId", System.Data.SqlDbType.Int);
                     pMediaTypeId.Value = mediaTypeId;
 
@@ -3443,6 +3707,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @Name
                     System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar, 240);
                     if (entity.Name == null)
                     {
@@ -3453,6 +3719,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pName.Value = entity.Name;
                     }
 
+                    // Parameter settings: @PlaylistId
                     System.Data.SqlClient.SqlParameter pPlaylistId = command.Parameters.Add("@PlaylistId", System.Data.SqlDbType.Int);
                     pPlaylistId.Value = entity.PlaylistId;
 
@@ -3487,6 +3754,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @Name
                     System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar, 240);
                     if (entity.Name == null)
                     {
@@ -3497,10 +3766,12 @@ namespace Generator.SimpleDataAccess.Samples
                         pName.Value = entity.Name;
                     }
 
+                    // Parameter settings: @PlaylistId
                     System.Data.SqlClient.SqlParameter pPlaylistId = command.Parameters.Add("@PlaylistId", System.Data.SqlDbType.Int);
                     pPlaylistId.Direction = System.Data.ParameterDirection.Output;
 
                     command.ExecuteNonQuery();
+
                     if (pPlaylistId.Value == System.DBNull.Value)
                     {
                         throw new InvalidOperationException("Invalid output value: pPlaylistId");
@@ -3526,9 +3797,12 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @PlaylistId
                     System.Data.SqlClient.SqlParameter pPlaylistId = command.Parameters.Add("@PlaylistId", System.Data.SqlDbType.Int);
                     pPlaylistId.Value = entity.PlaylistId;
 
+                    // Parameter settings: @Name
                     System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar, 240);
                     if (entity.Name == null)
                     {
@@ -3558,6 +3832,7 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
                     using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
                     {
                         List<Playlist> result = new List<Playlist>();
@@ -3609,6 +3884,7 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
                     System.Data.SqlClient.SqlParameter pFirstIndex = command.Parameters.Add("@__FirstIndex", System.Data.SqlDbType.Int);
                     pFirstIndex.Value = firstIndex;
 
@@ -3639,6 +3915,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @PlaylistId
                     System.Data.SqlClient.SqlParameter pPlaylistId = command.Parameters.Add("@PlaylistId", System.Data.SqlDbType.Int);
                     pPlaylistId.Value = playlistId;
 
@@ -3668,6 +3946,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @PlaylistId
                     System.Data.SqlClient.SqlParameter pPlaylistId = command.Parameters.Add("@PlaylistId", System.Data.SqlDbType.Int);
                     pPlaylistId.Value = playlistId;
 
@@ -3705,9 +3985,12 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @PlaylistId
                     System.Data.SqlClient.SqlParameter pPlaylistId = command.Parameters.Add("@PlaylistId", System.Data.SqlDbType.Int);
                     pPlaylistId.Value = entity.PlaylistId;
 
+                    // Parameter settings: @TrackId
                     System.Data.SqlClient.SqlParameter pTrackId = command.Parameters.Add("@TrackId", System.Data.SqlDbType.Int);
                     pTrackId.Value = entity.TrackId;
 
@@ -3731,6 +4014,7 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
                     using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
                     {
                         List<PlaylistTrack> result = new List<PlaylistTrack>();
@@ -3782,6 +4066,7 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
                     System.Data.SqlClient.SqlParameter pFirstIndex = command.Parameters.Add("@__FirstIndex", System.Data.SqlDbType.Int);
                     pFirstIndex.Value = firstIndex;
 
@@ -3812,6 +4097,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @TrackId
                     System.Data.SqlClient.SqlParameter pTrackId = command.Parameters.Add("@TrackId", System.Data.SqlDbType.Int);
                     pTrackId.Value = trackId;
 
@@ -3839,6 +4126,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @TrackId
                     System.Data.SqlClient.SqlParameter pTrackId = command.Parameters.Add("@TrackId", System.Data.SqlDbType.Int);
                     pTrackId.Value = trackId;
 
@@ -3858,9 +4147,12 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @PlaylistId
                     System.Data.SqlClient.SqlParameter pPlaylistId = command.Parameters.Add("@PlaylistId", System.Data.SqlDbType.Int);
                     pPlaylistId.Value = playlistId;
 
+                    // Parameter settings: @TrackId
                     System.Data.SqlClient.SqlParameter pTrackId = command.Parameters.Add("@TrackId", System.Data.SqlDbType.Int);
                     pTrackId.Value = trackId;
 
@@ -3890,9 +4182,12 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @PlaylistId
                     System.Data.SqlClient.SqlParameter pPlaylistId = command.Parameters.Add("@PlaylistId", System.Data.SqlDbType.Int);
                     pPlaylistId.Value = playlistId;
 
+                    // Parameter settings: @TrackId
                     System.Data.SqlClient.SqlParameter pTrackId = command.Parameters.Add("@TrackId", System.Data.SqlDbType.Int);
                     pTrackId.Value = trackId;
 
@@ -3912,6 +4207,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @PlaylistId
                     System.Data.SqlClient.SqlParameter pPlaylistId = command.Parameters.Add("@PlaylistId", System.Data.SqlDbType.Int);
                     pPlaylistId.Value = playlistId;
 
@@ -3939,6 +4236,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @PlaylistId
                     System.Data.SqlClient.SqlParameter pPlaylistId = command.Parameters.Add("@PlaylistId", System.Data.SqlDbType.Int);
                     pPlaylistId.Value = playlistId;
 
@@ -4003,9 +4302,12 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @Name
                     System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar, 400);
                     pName.Value = entity.Name;
 
+                    // Parameter settings: @AlbumId
                     System.Data.SqlClient.SqlParameter pAlbumId = command.Parameters.Add("@AlbumId", System.Data.SqlDbType.Int);
                     if (entity.AlbumId == null)
                     {
@@ -4016,9 +4318,11 @@ namespace Generator.SimpleDataAccess.Samples
                         pAlbumId.Value = entity.AlbumId;
                     }
 
+                    // Parameter settings: @MediaTypeId
                     System.Data.SqlClient.SqlParameter pMediaTypeId = command.Parameters.Add("@MediaTypeId", System.Data.SqlDbType.Int);
                     pMediaTypeId.Value = entity.MediaTypeId;
 
+                    // Parameter settings: @GenreId
                     System.Data.SqlClient.SqlParameter pGenreId = command.Parameters.Add("@GenreId", System.Data.SqlDbType.Int);
                     if (entity.GenreId == null)
                     {
@@ -4029,6 +4333,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pGenreId.Value = entity.GenreId;
                     }
 
+                    // Parameter settings: @Composer
                     System.Data.SqlClient.SqlParameter pComposer = command.Parameters.Add("@Composer", System.Data.SqlDbType.NVarChar, 440);
                     if (entity.Composer == null)
                     {
@@ -4039,9 +4344,11 @@ namespace Generator.SimpleDataAccess.Samples
                         pComposer.Value = entity.Composer;
                     }
 
+                    // Parameter settings: @Milliseconds
                     System.Data.SqlClient.SqlParameter pMilliseconds = command.Parameters.Add("@Milliseconds", System.Data.SqlDbType.Int);
                     pMilliseconds.Value = entity.Milliseconds;
 
+                    // Parameter settings: @Bytes
                     System.Data.SqlClient.SqlParameter pBytes = command.Parameters.Add("@Bytes", System.Data.SqlDbType.Int);
                     if (entity.Bytes == null)
                     {
@@ -4052,9 +4359,11 @@ namespace Generator.SimpleDataAccess.Samples
                         pBytes.Value = entity.Bytes;
                     }
 
+                    // Parameter settings: @UnitPrice
                     System.Data.SqlClient.SqlParameter pUnitPrice = command.Parameters.Add("@UnitPrice", System.Data.SqlDbType.Decimal);
                     pUnitPrice.Value = entity.UnitPrice;
 
+                    // Parameter settings: @TrackId
                     System.Data.SqlClient.SqlParameter pTrackId = command.Parameters.Add("@TrackId", System.Data.SqlDbType.Int);
                     pTrackId.Value = entity.TrackId;
 
@@ -4089,9 +4398,12 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @Name
                     System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar, 400);
                     pName.Value = entity.Name;
 
+                    // Parameter settings: @AlbumId
                     System.Data.SqlClient.SqlParameter pAlbumId = command.Parameters.Add("@AlbumId", System.Data.SqlDbType.Int);
                     if (entity.AlbumId == null)
                     {
@@ -4102,9 +4414,11 @@ namespace Generator.SimpleDataAccess.Samples
                         pAlbumId.Value = entity.AlbumId;
                     }
 
+                    // Parameter settings: @MediaTypeId
                     System.Data.SqlClient.SqlParameter pMediaTypeId = command.Parameters.Add("@MediaTypeId", System.Data.SqlDbType.Int);
                     pMediaTypeId.Value = entity.MediaTypeId;
 
+                    // Parameter settings: @GenreId
                     System.Data.SqlClient.SqlParameter pGenreId = command.Parameters.Add("@GenreId", System.Data.SqlDbType.Int);
                     if (entity.GenreId == null)
                     {
@@ -4115,6 +4429,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pGenreId.Value = entity.GenreId;
                     }
 
+                    // Parameter settings: @Composer
                     System.Data.SqlClient.SqlParameter pComposer = command.Parameters.Add("@Composer", System.Data.SqlDbType.NVarChar, 440);
                     if (entity.Composer == null)
                     {
@@ -4125,9 +4440,11 @@ namespace Generator.SimpleDataAccess.Samples
                         pComposer.Value = entity.Composer;
                     }
 
+                    // Parameter settings: @Milliseconds
                     System.Data.SqlClient.SqlParameter pMilliseconds = command.Parameters.Add("@Milliseconds", System.Data.SqlDbType.Int);
                     pMilliseconds.Value = entity.Milliseconds;
 
+                    // Parameter settings: @Bytes
                     System.Data.SqlClient.SqlParameter pBytes = command.Parameters.Add("@Bytes", System.Data.SqlDbType.Int);
                     if (entity.Bytes == null)
                     {
@@ -4138,13 +4455,16 @@ namespace Generator.SimpleDataAccess.Samples
                         pBytes.Value = entity.Bytes;
                     }
 
+                    // Parameter settings: @UnitPrice
                     System.Data.SqlClient.SqlParameter pUnitPrice = command.Parameters.Add("@UnitPrice", System.Data.SqlDbType.Decimal);
                     pUnitPrice.Value = entity.UnitPrice;
 
+                    // Parameter settings: @TrackId
                     System.Data.SqlClient.SqlParameter pTrackId = command.Parameters.Add("@TrackId", System.Data.SqlDbType.Int);
                     pTrackId.Direction = System.Data.ParameterDirection.Output;
 
                     command.ExecuteNonQuery();
+
                     if (pTrackId.Value == System.DBNull.Value)
                     {
                         throw new InvalidOperationException("Invalid output value: pTrackId");
@@ -4170,12 +4490,16 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @TrackId
                     System.Data.SqlClient.SqlParameter pTrackId = command.Parameters.Add("@TrackId", System.Data.SqlDbType.Int);
                     pTrackId.Value = entity.TrackId;
 
+                    // Parameter settings: @Name
                     System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar, 400);
                     pName.Value = entity.Name;
 
+                    // Parameter settings: @AlbumId
                     System.Data.SqlClient.SqlParameter pAlbumId = command.Parameters.Add("@AlbumId", System.Data.SqlDbType.Int);
                     if (entity.AlbumId == null)
                     {
@@ -4186,9 +4510,11 @@ namespace Generator.SimpleDataAccess.Samples
                         pAlbumId.Value = entity.AlbumId;
                     }
 
+                    // Parameter settings: @MediaTypeId
                     System.Data.SqlClient.SqlParameter pMediaTypeId = command.Parameters.Add("@MediaTypeId", System.Data.SqlDbType.Int);
                     pMediaTypeId.Value = entity.MediaTypeId;
 
+                    // Parameter settings: @GenreId
                     System.Data.SqlClient.SqlParameter pGenreId = command.Parameters.Add("@GenreId", System.Data.SqlDbType.Int);
                     if (entity.GenreId == null)
                     {
@@ -4199,6 +4525,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pGenreId.Value = entity.GenreId;
                     }
 
+                    // Parameter settings: @Composer
                     System.Data.SqlClient.SqlParameter pComposer = command.Parameters.Add("@Composer", System.Data.SqlDbType.NVarChar, 440);
                     if (entity.Composer == null)
                     {
@@ -4209,9 +4536,11 @@ namespace Generator.SimpleDataAccess.Samples
                         pComposer.Value = entity.Composer;
                     }
 
+                    // Parameter settings: @Milliseconds
                     System.Data.SqlClient.SqlParameter pMilliseconds = command.Parameters.Add("@Milliseconds", System.Data.SqlDbType.Int);
                     pMilliseconds.Value = entity.Milliseconds;
 
+                    // Parameter settings: @Bytes
                     System.Data.SqlClient.SqlParameter pBytes = command.Parameters.Add("@Bytes", System.Data.SqlDbType.Int);
                     if (entity.Bytes == null)
                     {
@@ -4222,6 +4551,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pBytes.Value = entity.Bytes;
                     }
 
+                    // Parameter settings: @UnitPrice
                     System.Data.SqlClient.SqlParameter pUnitPrice = command.Parameters.Add("@UnitPrice", System.Data.SqlDbType.Decimal);
                     pUnitPrice.Value = entity.UnitPrice;
 
@@ -4244,6 +4574,7 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
                     using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
                     {
                         List<Track> result = new List<Track>();
@@ -4295,6 +4626,7 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
                     System.Data.SqlClient.SqlParameter pFirstIndex = command.Parameters.Add("@__FirstIndex", System.Data.SqlDbType.Int);
                     pFirstIndex.Value = firstIndex;
 
@@ -4325,6 +4657,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @AlbumId
                     System.Data.SqlClient.SqlParameter pAlbumId = command.Parameters.Add("@AlbumId", System.Data.SqlDbType.Int);
                     if (albumId == null)
                     {
@@ -4359,6 +4693,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @AlbumId
                     System.Data.SqlClient.SqlParameter pAlbumId = command.Parameters.Add("@AlbumId", System.Data.SqlDbType.Int);
                     if (albumId == null)
                     {
@@ -4385,6 +4721,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @GenreId
                     System.Data.SqlClient.SqlParameter pGenreId = command.Parameters.Add("@GenreId", System.Data.SqlDbType.Int);
                     if (genreId == null)
                     {
@@ -4419,6 +4757,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @GenreId
                     System.Data.SqlClient.SqlParameter pGenreId = command.Parameters.Add("@GenreId", System.Data.SqlDbType.Int);
                     if (genreId == null)
                     {
@@ -4445,6 +4785,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @MediaTypeId
                     System.Data.SqlClient.SqlParameter pMediaTypeId = command.Parameters.Add("@MediaTypeId", System.Data.SqlDbType.Int);
                     pMediaTypeId.Value = mediaTypeId;
 
@@ -4472,6 +4814,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @MediaTypeId
                     System.Data.SqlClient.SqlParameter pMediaTypeId = command.Parameters.Add("@MediaTypeId", System.Data.SqlDbType.Int);
                     pMediaTypeId.Value = mediaTypeId;
 
@@ -4491,6 +4835,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @TrackId
                     System.Data.SqlClient.SqlParameter pTrackId = command.Parameters.Add("@TrackId", System.Data.SqlDbType.Int);
                     pTrackId.Value = trackId;
 
@@ -4520,6 +4866,8 @@ namespace Generator.SimpleDataAccess.Samples
                 try
                 {
                     PopConnection(command);
+
+                    // Parameter settings: @TrackId
                     System.Data.SqlClient.SqlParameter pTrackId = command.Parameters.Add("@TrackId", System.Data.SqlDbType.Int);
                     pTrackId.Value = trackId;
 
@@ -4605,19 +4953,26 @@ namespace Generator.SimpleDataAccess.Samples
             }
         }
         
-        public void BeginTransaction()
+        public void BeginTransaction(System.Data.IsolationLevel isolationLevel = System.Data.IsolationLevel.Unspecified)
         {
             if (this.connection == null)
             {
                 this.connection = new System.Data.SqlClient.SqlConnection(this.connectionString);
                 this.connection.Open();
             }
-        
+                
             if (this.transaction == null)
             {
-                this.transaction = this.connection.BeginTransaction();
+                this.transaction = this.connection.BeginTransaction(isolationLevel);
             }
-        
+            else
+            {
+                if (this.transaction.IsolationLevel != isolationLevel)
+                {
+                    throw new InvalidOperationException("Transaction isolation level mismatch.");
+                }
+            }
+                
             ++this.transactionCounter;
         }
         

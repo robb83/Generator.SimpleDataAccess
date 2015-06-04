@@ -284,19 +284,26 @@ private void PushConnection(System.Data.SqlClient.SqlCommand command)
     }
 }
 
-public void BeginTransaction()
+public void BeginTransaction(System.Data.IsolationLevel isolationLevel = System.Data.IsolationLevel.Unspecified)
 {
     if (this.connection == null)
     {
         this.connection = new System.Data.SqlClient.SqlConnection(this.connectionString);
         this.connection.Open();
     }
-
+        
     if (this.transaction == null)
     {
-        this.transaction = this.connection.BeginTransaction();
+        this.transaction = this.connection.BeginTransaction(isolationLevel);
     }
-
+    else
+    {
+        if (this.transaction.IsolationLevel != isolationLevel)
+        {
+            throw new InvalidOperationException(""Transaction isolation level mismatch."");
+        }
+    }
+        
     ++this.transactionCounter;
 }
 

@@ -222,7 +222,8 @@ namespace Generator.SimpleDataAccess.Generators
 
             code.CodeBlockBegin("try");
             code.AppendLine("PopConnection(command);");
-
+            code.AppendLine();
+            
             GenerateSqlParameter(code, firstIndex, firstIndexLocalVariableName, firstIndexParameterName, System.Data.SqlDbType.Int, false, System.Data.ParameterDirection.Input, -1);
             code.AppendLine();
 
@@ -287,11 +288,14 @@ namespace Generator.SimpleDataAccess.Generators
             
             code.CodeBlockBegin("try");
             code.AppendLine("PopConnection(command);");
+            code.AppendLine();
 
             if (filteredColumns != null && filteredColumns.Count > 0)
             {
                 foreach (ColumnInfo columnInfo in filteredColumns)
                 {
+                    code.AppendLineFormat("// Parameter settings: {0}", columnInfo.ParameterName);
+
                     GenerateSqlParameter(code, 
                         columnInfo.LocalVariableName, 
                         columnInfo.LocalParameterVariableName, 
@@ -409,9 +413,12 @@ namespace Generator.SimpleDataAccess.Generators
             
             code.CodeBlockBegin("try");
             code.AppendLine("PopConnection(command);");
+            code.AppendLine();
 
             foreach (ColumnInfo columnInfo in editable)
             {
+                code.AppendLineFormat("// Parameter settings: {0}", columnInfo.ParameterName);
+
                 GenerateSqlParameter(
                     code,
                     String.Format("entity.{0}", columnInfo.PropertyName),
@@ -474,9 +481,12 @@ namespace Generator.SimpleDataAccess.Generators
             
             code.CodeBlockBegin("try");
             code.AppendLine("PopConnection(command);");
+            code.AppendLine();
 
             foreach (ColumnInfo columnInfo in key)
             {
+                code.AppendLineFormat("// Parameter settings: {0}", columnInfo.ParameterName);
+
                 GenerateSqlParameter(
                     code,
                     String.Format("entity.{0}", columnInfo.PropertyName),
@@ -491,6 +501,8 @@ namespace Generator.SimpleDataAccess.Generators
 
             foreach (ColumnInfo columnInfo in insertableColumns)
             {
+                code.AppendLineFormat("// Parameter settings: {0}", columnInfo.ParameterName);
+
                 GenerateSqlParameter(
                     code,
                     String.Format("entity.{0}", columnInfo.PropertyName),
@@ -505,6 +517,8 @@ namespace Generator.SimpleDataAccess.Generators
 
             foreach (ColumnInfo columnInfo in computedColumns)
             {
+                code.AppendLineFormat("// Parameter settings: {0}", columnInfo.ParameterName);
+
                 GenerateSqlParameter(
                     code,
                     String.Format("entity.{0}", columnInfo.PropertyName),
@@ -556,6 +570,7 @@ namespace Generator.SimpleDataAccess.Generators
             
             code.CodeBlockBegin("try");
             code.AppendLine("PopConnection(command);");
+            code.AppendLine();
 
             foreach (ColumnInfo columnInfo in insertableColumns)
             {
@@ -563,6 +578,8 @@ namespace Generator.SimpleDataAccess.Generators
                 {
                     throw new NotSupportedException("Computed columns are not insertable.");
                 }
+
+                code.AppendLineFormat("// Parameter settings: {0}", columnInfo.ParameterName);
 
                 GenerateSqlParameter(
                     code,
@@ -578,6 +595,8 @@ namespace Generator.SimpleDataAccess.Generators
 
             foreach (ColumnInfo columnInfo in computedColumns)
             {
+                code.AppendLineFormat("// Parameter settings: {0}", columnInfo.ParameterName);
+
                 GenerateSqlParameter(
                     code,
                     String.Format("entity.{0}", columnInfo.PropertyName),
@@ -593,6 +612,7 @@ namespace Generator.SimpleDataAccess.Generators
             if (computedColumns != null && computedColumns.Count > 0)
             {
                 code.AppendLine("command.ExecuteNonQuery();");
+                code.AppendLine();
 
                 foreach (var columnInfo in computedColumns)
                 {
@@ -646,11 +666,14 @@ namespace Generator.SimpleDataAccess.Generators
             
             code.CodeBlockBegin("try");
             code.AppendLine("PopConnection(command);");
+            code.AppendLine();
 
             if (filteredColumns != null && filteredColumns.Count > 0)
             {
                 foreach (ColumnInfo columnInfo in filteredColumns)
                 {
+                    code.AppendLineFormat("// Parameter settings: {0}", columnInfo.ParameterName);
+
                     GenerateSqlParameter(
                         code,
                         columnInfo.LocalVariableName,

@@ -97,137 +97,16 @@ namespace Generator.SimpleDataAccess.Generators
 
         public static String GenerateDelete(TableInfo table, List<ColumnInfo> filterColumns)
         {
+            if (filterColumns == null || filterColumns.Count == 0)
+            {
+                throw new NotSupportedException("Delete without filter.");
+            }
+
             StringBuilder script = new StringBuilder();
 
             script.AppendFormat("DELETE FROM [{0}].[{1}]", table.Schema, table.Name);
 
             GenerateWhereClause(script, filterColumns);
-
-            return script.ToString();
-        }
-        
-        public static String GenerateMerge(TableInfo tableInfo, List<ColumnInfo> key)
-        {
-            if (key == null || key.Count == 0)
-            {
-                throw new NotSupportedException("No key");
-            }
-
-            StringBuilder script = new StringBuilder();
-
-            script.AppendFormat("MERGE [{0}].[{1}] AS T USING (SELECT ", tableInfo.Schema, tableInfo.Name);
-
-            if (tableInfo.Columns.Count > 0)
-            {
-                int counter = 0;
-                script.Append(tableInfo.Columns[counter++].ParameterName);
-
-                while (counter < tableInfo.Columns.Count)
-                {
-                    script.Append(", ");
-                    script.Append(tableInfo.Columns[counter++].ParameterName);
-                }
-            }
-
-            script.Append(") AS S (");
-
-            if (tableInfo.Columns.Count > 0)
-            {
-                int counter = 0;
-                script.Append(tableInfo.Columns[counter++].Name);
-
-                while (counter < tableInfo.Columns.Count)
-                {
-                    script.AppendFormat(", [{0}]", tableInfo.Columns[counter++].Name);
-                }
-            }
-
-            script.Append(") ON (");
-
-            if (key.Count > 0)
-            {
-                int counter = 0;
-                script.AppendFormat("S.[{0}] = T.[{0}]", key[counter++].Name);
-
-                while (counter < key.Count)
-                {
-                    script.AppendFormat(" AND S.[{0}] = T.[{0}]", key[counter++].Name);
-                }
-            }
-
-            script.Append(")");
-
-            if (tableInfo.Columns.Count > 0)
-            {
-                StringBuilder subScript = new StringBuilder();
-
-                foreach (ColumnInfo columnInfo in tableInfo.Columns)
-                {
-                    if (columnInfo.IsComputed || columnInfo.IsIdentity || key.Contains(columnInfo))
-                    {
-                        continue;
-                    }
-
-                    if (subScript.Length > 0)
-                    {
-                        subScript.Append(", ");
-                    }
-                    subScript.AppendFormat("[{0}] = S.[{0}]", columnInfo.Name);
-                }
-
-                script.AppendFormat(" WHEN MATCHED THEN UPDATE SET {0}", subScript.ToString());
-            }
-
-            if (tableInfo.Columns.Count > 0)
-            {
-                StringBuilder subScript1 = new StringBuilder();
-                StringBuilder subScript2 = new StringBuilder();
-
-                foreach (ColumnInfo columnInfo in tableInfo.Columns)
-                {
-                    if (columnInfo.IsComputed || columnInfo.IsIdentity)
-                    {
-                        continue;
-                    }
-
-                    if (subScript1.Length > 0)
-                    {
-                        subScript1.Append(", ");
-                    }
-
-                    if (subScript2.Length > 0)
-                    {
-                        subScript2.Append(", ");
-                    }
-
-                    subScript1.AppendFormat("[{0}]", columnInfo.Name);
-                    subScript2.AppendFormat("S.[{0}]", columnInfo.Name);
-                }
-                
-                script.AppendFormat(" WHEN NOT MATCHED THEN INSERT ({0}) VALUES ({1})", subScript1.ToString(), subScript2.ToString());
-            }
-
-            if (tableInfo.HasComputedColumns() || tableInfo.HasIdentityColumn())
-            {
-                StringBuilder subScript = new StringBuilder();
-                
-                foreach (ColumnInfo columnInfo in tableInfo.Columns)
-                {
-                    if (!columnInfo.IsComputed && !columnInfo.IsIdentity)
-                    {
-                        continue;
-                    }
-                    
-                    if (subScript.Length > 0)
-                    {
-                        subScript.Append(", ");
-                    }
-                    subScript.AppendFormat("inserted.[{0}]", columnInfo.Name);
-                }
-
-                script.AppendFormat(" OUTPUT {0}", subScript.ToString());
-            }
-            script.Append(";");
 
             return script.ToString();
         }
