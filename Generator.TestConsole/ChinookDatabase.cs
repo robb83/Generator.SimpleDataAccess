@@ -158,19 +158,19 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("MERGE [dbo].[Album] AS T USING (SELECT @AlbumId, @Title, @ArtistId) AS S (AlbumId, [Title], [ArtistId]) ON (S.[AlbumId] = T.[AlbumId]) WHEN MATCHED THEN UPDATE SET [Title] = S.[Title], [ArtistId] = S.[ArtistId] WHEN NOT MATCHED THEN INSERT ([Title], [ArtistId]) VALUES (S.[Title], S.[ArtistId]) OUTPUT inserted.[AlbumId];"))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("MERGE [dbo].[Album] AS T USING (SELECT @AlbumId, @Title, @ArtistId) AS S ([AlbumId], [Title], [ArtistId]) ON (S.[AlbumId] = T.[AlbumId]) WHEN MATCHED THEN UPDATE SET [Title] = S.[Title], [ArtistId] = S.[ArtistId] WHEN NOT MATCHED THEN INSERT ([Title], [ArtistId]) VALUES (S.[Title], S.[ArtistId]) OUTPUT inserted.[AlbumId];"))
             {
                 try
                 {
                     PopConnection(command);
-                    System.Data.SqlClient.SqlParameter pAlbumId = command.Parameters.Add("@AlbumId", System.Data.SqlDbType.Int);
-                    pAlbumId.Value = entity.AlbumId;
-
                     System.Data.SqlClient.SqlParameter pTitle = command.Parameters.Add("@Title", System.Data.SqlDbType.NVarChar, 320);
                     pTitle.Value = entity.Title;
 
                     System.Data.SqlClient.SqlParameter pArtistId = command.Parameters.Add("@ArtistId", System.Data.SqlDbType.Int);
                     pArtistId.Value = entity.ArtistId;
+
+                    System.Data.SqlClient.SqlParameter pAlbumId = command.Parameters.Add("@AlbumId", System.Data.SqlDbType.Int);
+                    pAlbumId.Value = entity.AlbumId;
 
                     using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
                     {
@@ -212,14 +212,12 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pAlbumId = command.Parameters.Add("@AlbumId", System.Data.SqlDbType.Int);
                     pAlbumId.Direction = System.Data.ParameterDirection.Output;
 
-                    if (command.ExecuteNonQuery() > 0)
+                    command.ExecuteNonQuery();
+                    if (pAlbumId.Value == System.DBNull.Value)
                     {
-                        entity.AlbumId = (System.Int32)pAlbumId.Value;
+                        throw new InvalidOperationException("Invalid output value: pAlbumId");
                     }
-                    else
-                    {
-                        throw new InvalidOperationException("Insert failed.");
-                    }
+                    entity.AlbumId = (System.Int32)pAlbumId.Value;
                 }
                 finally
                 {
@@ -249,10 +247,7 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pArtistId = command.Parameters.Add("@ArtistId", System.Data.SqlDbType.Int);
                     pArtistId.Value = entity.ArtistId;
 
-                    if (command.ExecuteNonQuery() > 0)
-                    {
-                    }
-                    else
+                    if (command.ExecuteNonQuery() <= 0)
                     {
                         throw new InvalidOperationException("Update failed.");
                     }
@@ -458,14 +453,11 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("MERGE [dbo].[Artist] AS T USING (SELECT @ArtistId, @Name) AS S (ArtistId, [Name]) ON (S.[ArtistId] = T.[ArtistId]) WHEN MATCHED THEN UPDATE SET [Name] = S.[Name] WHEN NOT MATCHED THEN INSERT ([Name]) VALUES (S.[Name]) OUTPUT inserted.[ArtistId];"))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("MERGE [dbo].[Artist] AS T USING (SELECT @ArtistId, @Name) AS S ([ArtistId], [Name]) ON (S.[ArtistId] = T.[ArtistId]) WHEN MATCHED THEN UPDATE SET [Name] = S.[Name] WHEN NOT MATCHED THEN INSERT ([Name]) VALUES (S.[Name]) OUTPUT inserted.[ArtistId];"))
             {
                 try
                 {
                     PopConnection(command);
-                    System.Data.SqlClient.SqlParameter pArtistId = command.Parameters.Add("@ArtistId", System.Data.SqlDbType.Int);
-                    pArtistId.Value = entity.ArtistId;
-
                     System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar, 240);
                     if (entity.Name == null)
                     {
@@ -475,6 +467,9 @@ namespace Generator.SimpleDataAccess.Samples
                     {
                         pName.Value = entity.Name;
                     }
+
+                    System.Data.SqlClient.SqlParameter pArtistId = command.Parameters.Add("@ArtistId", System.Data.SqlDbType.Int);
+                    pArtistId.Value = entity.ArtistId;
 
                     using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
                     {
@@ -520,14 +515,12 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pArtistId = command.Parameters.Add("@ArtistId", System.Data.SqlDbType.Int);
                     pArtistId.Direction = System.Data.ParameterDirection.Output;
 
-                    if (command.ExecuteNonQuery() > 0)
+                    command.ExecuteNonQuery();
+                    if (pArtistId.Value == System.DBNull.Value)
                     {
-                        entity.ArtistId = (System.Int32)pArtistId.Value;
+                        throw new InvalidOperationException("Invalid output value: pArtistId");
                     }
-                    else
-                    {
-                        throw new InvalidOperationException("Insert failed.");
-                    }
+                    entity.ArtistId = (System.Int32)pArtistId.Value;
                 }
                 finally
                 {
@@ -561,10 +554,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pName.Value = entity.Name;
                     }
 
-                    if (command.ExecuteNonQuery() > 0)
-                    {
-                    }
-                    else
+                    if (command.ExecuteNonQuery() <= 0)
                     {
                         throw new InvalidOperationException("Update failed.");
                     }
@@ -745,14 +735,11 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("MERGE [dbo].[Customer] AS T USING (SELECT @CustomerId, @FirstName, @LastName, @Company, @Address, @City, @State, @Country, @PostalCode, @Phone, @Fax, @Email, @SupportRepId, @FullName, @Comment, @FullDetail) AS S (CustomerId, [FirstName], [LastName], [Company], [Address], [City], [State], [Country], [PostalCode], [Phone], [Fax], [Email], [SupportRepId], [FullName], [Comment], [FullDetail]) ON (S.[CustomerId] = T.[CustomerId]) WHEN MATCHED THEN UPDATE SET [FirstName] = S.[FirstName], [LastName] = S.[LastName], [Company] = S.[Company], [Address] = S.[Address], [City] = S.[City], [State] = S.[State], [Country] = S.[Country], [PostalCode] = S.[PostalCode], [Phone] = S.[Phone], [Fax] = S.[Fax], [Email] = S.[Email], [SupportRepId] = S.[SupportRepId], [Comment] = S.[Comment] WHEN NOT MATCHED THEN INSERT ([FirstName], [LastName], [Company], [Address], [City], [State], [Country], [PostalCode], [Phone], [Fax], [Email], [SupportRepId], [Comment]) VALUES (S.[FirstName], S.[LastName], S.[Company], S.[Address], S.[City], S.[State], S.[Country], S.[PostalCode], S.[Phone], S.[Fax], S.[Email], S.[SupportRepId], S.[Comment]) OUTPUT inserted.[CustomerId], inserted.[FullName], inserted.[FullDetail];"))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("MERGE [dbo].[Customer] AS T USING (SELECT @CustomerId, @FirstName, @LastName, @Company, @Address, @City, @State, @Country, @PostalCode, @Phone, @Fax, @Email, @SupportRepId, @Comment) AS S ([CustomerId], [FirstName], [LastName], [Company], [Address], [City], [State], [Country], [PostalCode], [Phone], [Fax], [Email], [SupportRepId], [Comment]) ON (S.[CustomerId] = T.[CustomerId]) WHEN MATCHED THEN UPDATE SET [FirstName] = S.[FirstName], [LastName] = S.[LastName], [Company] = S.[Company], [Address] = S.[Address], [City] = S.[City], [State] = S.[State], [Country] = S.[Country], [PostalCode] = S.[PostalCode], [Phone] = S.[Phone], [Fax] = S.[Fax], [Email] = S.[Email], [SupportRepId] = S.[SupportRepId], [Comment] = S.[Comment] WHEN NOT MATCHED THEN INSERT ([FirstName], [LastName], [Company], [Address], [City], [State], [Country], [PostalCode], [Phone], [Fax], [Email], [SupportRepId], [Comment]) VALUES (S.[FirstName], S.[LastName], S.[Company], S.[Address], S.[City], S.[State], S.[Country], S.[PostalCode], S.[Phone], S.[Fax], S.[Email], S.[SupportRepId], S.[Comment]) OUTPUT inserted.[CustomerId], inserted.[FullName], inserted.[FullDetail];"))
             {
                 try
                 {
                     PopConnection(command);
-                    System.Data.SqlClient.SqlParameter pCustomerId = command.Parameters.Add("@CustomerId", System.Data.SqlDbType.Int);
-                    pCustomerId.Value = entity.CustomerId;
-
                     System.Data.SqlClient.SqlParameter pFirstName = command.Parameters.Add("@FirstName", System.Data.SqlDbType.NVarChar, 80);
                     pFirstName.Value = entity.FirstName;
 
@@ -852,9 +839,6 @@ namespace Generator.SimpleDataAccess.Samples
                         pSupportRepId.Value = entity.SupportRepId;
                     }
 
-                    System.Data.SqlClient.SqlParameter pFullName = command.Parameters.Add("@FullName", System.Data.SqlDbType.NVarChar, 122);
-                    pFullName.Direction = System.Data.ParameterDirection.Output;
-
                     System.Data.SqlClient.SqlParameter pComment = command.Parameters.Add("@Comment", System.Data.SqlDbType.NVarChar, -1);
                     if (entity.Comment == null)
                     {
@@ -865,8 +849,8 @@ namespace Generator.SimpleDataAccess.Samples
                         pComment.Value = entity.Comment;
                     }
 
-                    System.Data.SqlClient.SqlParameter pFullDetail = command.Parameters.Add("@FullDetail", System.Data.SqlDbType.NVarChar, -1);
-                    pFullDetail.Direction = System.Data.ParameterDirection.Output;
+                    System.Data.SqlClient.SqlParameter pCustomerId = command.Parameters.Add("@CustomerId", System.Data.SqlDbType.Int);
+                    pCustomerId.Value = entity.CustomerId;
 
                     using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
                     {
@@ -1019,22 +1003,24 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pFullDetail = command.Parameters.Add("@FullDetail", System.Data.SqlDbType.NVarChar, -1);
                     pFullDetail.Direction = System.Data.ParameterDirection.Output;
 
-                    if (command.ExecuteNonQuery() > 0)
+                    command.ExecuteNonQuery();
+                    if (pCustomerId.Value == System.DBNull.Value)
                     {
-                        entity.CustomerId = (System.Int32)pCustomerId.Value;
-                        entity.FullName = (System.String)pFullName.Value;
-                        if (pFullDetail.Value == System.DBNull.Value)
-                        {
-                            entity.FullDetail = null;
-                        }
-                        else
-                        {
-                            entity.FullDetail = (System.String)pFullDetail.Value;
-                        }
+                        throw new InvalidOperationException("Invalid output value: pCustomerId");
+                    }
+                    entity.CustomerId = (System.Int32)pCustomerId.Value;
+                    if (pFullName.Value == System.DBNull.Value)
+                    {
+                        throw new InvalidOperationException("Invalid output value: pFullName");
+                    }
+                    entity.FullName = (System.String)pFullName.Value;
+                    if (pFullDetail.Value == System.DBNull.Value)
+                    {
+                        entity.FullDetail = null;
                     }
                     else
                     {
-                        throw new InvalidOperationException("Insert failed.");
+                        entity.FullDetail = (System.String)pFullDetail.Value;
                     }
                 }
                 finally
@@ -1174,21 +1160,19 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pFullDetail = command.Parameters.Add("@FullDetail", System.Data.SqlDbType.NVarChar, -1);
                     pFullDetail.Direction = System.Data.ParameterDirection.Output;
 
-                    if (command.ExecuteNonQuery() > 0)
+                    command.ExecuteNonQuery();
+                    if (pFullName.Value == System.DBNull.Value)
                     {
-                        entity.FullName = (System.String)pFullName.Value;
-                        if (pFullDetail.Value == System.DBNull.Value)
-                        {
-                            entity.FullDetail = null;
-                        }
-                        else
-                        {
-                            entity.FullDetail = (System.String)pFullDetail.Value;
-                        }
+                        throw new InvalidOperationException("Invalid output value: pFullName");
+                    }
+                    entity.FullName = (System.String)pFullName.Value;
+                    if (pFullDetail.Value == System.DBNull.Value)
+                    {
+                        entity.FullDetail = null;
                     }
                     else
                     {
-                        throw new InvalidOperationException("Update failed.");
+                        entity.FullDetail = (System.String)pFullDetail.Value;
                     }
                 }
                 finally
@@ -1440,14 +1424,11 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("MERGE [dbo].[Employee] AS T USING (SELECT @EmployeeId, @LastName, @FirstName, @Title, @ReportsTo, @BirthDate, @HireDate, @Address, @City, @State, @Country, @PostalCode, @Phone, @Fax, @Email) AS S (EmployeeId, [LastName], [FirstName], [Title], [ReportsTo], [BirthDate], [HireDate], [Address], [City], [State], [Country], [PostalCode], [Phone], [Fax], [Email]) ON (S.[EmployeeId] = T.[EmployeeId]) WHEN MATCHED THEN UPDATE SET [LastName] = S.[LastName], [FirstName] = S.[FirstName], [Title] = S.[Title], [ReportsTo] = S.[ReportsTo], [BirthDate] = S.[BirthDate], [HireDate] = S.[HireDate], [Address] = S.[Address], [City] = S.[City], [State] = S.[State], [Country] = S.[Country], [PostalCode] = S.[PostalCode], [Phone] = S.[Phone], [Fax] = S.[Fax], [Email] = S.[Email] WHEN NOT MATCHED THEN INSERT ([LastName], [FirstName], [Title], [ReportsTo], [BirthDate], [HireDate], [Address], [City], [State], [Country], [PostalCode], [Phone], [Fax], [Email]) VALUES (S.[LastName], S.[FirstName], S.[Title], S.[ReportsTo], S.[BirthDate], S.[HireDate], S.[Address], S.[City], S.[State], S.[Country], S.[PostalCode], S.[Phone], S.[Fax], S.[Email]) OUTPUT inserted.[EmployeeId];"))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("MERGE [dbo].[Employee] AS T USING (SELECT @EmployeeId, @LastName, @FirstName, @Title, @ReportsTo, @BirthDate, @HireDate, @Address, @City, @State, @Country, @PostalCode, @Phone, @Fax, @Email) AS S ([EmployeeId], [LastName], [FirstName], [Title], [ReportsTo], [BirthDate], [HireDate], [Address], [City], [State], [Country], [PostalCode], [Phone], [Fax], [Email]) ON (S.[EmployeeId] = T.[EmployeeId]) WHEN MATCHED THEN UPDATE SET [LastName] = S.[LastName], [FirstName] = S.[FirstName], [Title] = S.[Title], [ReportsTo] = S.[ReportsTo], [BirthDate] = S.[BirthDate], [HireDate] = S.[HireDate], [Address] = S.[Address], [City] = S.[City], [State] = S.[State], [Country] = S.[Country], [PostalCode] = S.[PostalCode], [Phone] = S.[Phone], [Fax] = S.[Fax], [Email] = S.[Email] WHEN NOT MATCHED THEN INSERT ([LastName], [FirstName], [Title], [ReportsTo], [BirthDate], [HireDate], [Address], [City], [State], [Country], [PostalCode], [Phone], [Fax], [Email]) VALUES (S.[LastName], S.[FirstName], S.[Title], S.[ReportsTo], S.[BirthDate], S.[HireDate], S.[Address], S.[City], S.[State], S.[Country], S.[PostalCode], S.[Phone], S.[Fax], S.[Email]) OUTPUT inserted.[EmployeeId];"))
             {
                 try
                 {
                     PopConnection(command);
-                    System.Data.SqlClient.SqlParameter pEmployeeId = command.Parameters.Add("@EmployeeId", System.Data.SqlDbType.Int);
-                    pEmployeeId.Value = entity.EmployeeId;
-
                     System.Data.SqlClient.SqlParameter pLastName = command.Parameters.Add("@LastName", System.Data.SqlDbType.NVarChar, 40);
                     pLastName.Value = entity.LastName;
 
@@ -1573,6 +1554,9 @@ namespace Generator.SimpleDataAccess.Samples
                     {
                         pEmail.Value = entity.Email;
                     }
+
+                    System.Data.SqlClient.SqlParameter pEmployeeId = command.Parameters.Add("@EmployeeId", System.Data.SqlDbType.Int);
+                    pEmployeeId.Value = entity.EmployeeId;
 
                     using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
                     {
@@ -1734,14 +1718,12 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pEmployeeId = command.Parameters.Add("@EmployeeId", System.Data.SqlDbType.Int);
                     pEmployeeId.Direction = System.Data.ParameterDirection.Output;
 
-                    if (command.ExecuteNonQuery() > 0)
+                    command.ExecuteNonQuery();
+                    if (pEmployeeId.Value == System.DBNull.Value)
                     {
-                        entity.EmployeeId = (System.Int32)pEmployeeId.Value;
+                        throw new InvalidOperationException("Invalid output value: pEmployeeId");
                     }
-                    else
-                    {
-                        throw new InvalidOperationException("Insert failed.");
-                    }
+                    entity.EmployeeId = (System.Int32)pEmployeeId.Value;
                 }
                 finally
                 {
@@ -1891,10 +1873,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pEmail.Value = entity.Email;
                     }
 
-                    if (command.ExecuteNonQuery() > 0)
-                    {
-                    }
-                    else
+                    if (command.ExecuteNonQuery() <= 0)
                     {
                         throw new InvalidOperationException("Update failed.");
                     }
@@ -2114,14 +2093,11 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("MERGE [dbo].[Genre] AS T USING (SELECT @GenreId, @Name) AS S (GenreId, [Name]) ON (S.[GenreId] = T.[GenreId]) WHEN MATCHED THEN UPDATE SET [Name] = S.[Name] WHEN NOT MATCHED THEN INSERT ([Name]) VALUES (S.[Name]) OUTPUT inserted.[GenreId];"))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("MERGE [dbo].[Genre] AS T USING (SELECT @GenreId, @Name) AS S ([GenreId], [Name]) ON (S.[GenreId] = T.[GenreId]) WHEN MATCHED THEN UPDATE SET [Name] = S.[Name] WHEN NOT MATCHED THEN INSERT ([Name]) VALUES (S.[Name]) OUTPUT inserted.[GenreId];"))
             {
                 try
                 {
                     PopConnection(command);
-                    System.Data.SqlClient.SqlParameter pGenreId = command.Parameters.Add("@GenreId", System.Data.SqlDbType.Int);
-                    pGenreId.Value = entity.GenreId;
-
                     System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar, 240);
                     if (entity.Name == null)
                     {
@@ -2131,6 +2107,9 @@ namespace Generator.SimpleDataAccess.Samples
                     {
                         pName.Value = entity.Name;
                     }
+
+                    System.Data.SqlClient.SqlParameter pGenreId = command.Parameters.Add("@GenreId", System.Data.SqlDbType.Int);
+                    pGenreId.Value = entity.GenreId;
 
                     using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
                     {
@@ -2176,14 +2155,12 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pGenreId = command.Parameters.Add("@GenreId", System.Data.SqlDbType.Int);
                     pGenreId.Direction = System.Data.ParameterDirection.Output;
 
-                    if (command.ExecuteNonQuery() > 0)
+                    command.ExecuteNonQuery();
+                    if (pGenreId.Value == System.DBNull.Value)
                     {
-                        entity.GenreId = (System.Int32)pGenreId.Value;
+                        throw new InvalidOperationException("Invalid output value: pGenreId");
                     }
-                    else
-                    {
-                        throw new InvalidOperationException("Insert failed.");
-                    }
+                    entity.GenreId = (System.Int32)pGenreId.Value;
                 }
                 finally
                 {
@@ -2217,10 +2194,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pName.Value = entity.Name;
                     }
 
-                    if (command.ExecuteNonQuery() > 0)
-                    {
-                    }
-                    else
+                    if (command.ExecuteNonQuery() <= 0)
                     {
                         throw new InvalidOperationException("Update failed.");
                     }
@@ -2387,14 +2361,11 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("MERGE [dbo].[Invoice] AS T USING (SELECT @InvoiceId, @CustomerId, @InvoiceDate, @BillingAddress, @BillingCity, @BillingState, @BillingCountry, @BillingPostalCode, @Total) AS S (InvoiceId, [CustomerId], [InvoiceDate], [BillingAddress], [BillingCity], [BillingState], [BillingCountry], [BillingPostalCode], [Total]) ON (S.[InvoiceId] = T.[InvoiceId]) WHEN MATCHED THEN UPDATE SET [CustomerId] = S.[CustomerId], [InvoiceDate] = S.[InvoiceDate], [BillingAddress] = S.[BillingAddress], [BillingCity] = S.[BillingCity], [BillingState] = S.[BillingState], [BillingCountry] = S.[BillingCountry], [BillingPostalCode] = S.[BillingPostalCode], [Total] = S.[Total] WHEN NOT MATCHED THEN INSERT ([CustomerId], [InvoiceDate], [BillingAddress], [BillingCity], [BillingState], [BillingCountry], [BillingPostalCode], [Total]) VALUES (S.[CustomerId], S.[InvoiceDate], S.[BillingAddress], S.[BillingCity], S.[BillingState], S.[BillingCountry], S.[BillingPostalCode], S.[Total]) OUTPUT inserted.[InvoiceId];"))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("MERGE [dbo].[Invoice] AS T USING (SELECT @InvoiceId, @CustomerId, @InvoiceDate, @BillingAddress, @BillingCity, @BillingState, @BillingCountry, @BillingPostalCode, @Total) AS S ([InvoiceId], [CustomerId], [InvoiceDate], [BillingAddress], [BillingCity], [BillingState], [BillingCountry], [BillingPostalCode], [Total]) ON (S.[InvoiceId] = T.[InvoiceId]) WHEN MATCHED THEN UPDATE SET [CustomerId] = S.[CustomerId], [InvoiceDate] = S.[InvoiceDate], [BillingAddress] = S.[BillingAddress], [BillingCity] = S.[BillingCity], [BillingState] = S.[BillingState], [BillingCountry] = S.[BillingCountry], [BillingPostalCode] = S.[BillingPostalCode], [Total] = S.[Total] WHEN NOT MATCHED THEN INSERT ([CustomerId], [InvoiceDate], [BillingAddress], [BillingCity], [BillingState], [BillingCountry], [BillingPostalCode], [Total]) VALUES (S.[CustomerId], S.[InvoiceDate], S.[BillingAddress], S.[BillingCity], S.[BillingState], S.[BillingCountry], S.[BillingPostalCode], S.[Total]) OUTPUT inserted.[InvoiceId];"))
             {
                 try
                 {
                     PopConnection(command);
-                    System.Data.SqlClient.SqlParameter pInvoiceId = command.Parameters.Add("@InvoiceId", System.Data.SqlDbType.Int);
-                    pInvoiceId.Value = entity.InvoiceId;
-
                     System.Data.SqlClient.SqlParameter pCustomerId = command.Parameters.Add("@CustomerId", System.Data.SqlDbType.Int);
                     pCustomerId.Value = entity.CustomerId;
 
@@ -2453,6 +2424,9 @@ namespace Generator.SimpleDataAccess.Samples
 
                     System.Data.SqlClient.SqlParameter pTotal = command.Parameters.Add("@Total", System.Data.SqlDbType.Decimal);
                     pTotal.Value = entity.Total;
+
+                    System.Data.SqlClient.SqlParameter pInvoiceId = command.Parameters.Add("@InvoiceId", System.Data.SqlDbType.Int);
+                    pInvoiceId.Value = entity.InvoiceId;
 
                     using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
                     {
@@ -2547,14 +2521,12 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pInvoiceId = command.Parameters.Add("@InvoiceId", System.Data.SqlDbType.Int);
                     pInvoiceId.Direction = System.Data.ParameterDirection.Output;
 
-                    if (command.ExecuteNonQuery() > 0)
+                    command.ExecuteNonQuery();
+                    if (pInvoiceId.Value == System.DBNull.Value)
                     {
-                        entity.InvoiceId = (System.Int32)pInvoiceId.Value;
+                        throw new InvalidOperationException("Invalid output value: pInvoiceId");
                     }
-                    else
-                    {
-                        throw new InvalidOperationException("Insert failed.");
-                    }
+                    entity.InvoiceId = (System.Int32)pInvoiceId.Value;
                 }
                 finally
                 {
@@ -2637,10 +2609,7 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pTotal = command.Parameters.Add("@Total", System.Data.SqlDbType.Decimal);
                     pTotal.Value = entity.Total;
 
-                    if (command.ExecuteNonQuery() > 0)
-                    {
-                    }
-                    else
+                    if (command.ExecuteNonQuery() <= 0)
                     {
                         throw new InvalidOperationException("Update failed.");
                     }
@@ -2849,14 +2818,11 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("MERGE [dbo].[InvoiceLine] AS T USING (SELECT @InvoiceLineId, @InvoiceId, @TrackId, @UnitPrice, @Quantity) AS S (InvoiceLineId, [InvoiceId], [TrackId], [UnitPrice], [Quantity]) ON (S.[InvoiceLineId] = T.[InvoiceLineId]) WHEN MATCHED THEN UPDATE SET [InvoiceId] = S.[InvoiceId], [TrackId] = S.[TrackId], [UnitPrice] = S.[UnitPrice], [Quantity] = S.[Quantity] WHEN NOT MATCHED THEN INSERT ([InvoiceId], [TrackId], [UnitPrice], [Quantity]) VALUES (S.[InvoiceId], S.[TrackId], S.[UnitPrice], S.[Quantity]) OUTPUT inserted.[InvoiceLineId];"))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("MERGE [dbo].[InvoiceLine] AS T USING (SELECT @InvoiceLineId, @InvoiceId, @TrackId, @UnitPrice, @Quantity) AS S ([InvoiceLineId], [InvoiceId], [TrackId], [UnitPrice], [Quantity]) ON (S.[InvoiceLineId] = T.[InvoiceLineId]) WHEN MATCHED THEN UPDATE SET [InvoiceId] = S.[InvoiceId], [TrackId] = S.[TrackId], [UnitPrice] = S.[UnitPrice], [Quantity] = S.[Quantity] WHEN NOT MATCHED THEN INSERT ([InvoiceId], [TrackId], [UnitPrice], [Quantity]) VALUES (S.[InvoiceId], S.[TrackId], S.[UnitPrice], S.[Quantity]) OUTPUT inserted.[InvoiceLineId];"))
             {
                 try
                 {
                     PopConnection(command);
-                    System.Data.SqlClient.SqlParameter pInvoiceLineId = command.Parameters.Add("@InvoiceLineId", System.Data.SqlDbType.Int);
-                    pInvoiceLineId.Value = entity.InvoiceLineId;
-
                     System.Data.SqlClient.SqlParameter pInvoiceId = command.Parameters.Add("@InvoiceId", System.Data.SqlDbType.Int);
                     pInvoiceId.Value = entity.InvoiceId;
 
@@ -2868,6 +2834,9 @@ namespace Generator.SimpleDataAccess.Samples
 
                     System.Data.SqlClient.SqlParameter pQuantity = command.Parameters.Add("@Quantity", System.Data.SqlDbType.Int);
                     pQuantity.Value = entity.Quantity;
+
+                    System.Data.SqlClient.SqlParameter pInvoiceLineId = command.Parameters.Add("@InvoiceLineId", System.Data.SqlDbType.Int);
+                    pInvoiceLineId.Value = entity.InvoiceLineId;
 
                     using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
                     {
@@ -2915,14 +2884,12 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pInvoiceLineId = command.Parameters.Add("@InvoiceLineId", System.Data.SqlDbType.Int);
                     pInvoiceLineId.Direction = System.Data.ParameterDirection.Output;
 
-                    if (command.ExecuteNonQuery() > 0)
+                    command.ExecuteNonQuery();
+                    if (pInvoiceLineId.Value == System.DBNull.Value)
                     {
-                        entity.InvoiceLineId = (System.Int32)pInvoiceLineId.Value;
+                        throw new InvalidOperationException("Invalid output value: pInvoiceLineId");
                     }
-                    else
-                    {
-                        throw new InvalidOperationException("Insert failed.");
-                    }
+                    entity.InvoiceLineId = (System.Int32)pInvoiceLineId.Value;
                 }
                 finally
                 {
@@ -2958,10 +2925,7 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pQuantity = command.Parameters.Add("@Quantity", System.Data.SqlDbType.Int);
                     pQuantity.Value = entity.Quantity;
 
-                    if (command.ExecuteNonQuery() > 0)
-                    {
-                    }
-                    else
+                    if (command.ExecuteNonQuery() <= 0)
                     {
                         throw new InvalidOperationException("Update failed.");
                     }
@@ -3213,14 +3177,11 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("MERGE [dbo].[MediaType] AS T USING (SELECT @MediaTypeId, @Name) AS S (MediaTypeId, [Name]) ON (S.[MediaTypeId] = T.[MediaTypeId]) WHEN MATCHED THEN UPDATE SET [Name] = S.[Name] WHEN NOT MATCHED THEN INSERT ([Name]) VALUES (S.[Name]) OUTPUT inserted.[MediaTypeId];"))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("MERGE [dbo].[MediaType] AS T USING (SELECT @MediaTypeId, @Name) AS S ([MediaTypeId], [Name]) ON (S.[MediaTypeId] = T.[MediaTypeId]) WHEN MATCHED THEN UPDATE SET [Name] = S.[Name] WHEN NOT MATCHED THEN INSERT ([Name]) VALUES (S.[Name]) OUTPUT inserted.[MediaTypeId];"))
             {
                 try
                 {
                     PopConnection(command);
-                    System.Data.SqlClient.SqlParameter pMediaTypeId = command.Parameters.Add("@MediaTypeId", System.Data.SqlDbType.Int);
-                    pMediaTypeId.Value = entity.MediaTypeId;
-
                     System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar, 240);
                     if (entity.Name == null)
                     {
@@ -3230,6 +3191,9 @@ namespace Generator.SimpleDataAccess.Samples
                     {
                         pName.Value = entity.Name;
                     }
+
+                    System.Data.SqlClient.SqlParameter pMediaTypeId = command.Parameters.Add("@MediaTypeId", System.Data.SqlDbType.Int);
+                    pMediaTypeId.Value = entity.MediaTypeId;
 
                     using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
                     {
@@ -3275,14 +3239,12 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pMediaTypeId = command.Parameters.Add("@MediaTypeId", System.Data.SqlDbType.Int);
                     pMediaTypeId.Direction = System.Data.ParameterDirection.Output;
 
-                    if (command.ExecuteNonQuery() > 0)
+                    command.ExecuteNonQuery();
+                    if (pMediaTypeId.Value == System.DBNull.Value)
                     {
-                        entity.MediaTypeId = (System.Int32)pMediaTypeId.Value;
+                        throw new InvalidOperationException("Invalid output value: pMediaTypeId");
                     }
-                    else
-                    {
-                        throw new InvalidOperationException("Insert failed.");
-                    }
+                    entity.MediaTypeId = (System.Int32)pMediaTypeId.Value;
                 }
                 finally
                 {
@@ -3316,10 +3278,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pName.Value = entity.Name;
                     }
 
-                    if (command.ExecuteNonQuery() > 0)
-                    {
-                    }
-                    else
+                    if (command.ExecuteNonQuery() <= 0)
                     {
                         throw new InvalidOperationException("Update failed.");
                     }
@@ -3479,14 +3438,11 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("MERGE [dbo].[Playlist] AS T USING (SELECT @PlaylistId, @Name) AS S (PlaylistId, [Name]) ON (S.[PlaylistId] = T.[PlaylistId]) WHEN MATCHED THEN UPDATE SET [Name] = S.[Name] WHEN NOT MATCHED THEN INSERT ([Name]) VALUES (S.[Name]) OUTPUT inserted.[PlaylistId];"))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("MERGE [dbo].[Playlist] AS T USING (SELECT @PlaylistId, @Name) AS S ([PlaylistId], [Name]) ON (S.[PlaylistId] = T.[PlaylistId]) WHEN MATCHED THEN UPDATE SET [Name] = S.[Name] WHEN NOT MATCHED THEN INSERT ([Name]) VALUES (S.[Name]) OUTPUT inserted.[PlaylistId];"))
             {
                 try
                 {
                     PopConnection(command);
-                    System.Data.SqlClient.SqlParameter pPlaylistId = command.Parameters.Add("@PlaylistId", System.Data.SqlDbType.Int);
-                    pPlaylistId.Value = entity.PlaylistId;
-
                     System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar, 240);
                     if (entity.Name == null)
                     {
@@ -3496,6 +3452,9 @@ namespace Generator.SimpleDataAccess.Samples
                     {
                         pName.Value = entity.Name;
                     }
+
+                    System.Data.SqlClient.SqlParameter pPlaylistId = command.Parameters.Add("@PlaylistId", System.Data.SqlDbType.Int);
+                    pPlaylistId.Value = entity.PlaylistId;
 
                     using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
                     {
@@ -3541,14 +3500,12 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pPlaylistId = command.Parameters.Add("@PlaylistId", System.Data.SqlDbType.Int);
                     pPlaylistId.Direction = System.Data.ParameterDirection.Output;
 
-                    if (command.ExecuteNonQuery() > 0)
+                    command.ExecuteNonQuery();
+                    if (pPlaylistId.Value == System.DBNull.Value)
                     {
-                        entity.PlaylistId = (System.Int32)pPlaylistId.Value;
+                        throw new InvalidOperationException("Invalid output value: pPlaylistId");
                     }
-                    else
-                    {
-                        throw new InvalidOperationException("Insert failed.");
-                    }
+                    entity.PlaylistId = (System.Int32)pPlaylistId.Value;
                 }
                 finally
                 {
@@ -3582,10 +3539,7 @@ namespace Generator.SimpleDataAccess.Samples
                         pName.Value = entity.Name;
                     }
 
-                    if (command.ExecuteNonQuery() > 0)
-                    {
-                    }
-                    else
+                    if (command.ExecuteNonQuery() <= 0)
                     {
                         throw new InvalidOperationException("Update failed.");
                     }
@@ -3738,35 +3692,6 @@ namespace Generator.SimpleDataAccess.Samples
             return entity;
         }
 
-        public void UpsertPlaylistTrack(PlaylistTrack entity)
-        {
-            if (entity == null)
-            {
-                throw new ArgumentNullException("entity");
-            }
-
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("MERGE [dbo].[PlaylistTrack] AS T USING (SELECT @PlaylistId, @TrackId) AS S (PlaylistId, [TrackId]) ON (S.[PlaylistId] = T.[PlaylistId] AND S.[TrackId] = T.[TrackId]) WHEN MATCHED THEN UPDATE SET  WHEN NOT MATCHED THEN INSERT ([PlaylistId], [TrackId]) VALUES (S.[PlaylistId], S.[TrackId]);"))
-            {
-                try
-                {
-                    PopConnection(command);
-                    System.Data.SqlClient.SqlParameter pPlaylistId = command.Parameters.Add("@PlaylistId", System.Data.SqlDbType.Int);
-                    pPlaylistId.Value = entity.PlaylistId;
-
-                    System.Data.SqlClient.SqlParameter pTrackId = command.Parameters.Add("@TrackId", System.Data.SqlDbType.Int);
-                    pTrackId.Value = entity.TrackId;
-
-                    if (command.ExecuteNonQuery() <= 0)
-                    {
-                        throw new InvalidOperationException("Upsert failed.");
-                    }
-                }
-                finally
-                {
-                    PushConnection(command);
-                }
-            }
-        }
 
         public void InsertPlaylistTrack(PlaylistTrack entity)
         {
@@ -3786,10 +3711,7 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pTrackId = command.Parameters.Add("@TrackId", System.Data.SqlDbType.Int);
                     pTrackId.Value = entity.TrackId;
 
-                    if (command.ExecuteNonQuery() > 0)
-                    {
-                    }
-                    else
+                    if (command.ExecuteNonQuery() <= 0)
                     {
                         throw new InvalidOperationException("Insert failed.");
                     }
@@ -4076,14 +3998,11 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("MERGE [dbo].[Track] AS T USING (SELECT @TrackId, @Name, @AlbumId, @MediaTypeId, @GenreId, @Composer, @Milliseconds, @Bytes, @UnitPrice) AS S (TrackId, [Name], [AlbumId], [MediaTypeId], [GenreId], [Composer], [Milliseconds], [Bytes], [UnitPrice]) ON (S.[TrackId] = T.[TrackId]) WHEN MATCHED THEN UPDATE SET [Name] = S.[Name], [AlbumId] = S.[AlbumId], [MediaTypeId] = S.[MediaTypeId], [GenreId] = S.[GenreId], [Composer] = S.[Composer], [Milliseconds] = S.[Milliseconds], [Bytes] = S.[Bytes], [UnitPrice] = S.[UnitPrice] WHEN NOT MATCHED THEN INSERT ([Name], [AlbumId], [MediaTypeId], [GenreId], [Composer], [Milliseconds], [Bytes], [UnitPrice]) VALUES (S.[Name], S.[AlbumId], S.[MediaTypeId], S.[GenreId], S.[Composer], S.[Milliseconds], S.[Bytes], S.[UnitPrice]) OUTPUT inserted.[TrackId];"))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("MERGE [dbo].[Track] AS T USING (SELECT @TrackId, @Name, @AlbumId, @MediaTypeId, @GenreId, @Composer, @Milliseconds, @Bytes, @UnitPrice) AS S ([TrackId], [Name], [AlbumId], [MediaTypeId], [GenreId], [Composer], [Milliseconds], [Bytes], [UnitPrice]) ON (S.[TrackId] = T.[TrackId]) WHEN MATCHED THEN UPDATE SET [Name] = S.[Name], [AlbumId] = S.[AlbumId], [MediaTypeId] = S.[MediaTypeId], [GenreId] = S.[GenreId], [Composer] = S.[Composer], [Milliseconds] = S.[Milliseconds], [Bytes] = S.[Bytes], [UnitPrice] = S.[UnitPrice] WHEN NOT MATCHED THEN INSERT ([Name], [AlbumId], [MediaTypeId], [GenreId], [Composer], [Milliseconds], [Bytes], [UnitPrice]) VALUES (S.[Name], S.[AlbumId], S.[MediaTypeId], S.[GenreId], S.[Composer], S.[Milliseconds], S.[Bytes], S.[UnitPrice]) OUTPUT inserted.[TrackId];"))
             {
                 try
                 {
                     PopConnection(command);
-                    System.Data.SqlClient.SqlParameter pTrackId = command.Parameters.Add("@TrackId", System.Data.SqlDbType.Int);
-                    pTrackId.Value = entity.TrackId;
-
                     System.Data.SqlClient.SqlParameter pName = command.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar, 400);
                     pName.Value = entity.Name;
 
@@ -4135,6 +4054,9 @@ namespace Generator.SimpleDataAccess.Samples
 
                     System.Data.SqlClient.SqlParameter pUnitPrice = command.Parameters.Add("@UnitPrice", System.Data.SqlDbType.Decimal);
                     pUnitPrice.Value = entity.UnitPrice;
+
+                    System.Data.SqlClient.SqlParameter pTrackId = command.Parameters.Add("@TrackId", System.Data.SqlDbType.Int);
+                    pTrackId.Value = entity.TrackId;
 
                     using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
                     {
@@ -4222,14 +4144,12 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pTrackId = command.Parameters.Add("@TrackId", System.Data.SqlDbType.Int);
                     pTrackId.Direction = System.Data.ParameterDirection.Output;
 
-                    if (command.ExecuteNonQuery() > 0)
+                    command.ExecuteNonQuery();
+                    if (pTrackId.Value == System.DBNull.Value)
                     {
-                        entity.TrackId = (System.Int32)pTrackId.Value;
+                        throw new InvalidOperationException("Invalid output value: pTrackId");
                     }
-                    else
-                    {
-                        throw new InvalidOperationException("Insert failed.");
-                    }
+                    entity.TrackId = (System.Int32)pTrackId.Value;
                 }
                 finally
                 {
@@ -4305,10 +4225,7 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pUnitPrice = command.Parameters.Add("@UnitPrice", System.Data.SqlDbType.Decimal);
                     pUnitPrice.Value = entity.UnitPrice;
 
-                    if (command.ExecuteNonQuery() > 0)
-                    {
-                    }
-                    else
+                    if (command.ExecuteNonQuery() <= 0)
                     {
                         throw new InvalidOperationException("Update failed.");
                     }

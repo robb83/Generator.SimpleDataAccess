@@ -9,3 +9,7 @@
 	Connection keep alive support (if transaction is not explicitly opened)
 	System type size support in SqlParameter (optional)
 	SqlParameter InputOutput support
+	View and instead of trigger support
+	Automated test
+	Better README.md
+	Identity Insert support ?

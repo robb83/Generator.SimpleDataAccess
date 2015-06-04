@@ -105,38 +105,6 @@ namespace Generator.SimpleDataAccess.Generators
 
             return script.ToString();
         }
-
-        public static String GenerateUpdate(TableInfo table, List<ColumnInfo> filterColumns)
-        {
-            StringBuilder script = new StringBuilder();
-
-            script.AppendFormat("UPDATE [{0}].[{1}] SET ", table.Schema, table.Name);
-
-            int counter = 0;
-            foreach (var c in table.Columns)
-            {
-                if (c.IsIdentity || c.IsComputed || filterColumns.Contains(c))
-                {
-                    continue;
-                }
-
-                if (counter > 0)
-                {
-                    script.Append(", ");
-                }
-
-                script.AppendFormat("[{0}] = {1}", c.Name, c.ParameterName);
-
-                ++counter;
-            }
-
-            GenerateWhereClause(script, filterColumns);
-
-            script.Append(";");
-            GenerateReRead(script, table, true, filterColumns);
-
-            return script.ToString();
-        }
         
         public static String GenerateMerge(TableInfo tableInfo, List<ColumnInfo> key)
         {
@@ -263,95 +231,7 @@ namespace Generator.SimpleDataAccess.Generators
 
             return script.ToString();
         }
-
-        private static void GenerateReRead(StringBuilder script, TableInfo tableInfo, bool update, List<ColumnInfo> keys = null)
-        {
-            bool hasIdentity = tableInfo.HasIdentityColumn();
-            bool hasComputedColumns = tableInfo.HasComputedColumns();
-            bool readRequired = (!update && hasIdentity) || hasComputedColumns;
-
-            if (readRequired)
-            {
-                // compute key
-                ColumnInfo identityColumn = null;
-
-                if (keys == null)
-                {
-                    identityColumn = tableInfo.GetFirstIdentityColumn();
-
-                    if (identityColumn == null)
-                    {
-                        if (keys == null)
-                        {
-                            keys = tableInfo.GetFirstPrimaryKey();
-                        }
-
-                        if (keys == null)
-                        {
-                            keys = tableInfo.GetFirstUniqueKey();
-                        }
-
-                        if (keys == null || keys.Count == 0)
-                        {
-                            throw new InvalidProgramException("No keys found");
-                        }
-                    }
-                }
-
-                if (!hasComputedColumns)
-                {
-                    if (update)
-                    {
-                        throw new InvalidProgramException("Update cannot reread identity column value.");
-                    }
-                    else
-                    {
-                        script.AppendFormat(" SET {0} = SCOPE_IDENTITY();", identityColumn.ParameterName);
-                    }
-                }
-                else
-                {
-                    StringBuilder subquery = new StringBuilder();
-                    
-                    foreach (var columnInfo in tableInfo.Columns)
-                    {
-                        if ((!update && columnInfo.IsIdentity) || columnInfo.IsComputed)
-                        {
-                            if (subquery.Length > 0)
-                            {
-                                subquery.Append(", ");
-                            }
-
-                            subquery.AppendFormat("{0} = [{1}]", columnInfo.ParameterName, columnInfo.Name);
-                        }
-                    }
-
-                    if (keys != null)
-                    {
-                        StringBuilder keySelector = new StringBuilder();
-                        GenerateWhereClause(keySelector, keys);
-
-                        script.AppendFormat(" SELECT {0} FROM [{1}].[{2}] {3}", subquery.ToString(), tableInfo.Schema, tableInfo.Name, keySelector.ToString());
-                    }
-                    else if (identityColumn != null)
-                    {
-                        if (update)
-                        {
-                            script.AppendFormat(" SELECT {0} FROM [{1}].[{2}] WHERE [{3}] = {4}", subquery.ToString(), tableInfo.Schema, tableInfo.Name, identityColumn.Name, identityColumn.ParameterName);
-                        }
-                        else
-                        {
-                            script.AppendFormat(" SELECT {0} FROM [{1}].[{2}] WHERE [{3}] = SCOPE_IDENTITY()", subquery.ToString(), tableInfo.Schema, tableInfo.Name, identityColumn.Name);
-                        }
-                    }
-                    else
-                    {
-                        throw new InvalidProgramException("Something wrong.");
-                    }
-                }
-            }
-        }
-
+        
         public static void GenerateReadBackIdentityAfterInsertToParameter(StringBuilder script, List<ColumnInfo> identityColumns)
         {
             if (identityColumns == null || identityColumns.Count == 0)
@@ -548,6 +428,142 @@ namespace Generator.SimpleDataAccess.Generators
                     }
 
                     script.AppendFormat("[{0}] = {1}", key[a].Name, key[a].ParameterName);
+                }
+            }
+
+            script.Append(";");
+        }
+
+        public static void GenerateMergeStatement(StringBuilder script, String target, List<ColumnInfo> key, List<ColumnInfo> editable, List<ColumnInfo> computedColumns)
+        {
+            if (script == null)
+            {
+                throw new ArgumentNullException("script");
+            }
+
+            if (String.IsNullOrWhiteSpace("target"))
+            {
+                throw new ArgumentNullException("target");
+            }
+
+            if (key == null || key.Count == 0)
+            {
+                throw new ArgumentNullException("key");
+            }
+
+            if (editable == null || editable.Count == 0)
+            {
+                throw new ArgumentNullException("editable");
+            }
+
+            script.AppendFormat("MERGE {0} AS T USING (SELECT ", target);
+
+            int b = 0;
+            for (int a = 0; a < key.Count; ++a, ++b)
+            {
+                if (b > 0)
+                {
+                    script.Append(", ");
+                }
+
+                script.Append(key[a].ParameterName);
+            }
+
+            for (int a = 0; a < editable.Count; ++a, ++b)
+            {
+                if (b > 0)
+                {
+                    script.Append(", ");
+                }
+
+                script.Append(editable[a].ParameterName);
+            }
+
+            script.Append(") AS S (");
+
+            b = 0;
+            for (int a = 0; a < key.Count; ++a, ++b)
+            {
+                if (b > 0)
+                {
+                    script.Append(", ");
+                }
+
+                script.AppendFormat("[{0}]", key[a].Name);
+            }
+
+            for (int a = 0; a < editable.Count; ++a, ++b)
+            {
+                if (b > 0)
+                {
+                    script.Append(", ");
+                }
+
+                script.AppendFormat("[{0}]", editable[a].Name);
+            }
+
+            script.Append(") ON (");
+
+            for (int a = 0; a < key.Count; ++a)
+            {
+                if (a > 0)
+                {
+                    script.Append(" AND ");
+                }
+
+                script.AppendFormat("S.[{0}] = T.[{0}]", key[a].Name);
+            }
+            
+            script.Append(") WHEN MATCHED THEN UPDATE SET ");
+
+            for (int a = 0; a < editable.Count; ++a)
+            {
+                if (a > 0)
+                {
+                    script.Append(", ");
+                }
+
+                script.AppendFormat("[{0}] = S.[{0}]", editable[a].Name);
+            }
+
+            script.Append(" WHEN NOT MATCHED THEN INSERT (");
+
+            for (int a = 0; a < editable.Count; ++a)
+            {
+                if (a > 0)
+                {
+                    script.Append(", ");
+                }
+
+                script.AppendFormat("[{0}]", editable[a].Name);
+            }
+
+            script.Append(") VALUES (");
+
+            for (int a = 0; a < editable.Count; ++a)
+            {
+                if (a > 0)
+                {
+                    script.Append(", ");
+                }
+
+                script.AppendFormat("S.[{0}]", editable[a].Name);
+            }
+
+            script.Append(")");
+
+            if (computedColumns.Count > 0)
+            {
+                script.Append(" OUTPUT ");
+
+                for (int a = 0; a < computedColumns.Count; ++a)
+                {
+                    if (a > 0)
+                    {
+                        script.Append(", ");
+                    }
+
+                    script.AppendFormat("inserted.[{0}]", computedColumns[a].Name);
                 }
             }
 

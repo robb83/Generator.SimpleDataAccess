@@ -49,6 +49,7 @@
     <Compile Include="Model\ColumnInfo.cs" />
     <Compile Include="Model\ForeignKeyInfo.cs" />
     <Compile Include="Model\IndexInfo.cs" />
+    <Compile Include="Model\SqlParemeterInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Model\DatabaseSchemaInfo.cs" />

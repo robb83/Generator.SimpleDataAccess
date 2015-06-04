@@ -9,6 +9,42 @@ namespace Generator.SimpleDataAccess.Generators
 {
     public class SimpleDataAccessGenerator
     {
+        public static void GenerateUpsertMethod(CodeStringBuilder code, TableInfo tableInfo)
+        {
+            String entityTypeName = tableInfo.ClassName;
+            String target = String.Format("[{0}].[{1}]", tableInfo.Schema, tableInfo.Name);
+            String methodName = String.Format("Upsert{0}", entityTypeName);
+            List<ColumnInfo> editableColumns = tableInfo.GetEditableColumns();
+            List<ColumnInfo> computedColumns = tableInfo.GetComputedColumns();
+            List<ColumnInfo> identityColumns = tableInfo.GetIdentityColumns();
+            List<ColumnInfo> key = tableInfo.GetKey();
+
+            List<ColumnInfo> outputColumns = new List<ColumnInfo>();
+            outputColumns.AddRange(identityColumns);
+            outputColumns.AddRange(computedColumns);
+
+            List<ColumnInfo> inputColumns = new List<ColumnInfo>();
+            inputColumns.AddRange(editableColumns);
+            inputColumns.AddRange(identityColumns);
+
+            if (editableColumns.Count == 0)
+            {
+                return;
+            }
+
+            if (key.SequenceEqual(editableColumns))
+            {
+                return;
+            }
+
+            // generate sql script
+            StringBuilder script = new StringBuilder();
+
+            SQLTextGenerator.GenerateMergeStatement(script, target, key, editableColumns, outputColumns);
+
+            CSharpTextGenerator.GenerateUpsertMethod(code, methodName, entityTypeName, script.ToString(), inputColumns, outputColumns);
+        }
+
         public static void GenerateUpdateMethod(CodeStringBuilder code, TableInfo tableInfo)
         {
             String entityTypeName = tableInfo.ClassName;
@@ -148,7 +184,7 @@ namespace Generator.SimpleDataAccess.Generators
                 CSharpTextGenerator.GenerateMapping(code, t);
                 code.AppendLine();
 
-                CSharpTextGenerator.GenerateUpsertMethod(code, t);
+                SimpleDataAccessGenerator.GenerateUpsertMethod(code, t);
                 code.AppendLine();
 
                 SimpleDataAccessGenerator.GenerateInsertMethod(code, t);
