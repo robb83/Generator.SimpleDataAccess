@@ -4938,7 +4938,7 @@ namespace Generator.SimpleDataAccess.Samples
             }
             else
             {
-                if (this.transaction.IsolationLevel != isolationLevel)
+                if (isolationLevel != System.Data.IsolationLevel.Unspecified && this.transaction.IsolationLevel != isolationLevel)
                 {
                     throw new InvalidOperationException("Transaction isolation level mismatch.");
                 }

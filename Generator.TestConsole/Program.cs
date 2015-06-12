@@ -16,32 +16,62 @@ namespace Generator.TestConsole
             using (ChinookDatabase database = new ChinookDatabase(defaultConnectionString))
             {
                 database.BeginTransaction();
-                
-                List<Album> albums = database.SelectAlbum();
-                
-                Artist artist = new Artist();
-                artist.Name = "Heaven Street Seven";
 
-                database.InsertArtist(artist);
-
-                Album album = new Album();
-                album.ArtistId = artist.ArtistId;
-                album.Title = "Gesztenyefák alatt";
-
-                database.InsertAlbum(album);
-
-                album.Title = "Felkeltem a Reggelt";
-                database.UpdateAlbum(album);
-
-                database.DeleteAlbumByAlbumId(album.AlbumId);
-
-                int genreCount = database.SelectGenreCount();
-                if (genreCount > 0)
+                // stored procedure
                 {
                     int genreIdentity;
                     database.ExecuteInsertGenre("Favorite", out genreIdentity);
                 }
 
+                // select all
+                List<Artist> artists = database.SelectArtist();
+
+                // select insert, upsert, update, delete
+                if (artists.Where(a => "Heaven Street Seven".Equals(a.Name, StringComparison.InvariantCultureIgnoreCase)).Any() == false)
+                {
+                    Artist artist1 = new Artist();
+                    artist1.Name = "Heaven Street Seven";
+
+                    database.InsertArtist(artist1);
+
+                    Album album1 = new Album();
+                    album1.ArtistId = artist1.ArtistId;
+                    album1.Title = "Tick Tock No Fear";
+
+                    database.InsertAlbum(album1);
+
+                    Album album2 = new Album();
+                    album2.ArtistId = artist1.ArtistId;
+                    album2.Title = "Goal";
+
+                    database.InsertAlbum(album2);
+
+                    Album album3 = new Album();
+                    album3.ArtistId = artist1.ArtistId;
+                    album3.Title = "Budapest Dolls";
+
+                    database.InsertAlbum(album3);
+
+                    Album album4 = new Album();
+                    album4.ArtistId = artist1.ArtistId;
+                    album4.Title = "Cukor";
+
+                    database.UpsertAlbum(album4);
+
+                    Album album5 = new Album();
+                    album5.ArtistId = artist1.ArtistId;
+                    album5.Title = "Kisfilmek a nagyvilágból - 2002";
+
+                    database.InsertAlbum(album5);
+
+                    album5.Title = "Kisfilmek a nagyvilágból";
+
+                    database.UpdateAlbum(album5);
+
+                    database.DeleteAlbumByAlbumId(album5.AlbumId);
+                }
+                
+                // computed columns
                 Customer customer = new Customer();
                 customer.Address = "Alma u. 1";
                 customer.City = "Budapest";
@@ -65,19 +95,8 @@ namespace Generator.TestConsole
                 customer.LastName = "Oláh";
 
                 database.UpdateCustomer(customer);
-
-                customerID = customer.CustomerId;
-                fullName = customer.FullName;
-                fullDetail = customer.FullDetail;
-
-                Artist artist2 = new Artist();
-                artist2.Name = "Kis Pál és a borz";
-
-                database.UpsertArtist(artist2);
-
-                artist2.Name = "Kispál és a Borz";
-
-                database.UpsertArtist(artist2);
+                
+                // pageing
 
                 int artitsCount = database.SelectArtistCount();
                 int pageSize = 10, pageIndex = 0;
