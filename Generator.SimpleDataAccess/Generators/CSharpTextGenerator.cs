@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace Generator.SimpleDataAccess.Generators
 {
@@ -75,13 +76,13 @@ namespace Generator.SimpleDataAccess.Generators
             }
         }
 
-        public static void GenerateMapping(CodeStringBuilder code, TableInfo tableInfo)
+        public static void GenerateMapping(CodeStringBuilder code, String methodName, String entityTypeName, List<ColumnInfo> columns)
         {
-            code.CodeBlockBegin("public static {0} Read{0}(System.Data.SqlClient.SqlDataReader reader)", tableInfo.ClassName);
+            code.CodeBlockBegin("public static {0} {1}(System.Data.SqlClient.SqlDataReader reader)", entityTypeName, methodName);
 
-            code.AppendLineFormat("{0} entity = new {0}();", tableInfo.ClassName);
+            code.AppendLineFormat("{0} entity = new {0}();", entityTypeName);
             
-            foreach (var columnInfo in tableInfo.Columns)
+            foreach (var columnInfo in columns)
             {
                 GenerateColumnMapperFromSqlDataReader(code, columnInfo);
             }
@@ -89,7 +90,7 @@ namespace Generator.SimpleDataAccess.Generators
             code.CodeBlockEnd("return entity;");
         }
 
-        public static void GenerateStoredProcedure(CodeStringBuilder code, StoredProcedureInfo storedProcedureInfo)
+        public static void GenerateStoredProcedureMethod(CodeStringBuilder code, StoredProcedureInfo storedProcedureInfo)
         {
             String parameters = "";
 
@@ -173,11 +174,11 @@ namespace Generator.SimpleDataAccess.Generators
             code.CodeBlockEnd();
         }
 
-        public static void GenerateCountSelect(CodeStringBuilder code, TableInfo tableInfo)
+        public static void GenerateSelectCountMethod(CodeStringBuilder code, String methodName, String script)
         {
-            code.CodeBlockBegin("public int Select{0}Count()", tableInfo.ClassName);
+            code.CodeBlockBegin("public int {0}()", methodName);
             
-            code.CodeBlockBegin("using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(\"{0}\"))", SQLTextGenerator.GenerateSelectCount(tableInfo));
+            code.CodeBlockBegin("using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(\"{0}\"))", script);
             
             code.CodeBlockBegin("try");
             code.AppendLine("PopConnection(command);");
@@ -186,7 +187,7 @@ namespace Generator.SimpleDataAccess.Generators
             code.CodeBlockBegin("using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())");
             
             code.CodeBlockBegin("if (reader.Read())");
-            code.AppendFormat("return reader.GetInt32(0);", tableInfo.ClassName);
+            code.Append("return reader.GetInt32(0);");
             code.CodeBlockEnd();
             
             code.CodeBlockBegin("else");
@@ -204,10 +205,8 @@ namespace Generator.SimpleDataAccess.Generators
             code.CodeBlockEnd(); // method
         }
 
-        public static void GenerateSelectPagedMethod(CodeStringBuilder code, TableInfo tableInfo)
+        public static void GenerateSelectPagedMethod(CodeStringBuilder code, String methodName, String entityTypeName, String mappingMethodName, String script, List<ColumnInfo> key)
         {
-            List<ColumnInfo> key = tableInfo.GetFirstPrimaryKey();
-
             if (key == null || key.Count == 0)
             {
                 return;
@@ -216,9 +215,9 @@ namespace Generator.SimpleDataAccess.Generators
             String firstIndexParameterName = "@__FirstIndex", firstIndexLocalVariableName = "pFirstIndex", firstIndex = "firstIndex";
             String lastIndexParameterName = "@__LastIndex", lastIndexLocalVariableName = "pLastIndex", lastIndex = "lastIndex";
 
-            code.CodeBlockBegin("public List<{0}> Select{0}Paged(int {1}, int {2})", tableInfo.ClassName, firstIndex, lastIndex);
+            code.CodeBlockBegin("public List<{1}> {0}(int {2}, int {3})", methodName, entityTypeName, firstIndex, lastIndex);
 
-            code.CodeBlockBegin("using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(\"{0}\"))", SQLTextGenerator.GenerateSelectPaged(tableInfo, firstIndexParameterName, lastIndexParameterName, key));
+            code.CodeBlockBegin("using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(\"{0}\"))", script);
 
             code.CodeBlockBegin("try");
             code.AppendLine("PopConnection(command);");
@@ -232,10 +231,10 @@ namespace Generator.SimpleDataAccess.Generators
 
             code.CodeBlockBegin("using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())");
 
-            code.AppendLineFormat("List<{0}> result = new List<{0}>();", tableInfo.ClassName);
+            code.AppendLineFormat("List<{0}> result = new List<{0}>();", entityTypeName);
 
             code.CodeBlockBegin("while (reader.Read())");
-            code.AppendFormat("result.Add(Read{0}(reader));", tableInfo.ClassName);
+            code.AppendFormat("result.Add({0}(reader));", mappingMethodName);
             code.CodeBlockEnd();
 
             code.Append("return result;");
@@ -251,48 +250,41 @@ namespace Generator.SimpleDataAccess.Generators
             code.CodeBlockEnd(); // method
         }
 
-        public static void GenerateSelectMethod(CodeStringBuilder code, TableInfo tableInfo, List<ColumnInfo> filteredColumns, bool singleResult)
+        public static void GenerateSelectMethod(CodeStringBuilder code, String methodName, String entityTypeName, String script, List<ColumnInfo> key, bool singleResult, String mappingMethod)
         {
-            String methodName = "Select" + tableInfo.ClassName;
-            String parameters = "";
+            StringBuilder parameters = new StringBuilder();
 
-            if (filteredColumns != null && filteredColumns.Count > 0)
+            if (key != null)
             {
-                methodName += "By";
-
-                foreach (ColumnInfo columnInfo in filteredColumns)
+                for (int a = 0; a < key.Count; ++a)
                 {
-                    methodName += columnInfo.PropertyName;
-
-                    if (parameters.Length > 0)
+                    if (a > 0)
                     {
-                        parameters += ", ";
+                        parameters.Append(", ");
                     }
 
-                    parameters += columnInfo.FullTypeName;
-                    parameters += " ";
-                    parameters += columnInfo.LocalVariableName;
+                    parameters.AppendFormat("{0} {1}", key[a].FullTypeName, key[a].LocalVariableName);
                 }
             }
 
             if (singleResult)
             {
-                code.CodeBlockBegin("public {0} {1}({2})", tableInfo.ClassName, methodName, parameters);
+                code.CodeBlockBegin("public {0} {1}({2})", entityTypeName, methodName, parameters.ToString());
             }
             else
             {
-                code.CodeBlockBegin("public List<{0}> {1}({2})", tableInfo.ClassName, methodName, parameters);
+                code.CodeBlockBegin("public List<{0}> {1}({2})", entityTypeName, methodName, parameters.ToString());
             }
             
-            code.CodeBlockBegin("using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(\"{0}\"))", SQLTextGenerator.GenerateSelect(tableInfo, filteredColumns));
+            code.CodeBlockBegin("using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(\"{0}\"))", script);
             
             code.CodeBlockBegin("try");
             code.AppendLine("PopConnection(command);");
             code.AppendLine();
 
-            if (filteredColumns != null && filteredColumns.Count > 0)
+            if (key != null)
             {
-                foreach (ColumnInfo columnInfo in filteredColumns)
+                foreach (ColumnInfo columnInfo in key)
                 {
                     code.AppendLineFormat("// Parameter settings: {0}", columnInfo.ParameterName);
 
@@ -313,7 +305,7 @@ namespace Generator.SimpleDataAccess.Generators
             if (singleResult)
             {
                 code.CodeBlockBegin("if (reader.Read())");
-                code.AppendFormat("return Read{0}(reader);", tableInfo.ClassName);
+                code.AppendFormat("return {0}(reader);", mappingMethod);
                 code.CodeBlockEnd();
 
                 code.CodeBlockBegin("else");
@@ -322,10 +314,10 @@ namespace Generator.SimpleDataAccess.Generators
             }
             else
             {
-                code.AppendLineFormat("List<{0}> result = new List<{0}>();", tableInfo.ClassName);
+                code.AppendLineFormat("List<{0}> result = new List<{0}>();", entityTypeName);
 
                 code.CodeBlockBegin("while (reader.Read())");
-                code.AppendFormat("result.Add(Read{0}(reader));", tableInfo.ClassName);
+                code.AppendFormat("result.Add({0}(reader));", mappingMethod);
                 code.CodeBlockEnd();
 
                 code.Append("return result;");
@@ -468,7 +460,7 @@ namespace Generator.SimpleDataAccess.Generators
             code.CodeBlockEnd(); // method
         }
 
-        public static void GenerateUpdateMethod(CodeStringBuilder code, String methodName, String entityTypeName, String script, List<ColumnInfo> key, List<ColumnInfo> insertableColumns, List<ColumnInfo> computedColumns)
+        public static void GenerateUpdateMethod(CodeStringBuilder code, String methodName, String entityTypeName, String script, List<ColumnInfo> key, List<ColumnInfo> insertableColumns, List<ColumnInfo> outputColumns)
         {
             code.CodeBlockBegin("public void {0}({1} entity)", methodName, entityTypeName);
             
@@ -515,30 +507,25 @@ namespace Generator.SimpleDataAccess.Generators
                 code.AppendLine();
             }
 
-            foreach (ColumnInfo columnInfo in computedColumns)
+            if (outputColumns != null && outputColumns.Count > 0)
             {
-                code.AppendLineFormat("// Parameter settings: {0}", columnInfo.ParameterName);
+                code.CodeBlockBegin("using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())");
 
-                GenerateSqlParameter(
-                    code,
-                    String.Format("entity.{0}", columnInfo.PropertyName),
-                    columnInfo.LocalParameterVariableName,
-                    columnInfo.ParameterName,
-                    columnInfo.DbType,
-                    columnInfo.IsNullable,
-                    System.Data.ParameterDirection.Output,
-                    columnInfo.MaxLength);
-                code.AppendLine();
-            }
+                code.CodeBlockBegin("if (reader.Read())");
 
-            if (computedColumns != null && computedColumns.Count > 0)
-            {
-                code.AppendLine("command.ExecuteNonQuery();");
-
-                foreach (var columnInfo in computedColumns)
+                int ordinal = 0;
+                foreach (ColumnInfo columnInfo in outputColumns)
                 {
-                    GenerateColumnMapperFromSqlParameter(code, columnInfo, true);
+                    GenerateColumnMapperFromSqlDataReader(code, columnInfo, ordinal++);
                 }
+
+                code.CodeBlockEnd();
+
+                code.CodeBlockBegin("else");
+                code.Append("throw new InvalidOperationException(\"Insert failed.\");");
+                code.CodeBlockEnd();
+
+                code.CodeBlockEnd();
             }
             else
             {
@@ -557,7 +544,7 @@ namespace Generator.SimpleDataAccess.Generators
             code.CodeBlockEnd(); // method
         }
         
-        public static void GenerateInsertMethod(CodeStringBuilder code, String methodName, String entityTypeName, String script, List<ColumnInfo> insertableColumns, List<ColumnInfo> computedColumns)
+        public static void GenerateInsertMethod(CodeStringBuilder code, String methodName, String entityTypeName, String script, List<ColumnInfo> insertableColumns, List<ColumnInfo> outputColumns)
         {
             code.CodeBlockBegin("public void {0}({1} entity)", methodName, entityTypeName);
 
@@ -574,11 +561,6 @@ namespace Generator.SimpleDataAccess.Generators
 
             foreach (ColumnInfo columnInfo in insertableColumns)
             {
-                if (columnInfo.IsComputed || columnInfo.IsIdentity)
-                {
-                    throw new NotSupportedException("Computed columns are not insertable.");
-                }
-
                 code.AppendLineFormat("// Parameter settings: {0}", columnInfo.ParameterName);
 
                 GenerateSqlParameter(
@@ -593,31 +575,25 @@ namespace Generator.SimpleDataAccess.Generators
                 code.AppendLine();
             }
 
-            foreach (ColumnInfo columnInfo in computedColumns)
+            if (outputColumns != null && outputColumns.Count > 0)
             {
-                code.AppendLineFormat("// Parameter settings: {0}", columnInfo.ParameterName);
+                code.CodeBlockBegin("using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())");
 
-                GenerateSqlParameter(
-                    code,
-                    String.Format("entity.{0}", columnInfo.PropertyName),
-                    columnInfo.LocalParameterVariableName,
-                    columnInfo.ParameterName,
-                    columnInfo.DbType,
-                    columnInfo.IsNullable,
-                    System.Data.ParameterDirection.Output,
-                    columnInfo.MaxLength);
-                code.AppendLine();
-            }
+                code.CodeBlockBegin("if (reader.Read())");
 
-            if (computedColumns != null && computedColumns.Count > 0)
-            {
-                code.AppendLine("command.ExecuteNonQuery();");
-                code.AppendLine();
-
-                foreach (var columnInfo in computedColumns)
+                int ordinal = 0;
+                foreach (ColumnInfo columnInfo in outputColumns)
                 {
-                    GenerateColumnMapperFromSqlParameter(code, columnInfo, true);
-                }                
+                    GenerateColumnMapperFromSqlDataReader(code, columnInfo, ordinal++);
+                }
+
+                code.CodeBlockEnd();
+
+                code.CodeBlockBegin("else");
+                code.Append("throw new InvalidOperationException(\"Insert failed.\");");
+                code.CodeBlockEnd();
+
+                code.CodeBlockEnd();
             }
             else
             {
@@ -625,7 +601,6 @@ namespace Generator.SimpleDataAccess.Generators
                 code.Append("throw new InvalidOperationException(\"Insert failed.\");");
                 code.CodeBlockEnd();
             }
-
 
             code.CodeBlockEnd();
             code.CodeBlockBegin("finally");
@@ -636,55 +611,42 @@ namespace Generator.SimpleDataAccess.Generators
             code.CodeBlockEnd();
         }
 
-        public static void GenerateDeleteMethod(CodeStringBuilder code, TableInfo tableInfo, List<ColumnInfo> filteredColumns)
+        public static void GenerateDeleteMethod(CodeStringBuilder code, String methodName, String script, List<ColumnInfo> key)
         {
-            String methodName = "Delete" + tableInfo.ClassName;
-            String parameters = "";
+            StringBuilder parameters = new StringBuilder();
 
-            if (filteredColumns != null && filteredColumns.Count > 0)
+            for (int a = 0; a < key.Count; ++a)
             {
-                methodName += "By";
-
-                foreach (ColumnInfo columnInfo in filteredColumns)
+                if (a > 0)
                 {
-                    methodName += columnInfo.PropertyName;
-
-                    if (parameters.Length > 0)
-                    {
-                        parameters += ", ";
-                    }
-
-                    parameters += columnInfo.FullTypeName;
-                    parameters += " ";
-                    parameters += columnInfo.LocalVariableName;
+                    parameters.Append(", ");
                 }
+
+                parameters.AppendFormat("{0} {1}", key[a].FullTypeName, key[a].LocalVariableName);
             }
+
+            code.CodeBlockBegin("public void {0}({1})", methodName, parameters.ToString());
             
-            code.CodeBlockBegin("public void {0}({1})", methodName, parameters);
-            
-            code.CodeBlockBegin("using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(\"{0}\"))", SQLTextGenerator.GenerateDelete(tableInfo, filteredColumns));
+            code.CodeBlockBegin("using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand(\"{0}\"))", script);
             
             code.CodeBlockBegin("try");
             code.AppendLine("PopConnection(command);");
             code.AppendLine();
 
-            if (filteredColumns != null && filteredColumns.Count > 0)
+            foreach (ColumnInfo columnInfo in key)
             {
-                foreach (ColumnInfo columnInfo in filteredColumns)
-                {
-                    code.AppendLineFormat("// Parameter settings: {0}", columnInfo.ParameterName);
+                code.AppendLineFormat("// Parameter settings: {0}", columnInfo.ParameterName);
 
-                    GenerateSqlParameter(
-                        code,
-                        columnInfo.LocalVariableName,
-                        columnInfo.LocalParameterVariableName, 
-                        columnInfo.ParameterName, 
-                        columnInfo.DbType, 
-                        columnInfo.IsNullable, 
-                        System.Data.ParameterDirection.Input,
-                        columnInfo.MaxLength);
-                    code.AppendLine();
-                }
+                GenerateSqlParameter(
+                    code,
+                    columnInfo.LocalVariableName,
+                    columnInfo.LocalParameterVariableName,
+                    columnInfo.ParameterName,
+                    columnInfo.DbType,
+                    columnInfo.IsNullable,
+                    System.Data.ParameterDirection.Input,
+                    columnInfo.MaxLength);
+                code.AppendLine();
             }
 
             code.Append("command.ExecuteNonQuery();");

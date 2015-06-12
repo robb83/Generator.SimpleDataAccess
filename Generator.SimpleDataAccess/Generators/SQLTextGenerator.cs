@@ -14,16 +14,17 @@ namespace Generator.SimpleDataAccess.Generators
             {
                 return;
             }
-
-            int counter = 0;
             
-            ColumnInfo columnInfo = filterColumns[counter++];
-            script.AppendFormat(" WHERE [{0}] = {1}", columnInfo.Name, columnInfo.ParameterName);
+            script.Append(" WHERE ");
 
-            for (; counter < filterColumns.Count;)
+            for (int a = 0; a < filterColumns.Count; ++a)
             {
-                columnInfo = filterColumns[counter++];
-                script.AppendFormat(" AND [{0}] = {1}", columnInfo.Name, columnInfo.ParameterName);
+                if (a > 0)
+                {
+                    script.Append(" AND ");
+                }
+                
+                script.AppendFormat("[{0}] = {1}", filterColumns[a].Name, filterColumns[a].ParameterName);
             }
         }
 
@@ -33,42 +34,36 @@ namespace Generator.SimpleDataAccess.Generators
             {
                 return;
             }
-
-            int counter = 0;
             
-            ColumnInfo columnInfo = columns[counter++];
-            script.AppendFormat("[{0}]", columnInfo.Name);
-
-            for (; counter < columns.Count;)
+            for (int a = 0; a < columns.Count; ++a)
             {
-                columnInfo = columns[counter++];
-                script.AppendFormat(", [{0}]", columnInfo.Name);
+                if (a > 0)
+                {
+                    script.Append(", ");
+                }
+
+                script.AppendFormat("[{0}]", columns[a].Name);
             }
         }
 
-        public static String GenerateSelectCount(TableInfo table, List<ColumnInfo> filterColumns = null)
+        public static String GenerateSelectStatementCount(StringBuilder script, String target, List<ColumnInfo> filterColumns)
         {
-            StringBuilder script = new StringBuilder();
-
-            script.AppendFormat("SELECT Count(*) FROM [{0}].[{1}]", table.Schema, table.Name);
-
+            script.AppendFormat("SELECT Count(*) FROM {0}", target);
+        
             GenerateWhereClause(script, filterColumns);
 
             return script.ToString();
         }
 
-        public static String GenerateSelectPaged(TableInfo table, String firstIndexParameterName, String lastIndexParameterName, List<ColumnInfo> orderColumns, List<ColumnInfo> filterColumns = null)
+        public static String GenerateSelectStatementPaged(StringBuilder script, String target, List<ColumnInfo> projection, String firstIndexParameterName, String lastIndexParameterName, List<ColumnInfo> orderColumns, List<ColumnInfo> filterColumns = null)
         {
-            // SELECT * FROM ( SELECT [Column1], [Column2], ROW_NUMBER() OVER(ORDER BY PrimaryKey) AS _ROW_NUMBER FROM [dbo].[Table]) AS T0 WHERE _ROW_NUMBER BETWEEN @FirstIndexParameterNAme AND @LastIndexParameterName ORDER BY PrimaryKey
-
-            StringBuilder script = new StringBuilder();
             script.Append("SELECT * FROM ( SELECT ");
             
-            GenerateProjection(script, table.Columns);
+            GenerateProjection(script, projection);
 
             script.Append(", ROW_NUMBER() OVER(ORDER BY ");
             GenerateProjection(script, orderColumns);
-            script.AppendFormat(") AS _ROW_NUMBER FROM [{0}].[{1}]", table.Schema, table.Name);
+            script.AppendFormat(") AS _ROW_NUMBER FROM {0}", target);
             GenerateWhereClause(script, filterColumns);
             script.Append(" ) AS T0 WHERE _ROW_NUMBER BETWEEN ");
             script.Append(firstIndexParameterName);
@@ -80,31 +75,22 @@ namespace Generator.SimpleDataAccess.Generators
             return script.ToString();
         }
 
-        public static String GenerateSelect(TableInfo table, List<ColumnInfo> filterColumns = null)
+        public static String GenerateSelectStatement(StringBuilder script, String target, List<ColumnInfo> projection, List<ColumnInfo> filterColumns)
         {
-            StringBuilder script = new StringBuilder();
-
             script.Append("SELECT ");
 
-            GenerateProjection(script, table.Columns);
+            GenerateProjection(script, projection);
 
-            script.AppendFormat(" FROM [{0}].[{1}]", table.Schema, table.Name);
+            script.AppendFormat(" FROM {0}", target);
 
             GenerateWhereClause(script, filterColumns);
 
             return script.ToString();
         }
 
-        public static String GenerateDelete(TableInfo table, List<ColumnInfo> filterColumns)
+        public static String GenerateDeleteStatement(StringBuilder script, String target, List<ColumnInfo> filterColumns)
         {
-            if (filterColumns == null || filterColumns.Count == 0)
-            {
-                throw new NotSupportedException("Delete without filter.");
-            }
-
-            StringBuilder script = new StringBuilder();
-
-            script.AppendFormat("DELETE FROM [{0}].[{1}]", table.Schema, table.Name);
+            script.AppendFormat("DELETE FROM {0}", target);
 
             GenerateWhereClause(script, filterColumns);
 
@@ -222,7 +208,7 @@ namespace Generator.SimpleDataAccess.Generators
             }
         }
 
-        public static void GenerateInsertStatement(StringBuilder script, String target, List<ColumnInfo> values)
+        public static void GenerateInsertStatement(StringBuilder script, String target, List<ColumnInfo> values, List<ColumnInfo> outputs)
         {
             if (script == null)
             {
@@ -251,7 +237,24 @@ namespace Generator.SimpleDataAccess.Generators
                 script.AppendFormat("[{0}]", values[a].Name);
             }
 
-            script.Append(") VALUES (");
+            script.Append(") ");
+
+            if (outputs != null && outputs.Count > 0)
+            {
+                script.Append(" OUTPUT ");
+
+                for (int a = 0; a < outputs.Count; ++a)
+                {
+                    if (a > 0)
+                    {
+                        script.Append(", ");
+                    }
+
+                    script.AppendFormat("inserted.[{0}]", outputs[a].Name);
+                }
+            }
+
+            script.Append(" VALUES (");
 
             for (int a = 0; a < values.Count; ++a)
             {
@@ -266,7 +269,7 @@ namespace Generator.SimpleDataAccess.Generators
             script.Append(");");
         }
 
-        public static void GenerateUpdateStatement(StringBuilder script, String target, List<ColumnInfo> key, List<ColumnInfo> values)
+        public static void GenerateUpdateStatement(StringBuilder script, String target, List<ColumnInfo> key, List<ColumnInfo> values, List<ColumnInfo> outputs)
         {
             if (script == null)
             {
@@ -284,7 +287,7 @@ namespace Generator.SimpleDataAccess.Generators
             }
 
             script.AppendFormat("UPDATE {0} SET ", target);
-
+            
             for(int a = 0; a < values.Count; ++a)
             {
                 if (a > 0)
@@ -295,6 +298,21 @@ namespace Generator.SimpleDataAccess.Generators
                 script.AppendFormat("[{0}] = {1}", values[a].Name, values[a].ParameterName);
             }
 
+            if (outputs != null && outputs.Count > 0)
+            {
+                script.Append(" OUTPUT ");
+
+                for (int a = 0; a < outputs.Count; ++a)
+                {
+                    if (a > 0)
+                    {
+                        script.Append(", ");
+                    }
+
+                    script.AppendFormat("inserted.[{0}]", outputs[a].Name);
+                }
+            }
+            
             if (key.Count > 0)
             {
                 script.Append(" WHERE ");
@@ -313,7 +331,7 @@ namespace Generator.SimpleDataAccess.Generators
             script.Append(";");
         }
 
-        public static void GenerateMergeStatement(StringBuilder script, String target, List<ColumnInfo> key, List<ColumnInfo> editable, List<ColumnInfo> computedColumns)
+        public static void GenerateMergeStatement(StringBuilder script, String target, List<ColumnInfo> key, List<ColumnInfo> values, List<ColumnInfo> outputs)
         {
             if (script == null)
             {
@@ -330,7 +348,7 @@ namespace Generator.SimpleDataAccess.Generators
                 throw new ArgumentNullException("key");
             }
 
-            if (editable == null || editable.Count == 0)
+            if (values == null || values.Count == 0)
             {
                 throw new ArgumentNullException("editable");
             }
@@ -348,14 +366,14 @@ namespace Generator.SimpleDataAccess.Generators
                 script.Append(key[a].ParameterName);
             }
 
-            for (int a = 0; a < editable.Count; ++a, ++b)
+            for (int a = 0; a < values.Count; ++a, ++b)
             {
                 if (b > 0)
                 {
                     script.Append(", ");
                 }
 
-                script.Append(editable[a].ParameterName);
+                script.Append(values[a].ParameterName);
             }
 
             script.Append(") AS S (");
@@ -371,14 +389,14 @@ namespace Generator.SimpleDataAccess.Generators
                 script.AppendFormat("[{0}]", key[a].Name);
             }
 
-            for (int a = 0; a < editable.Count; ++a, ++b)
+            for (int a = 0; a < values.Count; ++a, ++b)
             {
                 if (b > 0)
                 {
                     script.Append(", ");
                 }
 
-                script.AppendFormat("[{0}]", editable[a].Name);
+                script.AppendFormat("[{0}]", values[a].Name);
             }
 
             script.Append(") ON (");
@@ -395,54 +413,54 @@ namespace Generator.SimpleDataAccess.Generators
             
             script.Append(") WHEN MATCHED THEN UPDATE SET ");
 
-            for (int a = 0; a < editable.Count; ++a)
+            for (int a = 0; a < values.Count; ++a)
             {
                 if (a > 0)
                 {
                     script.Append(", ");
                 }
 
-                script.AppendFormat("[{0}] = S.[{0}]", editable[a].Name);
+                script.AppendFormat("[{0}] = S.[{0}]", values[a].Name);
             }
 
             script.Append(" WHEN NOT MATCHED THEN INSERT (");
 
-            for (int a = 0; a < editable.Count; ++a)
+            for (int a = 0; a < values.Count; ++a)
             {
                 if (a > 0)
                 {
                     script.Append(", ");
                 }
 
-                script.AppendFormat("[{0}]", editable[a].Name);
+                script.AppendFormat("[{0}]", values[a].Name);
             }
 
             script.Append(") VALUES (");
 
-            for (int a = 0; a < editable.Count; ++a)
+            for (int a = 0; a < values.Count; ++a)
             {
                 if (a > 0)
                 {
                     script.Append(", ");
                 }
 
-                script.AppendFormat("S.[{0}]", editable[a].Name);
+                script.AppendFormat("S.[{0}]", values[a].Name);
             }
 
             script.Append(")");
 
-            if (computedColumns.Count > 0)
+            if (outputs != null && outputs.Count > 0)
             {
                 script.Append(" OUTPUT ");
 
-                for (int a = 0; a < computedColumns.Count; ++a)
+                for (int a = 0; a < outputs.Count; ++a)
                 {
                     if (a > 0)
                     {
                         script.Append(", ");
                     }
 
-                    script.AppendFormat("inserted.[{0}]", computedColumns[a].Name);
+                    script.AppendFormat("inserted.[{0}]", outputs[a].Name);
                 }
             }
 

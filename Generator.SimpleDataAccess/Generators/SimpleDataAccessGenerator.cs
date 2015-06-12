@@ -39,9 +39,9 @@ namespace Generator.SimpleDataAccess.Generators
 
             // generate sql script
             StringBuilder script = new StringBuilder();
-
             SQLTextGenerator.GenerateMergeStatement(script, target, key, editableColumns, outputColumns);
 
+            // generate code for script
             CSharpTextGenerator.GenerateUpsertMethod(code, methodName, entityTypeName, script.ToString(), inputColumns, outputColumns);
         }
 
@@ -66,13 +66,7 @@ namespace Generator.SimpleDataAccess.Generators
 
             // generate sql script
             StringBuilder script = new StringBuilder();
-
-            SQLTextGenerator.GenerateUpdateStatement(script, target, key, editableColumns);
-
-            if (computedColumns.Count > 0)
-            {
-                SQLTextGenerator.GenerateReadBackComputedValuesToParameter(script, target, key, computedColumns);
-            }
+            SQLTextGenerator.GenerateUpdateStatement(script, target, key, editableColumns, computedColumns);
 
             // generate code for script
             CSharpTextGenerator.GenerateUpdateMethod(code, methodName, entityTypeName, script.ToString(), key, editableColumns, computedColumns);
@@ -99,29 +93,104 @@ namespace Generator.SimpleDataAccess.Generators
 
             // generate sql script
             StringBuilder script = new StringBuilder();
+            SQLTextGenerator.GenerateInsertStatement(script, target, editableColumns, readBackColumns);
+            
+            // generate code for script
+            CSharpTextGenerator.GenerateInsertMethod(code, methodName, entityTypeName, script.ToString(), editableColumns, readBackColumns);
+        }
 
-            SQLTextGenerator.GenerateInsertStatement(script, target, editableColumns);
-
-            if (computedColumns.Count + identityColumns.Count > 0)
+        public static void GenerateDeleteMethod(CodeStringBuilder code, TableInfo tableInfo, List<ColumnInfo> key)
+        {
+            if (key == null || key.Count == 0)
             {
-                script.Append(" ");
+                return;
+            }
 
-                if (identityColumns.Count > 0 && computedColumns.Count > 0)
+            String entityTypeName = tableInfo.ClassName;
+            String target = String.Format("[{0}].[{1}]", tableInfo.Schema, tableInfo.Name);
+
+            StringBuilder methodName = new StringBuilder();
+            methodName.Append("Delete");
+            methodName.Append(entityTypeName);
+            methodName.Append("By");
+            foreach(var k in key)
+            {
+                methodName.Append(k.PropertyName);
+            }
+
+            // generate sql script
+            StringBuilder script = new StringBuilder();
+            SQLTextGenerator.GenerateDeleteStatement(script, target, key);
+
+            // generate code for script
+            CSharpTextGenerator.GenerateDeleteMethod(code, methodName.ToString(), script.ToString(), key);
+        }
+
+        public static void GenerateSelectMethod(CodeStringBuilder code, TableInfo tableInfo, List<ColumnInfo> key, bool singleResult, String mappingMethodName)
+        {
+            String entityTypeName = tableInfo.ClassName;
+            String target = String.Format("[{0}].[{1}]", tableInfo.Schema, tableInfo.Name);
+
+            StringBuilder methodName = new StringBuilder();
+            methodName.Append("Select");
+            methodName.Append(entityTypeName);
+            if (key != null && key.Count > 0)
+            {
+                methodName.Append("By");
+                foreach (var k in key)
                 {
-                    SQLTextGenerator.GenerateReadBackIdentityAfterInsertToParameter(script, target, identityColumns, computedColumns);
-                }
-                else if (identityColumns.Count > 0)
-                {
-                    SQLTextGenerator.GenerateReadBackIdentityAfterInsertToParameter(script, identityColumns);
-                }
-                else if (computedColumns.Count > 0)
-                {
-                    SQLTextGenerator.GenerateReadBackComputedValuesToParameter(script, target, key, computedColumns);
+                    methodName.Append(k.PropertyName);
                 }
             }
 
+            // generate sql script
+            StringBuilder script = new StringBuilder();
+            SQLTextGenerator.GenerateSelectStatement(script, target, tableInfo.Columns ,key);
+
             // generate code for script
-            CSharpTextGenerator.GenerateInsertMethod(code, methodName, entityTypeName, script.ToString(), editableColumns, readBackColumns);
+            CSharpTextGenerator.GenerateSelectMethod(code, methodName.ToString(), entityTypeName, script.ToString(), key, singleResult, mappingMethodName);
+        }
+
+        public static void GenerateSelectPagedMethod(CodeStringBuilder code, TableInfo tableInfo, String mappingMethodName)
+        {
+            String entityTypeName = tableInfo.ClassName;
+            String target = String.Format("[{0}].[{1}]", tableInfo.Schema, tableInfo.Name);
+            List<ColumnInfo> key = tableInfo.GetKey();
+
+            StringBuilder methodName = new StringBuilder();
+            methodName.Append("Select");
+            methodName.Append(entityTypeName);
+            methodName.Append("Paged");
+
+            if (key == null || key.Count == 0)
+            {
+                return;
+            }
+
+            // generate sql script
+            StringBuilder script = new StringBuilder();
+            SQLTextGenerator.GenerateSelectStatementPaged(script, target, tableInfo.Columns, "@__FirstIndex", "@__LastIndex", key, null);
+
+            // generate code for script
+            CSharpTextGenerator.GenerateSelectPagedMethod(code, methodName.ToString(), entityTypeName, mappingMethodName, script.ToString(), key);
+        }
+
+        public static void GenerateSelectCountMethod(CodeStringBuilder code, TableInfo tableInfo)
+        {
+            String entityTypeName = tableInfo.ClassName;
+            String target = String.Format("[{0}].[{1}]", tableInfo.Schema, tableInfo.Name);
+
+            StringBuilder methodName = new StringBuilder();
+            methodName.Append("Select");
+            methodName.Append(entityTypeName);
+            methodName.Append("Count");
+
+            // generate sql script
+            StringBuilder script = new StringBuilder();
+            SQLTextGenerator.GenerateSelectStatementCount(script, target, null);
+
+            // generate code for script
+            CSharpTextGenerator.GenerateSelectCountMethod(code, methodName.ToString(), script.ToString());
         }
 
         public static void GenerateDatabaseAccessCode(DatabaseSchemaInfo schemaInfo, String outputFilename)
@@ -178,10 +247,13 @@ namespace Generator.SimpleDataAccess.Generators
 
             foreach (var t in schemaInfo.Tables)
             {
+                String entityTypeName = t.ClassName;
+                String mappingMethodName = "Read" + entityTypeName;
+
                 code.AppendLineFormat("#region Upsert, Insert, Update, Delete, Select, Mapping - {0}", t.ToString());
                 code.AppendLine();
 
-                CSharpTextGenerator.GenerateMapping(code, t);
+                CSharpTextGenerator.GenerateMapping(code, mappingMethodName, entityTypeName, t.Columns);
                 code.AppendLine();
 
                 SimpleDataAccessGenerator.GenerateUpsertMethod(code, t);
@@ -193,13 +265,13 @@ namespace Generator.SimpleDataAccess.Generators
                 SimpleDataAccessGenerator.GenerateUpdateMethod(code, t);
                 code.AppendLine();
 
-                CSharpTextGenerator.GenerateSelectMethod(code, t, null, false);
+                SimpleDataAccessGenerator.GenerateSelectMethod(code, t, null, false, mappingMethodName);
                 code.AppendLine();
 
-                CSharpTextGenerator.GenerateCountSelect(code, t);
+                SimpleDataAccessGenerator.GenerateSelectCountMethod(code, t);
                 code.AppendLine();
 
-                CSharpTextGenerator.GenerateSelectPagedMethod(code, t);
+                SimpleDataAccessGenerator.GenerateSelectPagedMethod(code, t, mappingMethodName);
                 code.AppendLine();
 
                 Dictionary<String, Filter> filterColumnLists = new Dictionary<string, Filter>();
@@ -233,10 +305,10 @@ namespace Generator.SimpleDataAccess.Generators
 
                 foreach (KeyValuePair<String, Filter> keyValue in filterColumnLists)
                 {
-                    CSharpTextGenerator.GenerateSelectMethod(code, t, keyValue.Value.Columns, keyValue.Value.IsUnique);
+                    SimpleDataAccessGenerator.GenerateSelectMethod(code, t, keyValue.Value.Columns, keyValue.Value.IsUnique, mappingMethodName);
                     code.AppendLine();
 
-                    CSharpTextGenerator.GenerateDeleteMethod(code, t, keyValue.Value.Columns);
+                    SimpleDataAccessGenerator.GenerateDeleteMethod(code, t, keyValue.Value.Columns);
                     code.AppendLine();
                 }
 
@@ -249,7 +321,7 @@ namespace Generator.SimpleDataAccess.Generators
                 code.AppendLine("#region Stored Procedures");
                 code.AppendLine();
 
-                CSharpTextGenerator.GenerateStoredProcedure(code, storedProcedureInfo);
+                CSharpTextGenerator.GenerateStoredProcedureMethod(code, storedProcedureInfo);
 
                 code.AppendLine("#endregion");
                 code.AppendLine();

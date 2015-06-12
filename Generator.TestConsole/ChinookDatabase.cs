@@ -202,7 +202,7 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[Album] ([Title], [ArtistId]) VALUES (@Title, @ArtistId); SET @AlbumId = SCOPE_IDENTITY();"))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[Album] ([Title], [ArtistId])  OUTPUT inserted.[AlbumId] VALUES (@Title, @ArtistId);"))
             {
                 try
                 {
@@ -216,17 +216,17 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pArtistId = command.Parameters.Add("@ArtistId", System.Data.SqlDbType.Int);
                     pArtistId.Value = entity.ArtistId;
 
-                    // Parameter settings: @AlbumId
-                    System.Data.SqlClient.SqlParameter pAlbumId = command.Parameters.Add("@AlbumId", System.Data.SqlDbType.Int);
-                    pAlbumId.Direction = System.Data.ParameterDirection.Output;
-
-                    command.ExecuteNonQuery();
-
-                    if (pAlbumId.Value == System.DBNull.Value)
+                    using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
                     {
-                        throw new InvalidOperationException("Invalid output value: pAlbumId");
+                        if (reader.Read())
+                        {
+                            entity.AlbumId = reader.GetInt32(0);
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("Insert failed.");
+                        }
                     }
-                    entity.AlbumId = (System.Int32)pAlbumId.Value;
                 }
                 finally
                 {
@@ -523,7 +523,7 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[Artist] ([Name]) VALUES (@Name); SET @ArtistId = SCOPE_IDENTITY();"))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[Artist] ([Name])  OUTPUT inserted.[ArtistId] VALUES (@Name);"))
             {
                 try
                 {
@@ -540,17 +540,17 @@ namespace Generator.SimpleDataAccess.Samples
                         pName.Value = entity.Name;
                     }
 
-                    // Parameter settings: @ArtistId
-                    System.Data.SqlClient.SqlParameter pArtistId = command.Parameters.Add("@ArtistId", System.Data.SqlDbType.Int);
-                    pArtistId.Direction = System.Data.ParameterDirection.Output;
-
-                    command.ExecuteNonQuery();
-
-                    if (pArtistId.Value == System.DBNull.Value)
+                    using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
                     {
-                        throw new InvalidOperationException("Invalid output value: pArtistId");
+                        if (reader.Read())
+                        {
+                            entity.ArtistId = reader.GetInt32(0);
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("Insert failed.");
+                        }
                     }
-                    entity.ArtistId = (System.Int32)pArtistId.Value;
                 }
                 finally
                 {
@@ -934,7 +934,7 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[Customer] ([FirstName], [LastName], [Company], [Address], [City], [State], [Country], [PostalCode], [Phone], [Fax], [Email], [SupportRepId], [Comment]) VALUES (@FirstName, @LastName, @Company, @Address, @City, @State, @Country, @PostalCode, @Phone, @Fax, @Email, @SupportRepId, @Comment); SELECT @FullName = [FullName], @FullName = [FullName], @FullDetail = [FullDetail] FROM [dbo].[Customer] WHERE [CustomerId] = SCOPE_IDENTITY()"))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[Customer] ([FirstName], [LastName], [Company], [Address], [City], [State], [Country], [PostalCode], [Phone], [Fax], [Email], [SupportRepId], [Comment])  OUTPUT inserted.[CustomerId], inserted.[FullName], inserted.[FullDetail] VALUES (@FirstName, @LastName, @Company, @Address, @City, @State, @Country, @PostalCode, @Phone, @Fax, @Email, @SupportRepId, @Comment);"))
             {
                 try
                 {
@@ -1062,37 +1062,18 @@ namespace Generator.SimpleDataAccess.Samples
                         pComment.Value = entity.Comment;
                     }
 
-                    // Parameter settings: @CustomerId
-                    System.Data.SqlClient.SqlParameter pCustomerId = command.Parameters.Add("@CustomerId", System.Data.SqlDbType.Int);
-                    pCustomerId.Direction = System.Data.ParameterDirection.Output;
-
-                    // Parameter settings: @FullName
-                    System.Data.SqlClient.SqlParameter pFullName = command.Parameters.Add("@FullName", System.Data.SqlDbType.NVarChar, 122);
-                    pFullName.Direction = System.Data.ParameterDirection.Output;
-
-                    // Parameter settings: @FullDetail
-                    System.Data.SqlClient.SqlParameter pFullDetail = command.Parameters.Add("@FullDetail", System.Data.SqlDbType.NVarChar, -1);
-                    pFullDetail.Direction = System.Data.ParameterDirection.Output;
-
-                    command.ExecuteNonQuery();
-
-                    if (pCustomerId.Value == System.DBNull.Value)
+                    using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
                     {
-                        throw new InvalidOperationException("Invalid output value: pCustomerId");
-                    }
-                    entity.CustomerId = (System.Int32)pCustomerId.Value;
-                    if (pFullName.Value == System.DBNull.Value)
-                    {
-                        throw new InvalidOperationException("Invalid output value: pFullName");
-                    }
-                    entity.FullName = (System.String)pFullName.Value;
-                    if (pFullDetail.Value == System.DBNull.Value)
-                    {
-                        entity.FullDetail = null;
-                    }
-                    else
-                    {
-                        entity.FullDetail = (System.String)pFullDetail.Value;
+                        if (reader.Read())
+                        {
+                            entity.CustomerId = reader.GetInt32(0);
+                            entity.FullName = reader.GetString(1);
+                            entity.FullDetail = reader.GetString(2);
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("Insert failed.");
+                        }
                     }
                 }
                 finally
@@ -1109,7 +1090,7 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("UPDATE [dbo].[Customer] SET [FirstName] = @FirstName, [LastName] = @LastName, [Company] = @Company, [Address] = @Address, [City] = @City, [State] = @State, [Country] = @Country, [PostalCode] = @PostalCode, [Phone] = @Phone, [Fax] = @Fax, [Email] = @Email, [SupportRepId] = @SupportRepId, [Comment] = @Comment WHERE [CustomerId] = @CustomerId;SELECT @FullName = [FullName], @FullDetail = [FullDetail] FROM [dbo].[Customer] WHERE [CustomerId] = @CustomerId"))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("UPDATE [dbo].[Customer] SET [FirstName] = @FirstName, [LastName] = @LastName, [Company] = @Company, [Address] = @Address, [City] = @City, [State] = @State, [Country] = @Country, [PostalCode] = @PostalCode, [Phone] = @Phone, [Fax] = @Fax, [Email] = @Email, [SupportRepId] = @SupportRepId, [Comment] = @Comment OUTPUT inserted.[FullName], inserted.[FullDetail] WHERE [CustomerId] = @CustomerId;"))
             {
                 try
                 {
@@ -1241,27 +1222,17 @@ namespace Generator.SimpleDataAccess.Samples
                         pComment.Value = entity.Comment;
                     }
 
-                    // Parameter settings: @FullName
-                    System.Data.SqlClient.SqlParameter pFullName = command.Parameters.Add("@FullName", System.Data.SqlDbType.NVarChar, 122);
-                    pFullName.Direction = System.Data.ParameterDirection.Output;
-
-                    // Parameter settings: @FullDetail
-                    System.Data.SqlClient.SqlParameter pFullDetail = command.Parameters.Add("@FullDetail", System.Data.SqlDbType.NVarChar, -1);
-                    pFullDetail.Direction = System.Data.ParameterDirection.Output;
-
-                    command.ExecuteNonQuery();
-                    if (pFullName.Value == System.DBNull.Value)
+                    using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
                     {
-                        throw new InvalidOperationException("Invalid output value: pFullName");
-                    }
-                    entity.FullName = (System.String)pFullName.Value;
-                    if (pFullDetail.Value == System.DBNull.Value)
-                    {
-                        entity.FullDetail = null;
-                    }
-                    else
-                    {
-                        entity.FullDetail = (System.String)pFullDetail.Value;
+                        if (reader.Read())
+                        {
+                            entity.FullName = reader.GetString(0);
+                            entity.FullDetail = reader.GetString(1);
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("Insert failed.");
+                        }
                     }
                 }
                 finally
@@ -1699,7 +1670,7 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[Employee] ([LastName], [FirstName], [Title], [ReportsTo], [BirthDate], [HireDate], [Address], [City], [State], [Country], [PostalCode], [Phone], [Fax], [Email]) VALUES (@LastName, @FirstName, @Title, @ReportsTo, @BirthDate, @HireDate, @Address, @City, @State, @Country, @PostalCode, @Phone, @Fax, @Email); SET @EmployeeId = SCOPE_IDENTITY();"))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[Employee] ([LastName], [FirstName], [Title], [ReportsTo], [BirthDate], [HireDate], [Address], [City], [State], [Country], [PostalCode], [Phone], [Fax], [Email])  OUTPUT inserted.[EmployeeId] VALUES (@LastName, @FirstName, @Title, @ReportsTo, @BirthDate, @HireDate, @Address, @City, @State, @Country, @PostalCode, @Phone, @Fax, @Email);"))
             {
                 try
                 {
@@ -1845,17 +1816,17 @@ namespace Generator.SimpleDataAccess.Samples
                         pEmail.Value = entity.Email;
                     }
 
-                    // Parameter settings: @EmployeeId
-                    System.Data.SqlClient.SqlParameter pEmployeeId = command.Parameters.Add("@EmployeeId", System.Data.SqlDbType.Int);
-                    pEmployeeId.Direction = System.Data.ParameterDirection.Output;
-
-                    command.ExecuteNonQuery();
-
-                    if (pEmployeeId.Value == System.DBNull.Value)
+                    using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
                     {
-                        throw new InvalidOperationException("Invalid output value: pEmployeeId");
+                        if (reader.Read())
+                        {
+                            entity.EmployeeId = reader.GetInt32(0);
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("Insert failed.");
+                        }
                     }
-                    entity.EmployeeId = (System.Int32)pEmployeeId.Value;
                 }
                 finally
                 {
@@ -2298,7 +2269,7 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[Genre] ([Name]) VALUES (@Name); SET @GenreId = SCOPE_IDENTITY();"))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[Genre] ([Name])  OUTPUT inserted.[GenreId] VALUES (@Name);"))
             {
                 try
                 {
@@ -2315,17 +2286,17 @@ namespace Generator.SimpleDataAccess.Samples
                         pName.Value = entity.Name;
                     }
 
-                    // Parameter settings: @GenreId
-                    System.Data.SqlClient.SqlParameter pGenreId = command.Parameters.Add("@GenreId", System.Data.SqlDbType.Int);
-                    pGenreId.Direction = System.Data.ParameterDirection.Output;
-
-                    command.ExecuteNonQuery();
-
-                    if (pGenreId.Value == System.DBNull.Value)
+                    using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
                     {
-                        throw new InvalidOperationException("Invalid output value: pGenreId");
+                        if (reader.Read())
+                        {
+                            entity.GenreId = reader.GetInt32(0);
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("Insert failed.");
+                        }
                     }
-                    entity.GenreId = (System.Int32)pGenreId.Value;
                 }
                 finally
                 {
@@ -2638,7 +2609,7 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[Invoice] ([CustomerId], [InvoiceDate], [BillingAddress], [BillingCity], [BillingState], [BillingCountry], [BillingPostalCode], [Total]) VALUES (@CustomerId, @InvoiceDate, @BillingAddress, @BillingCity, @BillingState, @BillingCountry, @BillingPostalCode, @Total); SET @InvoiceId = SCOPE_IDENTITY();"))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[Invoice] ([CustomerId], [InvoiceDate], [BillingAddress], [BillingCity], [BillingState], [BillingCountry], [BillingPostalCode], [Total])  OUTPUT inserted.[InvoiceId] VALUES (@CustomerId, @InvoiceDate, @BillingAddress, @BillingCity, @BillingState, @BillingCountry, @BillingPostalCode, @Total);"))
             {
                 try
                 {
@@ -2711,17 +2682,17 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pTotal = command.Parameters.Add("@Total", System.Data.SqlDbType.Decimal);
                     pTotal.Value = entity.Total;
 
-                    // Parameter settings: @InvoiceId
-                    System.Data.SqlClient.SqlParameter pInvoiceId = command.Parameters.Add("@InvoiceId", System.Data.SqlDbType.Int);
-                    pInvoiceId.Direction = System.Data.ParameterDirection.Output;
-
-                    command.ExecuteNonQuery();
-
-                    if (pInvoiceId.Value == System.DBNull.Value)
+                    using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
                     {
-                        throw new InvalidOperationException("Invalid output value: pInvoiceId");
+                        if (reader.Read())
+                        {
+                            entity.InvoiceId = reader.GetInt32(0);
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("Insert failed.");
+                        }
                     }
-                    entity.InvoiceId = (System.Int32)pInvoiceId.Value;
                 }
                 finally
                 {
@@ -3085,7 +3056,7 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[InvoiceLine] ([InvoiceId], [TrackId], [UnitPrice], [Quantity]) VALUES (@InvoiceId, @TrackId, @UnitPrice, @Quantity); SET @InvoiceLineId = SCOPE_IDENTITY();"))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[InvoiceLine] ([InvoiceId], [TrackId], [UnitPrice], [Quantity])  OUTPUT inserted.[InvoiceLineId] VALUES (@InvoiceId, @TrackId, @UnitPrice, @Quantity);"))
             {
                 try
                 {
@@ -3107,17 +3078,17 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pQuantity = command.Parameters.Add("@Quantity", System.Data.SqlDbType.Int);
                     pQuantity.Value = entity.Quantity;
 
-                    // Parameter settings: @InvoiceLineId
-                    System.Data.SqlClient.SqlParameter pInvoiceLineId = command.Parameters.Add("@InvoiceLineId", System.Data.SqlDbType.Int);
-                    pInvoiceLineId.Direction = System.Data.ParameterDirection.Output;
-
-                    command.ExecuteNonQuery();
-
-                    if (pInvoiceLineId.Value == System.DBNull.Value)
+                    using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
                     {
-                        throw new InvalidOperationException("Invalid output value: pInvoiceLineId");
+                        if (reader.Read())
+                        {
+                            entity.InvoiceLineId = reader.GetInt32(0);
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("Insert failed.");
+                        }
                     }
-                    entity.InvoiceLineId = (System.Int32)pInvoiceLineId.Value;
                 }
                 finally
                 {
@@ -3472,7 +3443,7 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[MediaType] ([Name]) VALUES (@Name); SET @MediaTypeId = SCOPE_IDENTITY();"))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[MediaType] ([Name])  OUTPUT inserted.[MediaTypeId] VALUES (@Name);"))
             {
                 try
                 {
@@ -3489,17 +3460,17 @@ namespace Generator.SimpleDataAccess.Samples
                         pName.Value = entity.Name;
                     }
 
-                    // Parameter settings: @MediaTypeId
-                    System.Data.SqlClient.SqlParameter pMediaTypeId = command.Parameters.Add("@MediaTypeId", System.Data.SqlDbType.Int);
-                    pMediaTypeId.Direction = System.Data.ParameterDirection.Output;
-
-                    command.ExecuteNonQuery();
-
-                    if (pMediaTypeId.Value == System.DBNull.Value)
+                    using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
                     {
-                        throw new InvalidOperationException("Invalid output value: pMediaTypeId");
+                        if (reader.Read())
+                        {
+                            entity.MediaTypeId = reader.GetInt32(0);
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("Insert failed.");
+                        }
                     }
-                    entity.MediaTypeId = (System.Int32)pMediaTypeId.Value;
                 }
                 finally
                 {
@@ -3749,7 +3720,7 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[Playlist] ([Name]) VALUES (@Name); SET @PlaylistId = SCOPE_IDENTITY();"))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[Playlist] ([Name])  OUTPUT inserted.[PlaylistId] VALUES (@Name);"))
             {
                 try
                 {
@@ -3766,17 +3737,17 @@ namespace Generator.SimpleDataAccess.Samples
                         pName.Value = entity.Name;
                     }
 
-                    // Parameter settings: @PlaylistId
-                    System.Data.SqlClient.SqlParameter pPlaylistId = command.Parameters.Add("@PlaylistId", System.Data.SqlDbType.Int);
-                    pPlaylistId.Direction = System.Data.ParameterDirection.Output;
-
-                    command.ExecuteNonQuery();
-
-                    if (pPlaylistId.Value == System.DBNull.Value)
+                    using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
                     {
-                        throw new InvalidOperationException("Invalid output value: pPlaylistId");
+                        if (reader.Read())
+                        {
+                            entity.PlaylistId = reader.GetInt32(0);
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("Insert failed.");
+                        }
                     }
-                    entity.PlaylistId = (System.Int32)pPlaylistId.Value;
                 }
                 finally
                 {
@@ -3980,7 +3951,7 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[PlaylistTrack] ([PlaylistId], [TrackId]) VALUES (@PlaylistId, @TrackId);"))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[PlaylistTrack] ([PlaylistId], [TrackId])  VALUES (@PlaylistId, @TrackId);"))
             {
                 try
                 {
@@ -4393,7 +4364,7 @@ namespace Generator.SimpleDataAccess.Samples
                 throw new ArgumentNullException("entity");
             }
 
-            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[Track] ([Name], [AlbumId], [MediaTypeId], [GenreId], [Composer], [Milliseconds], [Bytes], [UnitPrice]) VALUES (@Name, @AlbumId, @MediaTypeId, @GenreId, @Composer, @Milliseconds, @Bytes, @UnitPrice); SET @TrackId = SCOPE_IDENTITY();"))
+            using (System.Data.SqlClient.SqlCommand command = new System.Data.SqlClient.SqlCommand("INSERT INTO [dbo].[Track] ([Name], [AlbumId], [MediaTypeId], [GenreId], [Composer], [Milliseconds], [Bytes], [UnitPrice])  OUTPUT inserted.[TrackId] VALUES (@Name, @AlbumId, @MediaTypeId, @GenreId, @Composer, @Milliseconds, @Bytes, @UnitPrice);"))
             {
                 try
                 {
@@ -4459,17 +4430,17 @@ namespace Generator.SimpleDataAccess.Samples
                     System.Data.SqlClient.SqlParameter pUnitPrice = command.Parameters.Add("@UnitPrice", System.Data.SqlDbType.Decimal);
                     pUnitPrice.Value = entity.UnitPrice;
 
-                    // Parameter settings: @TrackId
-                    System.Data.SqlClient.SqlParameter pTrackId = command.Parameters.Add("@TrackId", System.Data.SqlDbType.Int);
-                    pTrackId.Direction = System.Data.ParameterDirection.Output;
-
-                    command.ExecuteNonQuery();
-
-                    if (pTrackId.Value == System.DBNull.Value)
+                    using (System.Data.SqlClient.SqlDataReader reader = command.ExecuteReader())
                     {
-                        throw new InvalidOperationException("Invalid output value: pTrackId");
+                        if (reader.Read())
+                        {
+                            entity.TrackId = reader.GetInt32(0);
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("Insert failed.");
+                        }
                     }
-                    entity.TrackId = (System.Int32)pTrackId.Value;
                 }
                 finally
                 {
